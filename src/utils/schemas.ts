@@ -1,0 +1,41 @@
+import { z } from 'zod';
+
+export const ProfileSchema = z.object({
+  name: z.string().min(1, "O nome não pode estar vazio").max(50),
+  goal: z.enum(["hipertrofia", "forca", "condicionamento", "perda_peso", "saude"]),
+  level: z.enum(["beginner", "intermediate", "advanced", "pro"]),
+  weight: z.number().min(30).max(300),
+  xp: z.number().min(0).default(0),
+  proMode: z.boolean().optional(),
+  philosophy: z.string().optional(),
+  classicStyle: z.string().optional(),
+  age: z.number().min(14).max(100).optional(),
+  injuries: z.array(z.string()).optional(),
+});
+
+
+export const SetSchema = z.object({
+  reps: z.number().min(0).max(100),
+  weight: z.number().min(0).max(1000),
+  rpe: z.number().min(1).max(10).optional(),
+});
+
+export const ExerciseSchema = z.object({
+  name: z.string(),
+  muscle: z.string(),
+  sets: z.array(SetSchema)
+});
+
+export const WorkoutSchema = z.object({
+  date: z.string(),
+  dayLabel: z.string().optional(),
+  duration: z.number().min(0),
+  totalVolume: z.number().min(0).optional(),
+  exercises: z.array(ExerciseSchema),
+  feedback: z.object({
+    difficulty: z.enum(["easy", "medium", "hard"]).optional(),
+    notes: z.string().optional()
+  }).optional()
+});
+
+export const HistorySchema = z.array(WorkoutSchema);

@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow:wght@300;400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: #080b0f; color: #eceae4;
+  font-family: 'Barlow', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: #1e2832; border-radius: 2px; }
+input:focus { outline: none; border-color: #e8c84a !important; }
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+button { cursor: pointer; font-family: 'Barlow', sans-serif; }
+button:active { opacity: 0.75; transform: scale(0.97); }
+
+@keyframes fadeUp   { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+@keyframes fadeIn   { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp  { from { transform:translateY(100%) } to { transform:translateY(0) } }
+@keyframes spin     { to { transform:rotate(360deg) } }
+@keyframes shimmer  { 0%{left:-100%} 100%{left:200%} }
+@keyframes pop      { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+.anim-up    { animation: fadeUp  0.36s ease forwards; }
+.anim-in    { animation: fadeIn  0.3s ease forwards; }
+.anim-slide { animation: slideUp 0.4s cubic-bezier(0.32,0.72,0,1) forwards; }
+.shimmer    { position:relative; overflow:hidden; }
+.shimmer::after {
+  content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
+  animation: shimmer 2.2s ease infinite;
+}
