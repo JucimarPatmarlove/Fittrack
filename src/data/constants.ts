@@ -13,25 +13,14 @@ export const GOALS = [
     { id: "condicionamento", label: "Condicionamento", icon: "⚡", desc: "Resistência", color: "#4a9ee8" },
 ];
 
-export const EXERCISE_DB: Record<string, any> = {
-    "Supino Plano": { muscle: "Peito", tutorial: "Costas no banco, pés firmes. Desce a barra até ao peito e empurra.", base: { hipertrofia: [3, 5, 8, 10] } },
-    "Puxada Frontal": { muscle: "Costas", tutorial: "Sentado, inclina ligeiramente o tronco e puxa em direção ao peito.", base: { hipertrofia: [4, 8, 10] } },
-    "Agachamento": { muscle: "Pernas", tutorial: "Pés à largura dos ombros. Desce o quadril para trás como se fosses sentar.", base: { hipertrofia: [4, 8, 10] } },
-    "Press Militar": { muscle: "Ombros", tutorial: "Abdómen contraído. Empurra o peso para cima da cabeça.", base: { hipertrofia: [4, 8, 10] } },
-    "Rosca Direta": { muscle: "Bíceps", tutorial: "Em pé com cotovelos colados ao corpo, sobe o peso dobrando apenas os braços.", base: { hipertrofia: [3, 10, 12] } },
-    "Tríceps Corda": { muscle: "Tríceps", tutorial: "Na polia alta, puxa a corda para baixo. Afasta as mãos no final.", base: { hipertrofia: [3, 12, 15] } },
-    "Plank": { muscle: "Core", tutorial: "Apoia-te nos antebraços e pontas dos pés. Corpo reto. Aperta a barriga.", base: { hipertrofia: [3, 45, 60] } },
-    "Remada Curvada": { muscle: "Costas", tutorial: "Inclina o tronco para a frente com as costas direitas. Puxa em direção ao umbigo.", base: { hipertrofia: [4, 8, 10] } },
-    "Barra Fixa": { muscle: "Costas", tutorial: "1. Pegada pronada\n2. Mãos na largura dos ombros\n3. Puxe o peito em direção à barra.", videoUrl: "https://www.youtube.com/watch?v=eGo4IYlbE5g", base: { hipertrofia: [3, 8, 10] } },
-    "Fundos": { muscle: "Peito", tutorial: "1. Entre paralelas\n2. Desça até 90°\n3. Suba com força controlada.", videoUrl: "https://www.youtube.com/watch?v=2z8JmcrW-As", base: { hipertrofia: [3, 10, 12] } },
-    "Burpees": { muscle: "Core", tutorial: "1. Agache\n2. Prancha\n3. Flexão\n4. Salte com braços em cima.", videoUrl: "https://www.youtube.com/watch?v=TU8QYVWxg6Y", base: { cardio: [3, 15, 20] } }
-};
+import { EXERCISE_DB } from './exerciseDB';
+export { EXERCISE_DB };
 
 export const WORKOUT_PLANS = [
-    { id: "p1", label: "Peito & Tríceps", exercises: ["Supino Plano", "Tríceps Corda", "Plank"] },
-    { id: "p2", label: "Costas & Bíceps", exercises: ["Puxada Frontal", "Remada Curvada", "Rosca Direta"] },
-    { id: "p3", label: "Pernas & Ombros", exercises: ["Agachamento", "Press Militar"] },
-    { id: "calisthenics", type: "circuit", rounds: 3, restBetweenRounds: 180, label: "Calistenia Park", exercises: ["Barra Fixa", "Fundos", "Burpees", "Plank"] },
+    { id: "p1", label: "Peito & Tríceps", exercises: ["Barbell Bench Press", "Cable Rope Tricep Pushdown", "Plank"] },
+    { id: "p2", label: "Costas & Bíceps", exercises: ["Cable Lat Pulldown Wide-Grip", "Barbell Bent Over Row", "Barbell Bicep Curl"] },
+    { id: "p3", label: "Pernas & Ombros", exercises: ["Barbell Back Squat", "Barbell Overhead Press"] },
+    { id: "calisthenics", type: "circuit", rounds: 3, restBetweenRounds: 180, label: "Calistenia Park", exercises: ["Pull-Up", "Dips", "Burpee", "Plank"] },
 ];
 
 export const ME: Record<string, string> = { Peito: "🫁", Costas: "🔙", Ombros: "🤷", Bíceps: "💪", Tríceps: "🦾", Pernas: "🦵", Core: "⭕" };

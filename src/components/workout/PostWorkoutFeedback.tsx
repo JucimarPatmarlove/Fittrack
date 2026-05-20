@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { estimateCaloriesBurned } from '../../services/fitnessMechanics';
 import { ProgressionSystem } from '../../services/ProgressionSystem';
+import { EffortTracker } from './EffortTracker';
 
 export const PostWorkoutFeedback = ({ onSubmit, profile, workoutData }: { onSubmit: (feedback: any) => void, profile?: any, workoutData?: any }) => {
     const [feedback, setFeedback] = useState({
@@ -53,12 +54,12 @@ export const PostWorkoutFeedback = ({ onSubmit, profile, workoutData }: { onSubm
                 <p style={{ color: '#55626e', fontSize: 12 }}>{adaptation.suggestion}</p>
             </div>
 
-            <button
-                onClick={() => onSubmit(feedback)}
-                style={{ width: '100%', background: '#e8c84a', border: 'none', borderRadius: 8, padding: 12, color: '#000', fontWeight: 700, cursor: 'pointer' }}
-            >
-                Guardar Feedback
-            </button>
+            <div style={{ marginBottom: 20 }}>
+                <EffortTracker 
+                    workoutDurationMinutes={workoutData?.durationMinutes || 45} 
+                    onEffortLogged={() => onSubmit(feedback)} 
+                />
+            </div>
         </div>
     );
 };

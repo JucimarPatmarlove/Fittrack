@@ -1,6 +1,7 @@
 import { WorkoutSession } from "../types";
 import { getCachedWorkout, cacheWorkout } from "../ai/cacheLayer";
 import { OfflineWorkoutEngine } from "./offlineWorkoutEngine";
+import { useEffortStore } from "../stores/useEffortStore";
 
 export const AnthropicService = {
     async askCoach(prompt: string, history: WorkoutSession[]): Promise<string> {
@@ -202,6 +203,10 @@ Retorna EXCLUSIVAMENTE um objeto JSON estrito com esta shape, NADA mais (nem for
             - Adiciona exercícios específicos para cada detalhe muscular.`;
         }
 
+        const effortLastWeek = useEffortStore.getState().getTotalEffortLastWeek();
+        const userMaxEffort = 850; // Limiar de Overtraining (pode ser dinâmico)
+        const isOvertraining = effortLastWeek > userMaxEffort;
+
         const prompt = `
 És um treinador de elite e fisiologista com experiência clínica.
 Cria um plano de treino semanal (7 dias) perfeitamente adaptado ao atleta Fittrack.
@@ -217,6 +222,8 @@ DADOS DO ATLETA (BIOFEEDBACK & LOGÍSTICA):
 - Dias de Treino Selecionados: ${profile.trainingDays?.join(', ') || 'Segunda, Quarta, Sexta'}
 - Duração Ideal do Treino: ${profile.preferredWorkoutDuration || 60} minutos
 - Lesões Ativas/Limitações: ${profile.injuries?.length ? profile.injuries.join(', ') : 'Nenhuma'}
+- Pontos de Esforço na última semana: ${effortLastWeek}
+${isOvertraining ? '- ⚠️ ALERTA: O atleta está em risco de overtraining (esforço excessivo).' : '- Atleta dentro da zona de recuperação saudável.'}
 
 REGRAS CORE DE PRESCRIÇÃO:
 1. Retorna EXCLUSIVAMENTE um objeto JSON estrito com o formato abaixo.
@@ -227,6 +234,7 @@ REGRAS CORE DE PRESCRIÇÃO:
 6. SE o atleta tiver Lesões (${profile.injuries?.join(', ') || 'Nenhuma'}), deves EXCLUIR movimentos que sobrecarreguem essas articulações (ex: sem agachamento livre se dor lombar) e escrever no 'reasoning' como contornaste a lesão.
 7. Ajusta a seleção de exercícios ao equipamento: se for 'Home Gym (Halteres)', não prescrevas Leg Press ou cabos.
 8. ${typeRequirements}
+9. ${isOvertraining ? 'OVERTRAINING DETETADO: Reduz o número de séries em 20%. O peso sugerido deve ser 10% inferior. RPE máximo 6.' : 'Mantém a progressão normal baseada no histórico.'}
 
 Formato JSON esperado (não adiciones markdown nem backticks \`\`\`json):
 {

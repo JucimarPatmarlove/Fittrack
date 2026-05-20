@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 import { getMasterKey, encryptData, decryptData } from '../utils/cryptoEngine';
+export { useGhostMode } from './useGhostMode';
 
 // Hook para Persistência Híbrida (IDB + LS) com suporte a Encriptação Zero Trust
 export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((prev: T) => T)) => void] {
@@ -13,7 +14,7 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
             try {
                 const mk = getMasterKey();
                 let rawStr = localStorage.getItem(key);
-                
+
                 const idbVal = await idbGet(key);
                 if (idbVal !== undefined) rawStr = idbVal;
 
@@ -26,14 +27,14 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
                     } catch (e) {
                         // Poderá não estar encriptado (legacy), ou corrompido
                         if (!rawStr.startsWith('{') && !rawStr.startsWith('[')) {
-                           console.warn(`Dados corrompidos ou chave inválida para ${key}`);
-                           return;
+                            console.warn(`Dados corrompidos ou chave inválida para ${key}`);
+                            return;
                         }
                     }
                 }
 
                 let parsed = JSON.parse(jsonStr);
-                
+
                 if (validator) {
                     const res = validator.safeParse(parsed);
                     if (!res.success) {
@@ -42,7 +43,7 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
                     }
                     parsed = res.data;
                 }
-                
+
                 sv(parsed);
             } catch (err) {
                 console.error("useLS load error:", err);
@@ -54,7 +55,7 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
     const set = useCallback((val: T | ((prev: T) => T)) => {
         sv(prev => {
             const next = val instanceof Function ? val(prev) : val;
-            
+
             // Background persist
             setTimeout(async () => {
                 try {
@@ -64,12 +65,12 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
                         toSave = await encryptData(mk, toSave);
                     }
                     localStorage.setItem(key, toSave);
-                    idbSet(key, toSave).catch(() => {});
+                    idbSet(key, toSave).catch(() => { });
                 } catch (e) {
                     console.error("Save error", e);
                 }
             }, 0);
-            
+
             return next;
         });
     }, [key]);

@@ -1,4 +1,5 @@
 import React, { useState, Suspense, lazy, useEffect } from "react";
+import ErrorBoundary from './components/ErrorBoundary';
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── IMPORTAÇÕES BASES & CONSTANTES ──────────────────────────────────────────
@@ -16,6 +17,7 @@ import { BeginnerGuide } from "./components/onboarding/BeginnerGuide";
 import { DetailedHistory } from "./components/history/DetailedHistory";
 import { PostWorkoutFeedback } from "./components/workout/PostWorkoutFeedback";
 import { PredictiveChallenges } from "./services/predictiveChallenges";
+import { RewardsStore } from "./screens/RewardsStore";
 
 // Componentes Pesados - Code Splitting
 const Dashboard = lazy(() => import('./screens/Dashboard'));
@@ -52,19 +54,19 @@ export default function App() {
     const silentBackup = async () => {
       const lastBackup = localStorage.getItem('last_backup');
       if (!lastBackup || Date.now() - parseInt(lastBackup) > 24 * 60 * 60 * 1000) {
-          const snapshot = {
-              profile: localStorage.getItem('fit_profile'),
-              history: localStorage.getItem('fit_history'),
-              ghostStats: localStorage.getItem('ghost-storage'),
-              timestamp: Date.now()
-          };
-          
-          try {
-             const { set } = await import('idb-keyval');
-             await set('cloud_backup_mock', snapshot);
-             localStorage.setItem('last_backup', Date.now().toString());
-             console.log("AutoBackup: Local Snapshot Guardado no IDB.");
-          } catch(e) {}
+        const snapshot = {
+          profile: localStorage.getItem('fit_profile'),
+          history: localStorage.getItem('fit_history'),
+          ghostStats: localStorage.getItem('ghost-storage'),
+          timestamp: Date.now()
+        };
+
+        try {
+          const { set } = await import('idb-keyval');
+          await set('cloud_backup_mock', snapshot);
+          localStorage.setItem('last_backup', Date.now().toString());
+          console.log("AutoBackup: Local Snapshot Guardado no IDB.");
+        } catch (e) { }
       }
     };
     silentBackup();
@@ -95,27 +97,27 @@ export default function App() {
 
     // Verificar desafios batidos
     try {
-        const storedC = localStorage.getItem('fit_challenges');
-        if (storedC) {
-            let challenges = JSON.parse(storedC);
-            let updated = false;
-            challenges = challenges.map((c: any) => {
-                if (c.status === 'active' && PredictiveChallenges.evaluateChallenge(c, finalData, newHistory)) {
-                    c.status = 'completed';
-                    challengeXP += c.xpReward;
-                    updated = true;
-                }
-                return c;
-            });
-            if (updated) localStorage.setItem('fit_challenges', JSON.stringify(challenges));
-        }
-    } catch(e){}
+      const storedC = localStorage.getItem('fit_challenges');
+      if (storedC) {
+        let challenges = JSON.parse(storedC);
+        let updated = false;
+        challenges = challenges.map((c: any) => {
+          if (c.status === 'active' && PredictiveChallenges.evaluateChallenge(c, finalData, newHistory)) {
+            c.status = 'completed';
+            challengeXP += c.xpReward;
+            updated = true;
+          }
+          return c;
+        });
+        if (updated) localStorage.setItem('fit_challenges', JSON.stringify(challenges));
+      }
+    } catch (e) { }
 
     const totalXPGained = baseXP + additionalXP + challengeXP;
 
     setHistory(newHistory);
     setProfile((p: any) => ({ ...p, xp: (p.xp || 0) + totalXPGained })); // Gamification progress!
-    
+
     setWorkoutData(null);
     setCurrentPlan(null);
     setView("dashboard");
@@ -128,8 +130,8 @@ export default function App() {
   };
 
   const handleUnlock = (key: CryptoKey) => {
-     setMasterKey(key);
-     setIsUnlocked(true);
+    setMasterKey(key);
+    setIsUnlocked(true);
   };
 
   if (!isUnlocked) {
@@ -140,28 +142,31 @@ export default function App() {
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Barlow', sans-serif" }}>
       <style>{css}</style>
 
-      <Suspense fallback={<LoadingFallback />}>
-        <AnimatePresence mode="wait">
-          {view === "dashboard" && <motion.div key="dash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}><Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} /></motion.div>}
-          {view === "workout" && currentPlan && <motion.div key="work" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}><ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => { setCurrentPlan(null); setView("dashboard"); }} /></motion.div>}
-          {view === "settings" && <motion.div key="set" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><Settings profile={profile} setProfile={setProfile} onReset={handleReset} /></motion.div>}
-          {view === "assessment" && <motion.div key="asses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><FitnessAssessment onComplete={(data: any) => { setProfile({ ...profile, ...data }); setView("dashboard"); }} /></motion.div>}
-          {view === "guide" && <motion.div key="gui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><BeginnerGuide onComplete={() => setView("dashboard")} /></motion.div>}
-          {view === "history" && <motion.div key="hist" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}><DetailedHistory workouts={history} profile={profile} onStartWorkout={handleStartWorkout} /></motion.div>}
-          {view === "feedback" && <motion.div key="feed" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}><PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} /></motion.div>}
-          {view === "aicoach" && <motion.div key="aicoach" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AICoach history={history} profile={profile} /></motion.div>}
-          {view === "trends" && <motion.div key="trends" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Trends history={history} /></motion.div>}
-          {view === "planner" && <motion.div key="planner" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Planner /></motion.div>}
-          {view === "gymvibe" && <motion.div key="gymvibe" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><GymVibe profile={profile} /></motion.div>}
-          {view === "milestones" && <motion.div key="milestones" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Milestones history={history} /></motion.div>}
-          {view === "cyclereview" && <motion.div key="cyclereview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} /></motion.div>}
-          {view === "devices" && <motion.div key="devices" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><DeviceManager /></motion.div>}
-        </AnimatePresence>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <AnimatePresence mode="wait">
+            {view === "dashboard" && <motion.div key="dash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}><Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} /></motion.div>}
+            {view === "workout" && currentPlan && <motion.div key="work" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}><ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => { setCurrentPlan(null); setView("dashboard"); }} /></motion.div>}
+            {view === "settings" && <motion.div key="set" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><Settings profile={profile} setProfile={setProfile} onReset={handleReset} /></motion.div>}
+            {view === "assessment" && <motion.div key="asses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><FitnessAssessment onComplete={(data: any) => { setProfile({ ...profile, ...data }); setView("dashboard"); }} /></motion.div>}
+            {view === "guide" && <motion.div key="gui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><BeginnerGuide onComplete={() => setView("dashboard")} /></motion.div>}
+            {view === "history" && <motion.div key="hist" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}><DetailedHistory workouts={history} profile={profile} onStartWorkout={handleStartWorkout} /></motion.div>}
+            {view === "feedback" && <motion.div key="feed" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}><PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} /></motion.div>}
+            {view === "aicoach" && <motion.div key="aicoach" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AICoach history={history} profile={profile} /></motion.div>}
+            {view === "trends" && <motion.div key="trends" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Trends history={history} /></motion.div>}
+            {view === "planner" && <motion.div key="planner" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Planner /></motion.div>}
+            {view === "gymvibe" && <motion.div key="gymvibe" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><GymVibe profile={profile} /></motion.div>}
+            {view === "milestones" && <motion.div key="milestones" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Milestones history={history} /></motion.div>}
+            {view === "cyclereview" && <motion.div key="cyclereview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} /></motion.div>}
+            {view === "devices" && <motion.div key="devices" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><DeviceManager /></motion.div>}
+            {view === "rewards" && <motion.div key="rewards" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><RewardsStore onClose={() => setView("dashboard")} /></motion.div>}
+          </AnimatePresence>
+        </Suspense>
+      </ErrorBoundary>
 
-      {view !== "workout" && view !== "assessment" && view !== "guide" && view !== "feedback" && (
+      {view !== "workout" && view !== "assessment" && view !== "guide" && view !== "feedback" && view !== "rewards" && (
         <div style={{ position: "fixed", bottom: 24, left: 0, right: 0, display: "flex", justifyContent: "center", zIndex: 100, pointerEvents: "none" }}>
-          <div className="glass" style={{ display: "flex", gap: "20px", padding: "12px 24px", borderRadius: "32px", pointerEvents: "auto", boxShadow: "0 10px 40px rgba(0,0,0,0.5)"}}>
+          <div className="glass" style={{ display: "flex", gap: "20px", padding: "12px 24px", borderRadius: "32px", pointerEvents: "auto", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}>
             <button onClick={() => setView("dashboard")} style={{ background: "none", border: "none", color: view === "dashboard" ? C.accent : C.muted, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
               <span style={{ fontSize: 20 }}>🏋️</span>
               {view === "dashboard" && <span style={{ fontSize: 10, fontWeight: "bold" }}>Treino</span>}
@@ -179,15 +184,19 @@ export default function App() {
               {view === "gymvibe" && <span style={{ fontSize: 10, fontWeight: "bold" }}>Vibe</span>}
             </button>
             {history.length >= 3 ? (
-               <button onClick={() => setShowClubModal(true)} style={{ background: "none", border: "none", color: showClubModal ? C.accent : C.muted, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                 <span style={{ fontSize: 20 }}>👥</span>
-                 {showClubModal && <span style={{ fontSize: 10, fontWeight: "bold" }}>Clube</span>}
-               </button>
+              <button onClick={() => setShowClubModal(true)} style={{ background: "none", border: "none", color: showClubModal ? C.accent : C.muted, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 20 }}>👥</span>
+                {showClubModal && <span style={{ fontSize: 10, fontWeight: "bold" }}>Clube</span>}
+              </button>
             ) : (
-               <button onClick={() => alert('🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!')} style={{ background: "none", border: "none", color: C.muted, opacity: 0.5, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                 <span style={{ fontSize: 20 }}>👥</span>
-               </button>
+              <button onClick={() => alert('🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!')} style={{ background: "none", border: "none", color: C.muted, opacity: 0.5, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 20 }}>👥</span>
+              </button>
             )}
+            <button onClick={() => setView("rewards")} style={{ background: "none", border: "none", color: view === "rewards" ? C.accent : C.muted, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 20 }}>💎</span>
+              {view === "rewards" && <span style={{ fontSize: 10, fontWeight: "bold" }}>Loja</span>}
+            </button>
             <button onClick={() => setView("settings")} style={{ background: "none", border: "none", color: view === "settings" ? C.accent : C.muted, cursor: "pointer", fontSize: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
               <span style={{ fontSize: 20 }}>👤</span>
               {view === "settings" && <span style={{ fontSize: 10, fontWeight: "bold" }}>Perfil</span>}
@@ -195,7 +204,7 @@ export default function App() {
           </div>
         </div>
       )}
-      
+
       {showClubModal && <ClubModal onClose={() => setShowClubModal(false)} />}
     </div>
   );

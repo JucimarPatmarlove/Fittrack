@@ -1,82 +1,70 @@
-// src/hooks/useAudioCoach.ts
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 
-export function useAudioCoach() {
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [enabled, setEnabled] = useState(true); // Pode ser ativado/desativado nas opções do treino
-  const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
+export interface CoachMessage {
+  text: string;
+  rate?: number;    // velocidade da fala (0.5 a 2)
+  pitch?: number;   // tom (0 a 2)
+  volume?: number;  // volume (0 a 1)
+}
 
-  // Pre-carregar vozes nativas (o evento voiceschanged é errático em PWA/mobile)
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+export function useAudioCoach(enabled: boolean = true) {
+  const queueRef = useRef<CoachMessage[]>([]);
+  const isSpeakingRef = useRef(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-    const loadVoices = () => {
-      const allVoices = window.speechSynthesis.getVoices();
-      if (allVoices.length > 0) {
-        setVoices(allVoices);
-        // Procurar voz em Português (PT-PT ou PT-BR)
-        const ptVoice = allVoices.find(v => v.lang.includes('pt-PT') || v.lang.includes('pt_PT')) ||
-                        allVoices.find(v => v.lang.includes('pt-BR') || v.lang.includes('pt'));
-        if (ptVoice) {
-          preferredVoiceRef.current = ptVoice;
-        } else {
-          // Fallback para primeira disponível
-          preferredVoiceRef.current = allVoices[0];
-        }
-      }
-    };
-
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = null;
-      }
-    };
-  }, []);
-
-  const speak = useCallback((text: string, priority: boolean = false) => {
-    if (!enabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-
-    try {
-      // Se for mensagem prioritária (ex: RPE crítico), limpar a fila atual
-      if (priority) {
-        window.speechSynthesis.cancel();
-      } else if (window.speechSynthesis.speaking) {
-        // Se já está a falar algo não prioritário, não atropelar
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (preferredVoiceRef.current) {
-        utterance.voice = preferredVoiceRef.current;
-      }
-      
-      // Ajustes Fisiológicos de Ginásio: Cadência e Tom firmes
-      utterance.rate = 1.05; // Ligeiramente mais rápido que o normal
-      utterance.pitch = 0.95; // Tom ligeiramente mais grave/sério
-
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.warn("Falha no Audio Coaching TTS", e);
+  const processQueue = useCallback(() => {
+    if (!enabled) return;
+    if (queueRef.current.length === 0) {
+      isSpeakingRef.current = false;
+      return;
     }
+    if (isSpeakingRef.current) return;
+
+    isSpeakingRef.current = true;
+    const next = queueRef.current.shift()!;
+    const utterance = new SpeechSynthesisUtterance(next.text);
+    utterance.rate = next.rate ?? 0.95;
+    utterance.pitch = next.pitch ?? 1.05;
+    utterance.volume = next.volume ?? 0.9;
+    utterance.lang = 'pt-PT';
+    
+    utterance.onend = () => {
+      isSpeakingRef.current = false;
+      setTimeout(processQueue, 150);
+    };
+    utterance.onerror = () => {
+      isSpeakingRef.current = false;
+      processQueue();
+    };
+    speechSynthesis.cancel(); // interrompe qualquer fala anterior
+    speechSynthesis.speak(utterance);
+    utteranceRef.current = utterance;
   }, [enabled]);
 
-  const toggleAudio = useCallback(() => {
-    setEnabled(prev => {
-      const next = !prev;
-      if (!next && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      return next;
-    });
+  const speak = useCallback((message: CoachMessage | string, priority: boolean = false) => {
+    if (!enabled) return;
+    
+    const msgObj = typeof message === 'string' ? { text: message } : message;
+    
+    if (priority) {
+      speechSynthesis.cancel();
+      queueRef.current = [msgObj];
+      isSpeakingRef.current = false;
+    } else {
+      queueRef.current.push(msgObj);
+    }
+    processQueue();
+  }, [enabled, processQueue]);
+
+  const cancel = useCallback(() => {
+    speechSynthesis.cancel();
+    queueRef.current = [];
+    isSpeakingRef.current = false;
   }, []);
 
-  return {
-    speak,
-    enabled,
-    toggleAudio,
-    hasSupport: typeof window !== 'undefined' && 'speechSynthesis' in window
-  };
+  useEffect(() => {
+    return () => cancel();
+  }, [cancel]);
+
+  return { speak, cancel, isSpeaking: isSpeakingRef.current };
 }

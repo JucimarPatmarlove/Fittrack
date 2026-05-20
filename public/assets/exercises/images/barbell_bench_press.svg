@@ -1,0 +1,176 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(232, 200, 74, 0.04)" stroke-width="1"/>
+    </pattern>
+    <!-- Scanlines -->
+    <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="rgba(0,0,0,0.1)"/>
+      <rect y="2" width="4" height="2" fill="rgba(255,255,255,0.02)"/>
+    </pattern>
+    <!-- Glow Filters -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="muscle-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Chromatic Aberration -->
+    <filter id="glitch">
+      <feOffset dx="1" dy="0" in="SourceGraphic" result="red-glitch"/>
+      <feOffset dx="-1" dy="0" in="SourceGraphic" result="cyan-glitch"/>
+      <feMerge>
+        <feMergeNode in="red-glitch"/>
+        <feMergeNode in="cyan-glitch"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    @keyframes radarSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes wavePan {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: 40; }
+    }
+    @keyframes dataFlicker {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.4; }
+      70% { opacity: 0.9; }
+    }
+    .radar {
+      animation: radarSpin 10s linear infinite;
+      transform-origin: 350px 50px;
+    }
+    .wave {
+      animation: wavePan 2s linear infinite;
+      stroke-dasharray: 4, 6;
+    }
+    .flicker {
+      animation: dataFlicker 3s random infinite;
+    }
+  </style>
+
+  <!-- Background Layer -->
+  <rect width="100%" height="100%" fill="#080b0f"/>
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+
+  <!-- Advanced Data Wave -->
+  <path class="wave" d="M 0,280 Q 50,260 100,280 T 200,280 T 300,280 T 400,280" fill="none" stroke="rgba(232, 200, 74, 0.1)" stroke-width="1.5"/>
+  <path class="wave" d="M 0,270 Q 50,290 100,270 T 200,270 T 300,270 T 400,270" fill="none" stroke="rgba(56, 189, 248, 0.05)" stroke-width="1"/>
+
+  <!-- Rotating Radar Widget -->
+  <g class="radar" opacity="0.3">
+    <circle cx="350" cy="50" r="25" fill="none" stroke="#e8c84a" stroke-width="0.5" stroke-dasharray="2,4"/>
+    <circle cx="350" cy="50" r="15" fill="none" stroke="#38bdf8" stroke-width="0.5"/>
+    <path d="M 350,25 L 350,50 L 375,50" fill="none" stroke="#e8c84a" stroke-width="1"/>
+  </g>
+
+  <!-- Glowing UI Frame & Corner Brackets -->
+  <rect x="10" y="10" width="380" height="280" rx="12" fill="none" stroke="rgba(232, 200, 74, 0.15)" stroke-width="1.5"/>
+  <line x1="20" y1="40" x2="380" y2="40" stroke="rgba(232, 200, 74, 0.15)" stroke-width="1"/>
+  
+  <!-- Top Left Bracket -->
+  <path d="M 25,25 L 15,25 L 15,35" fill="none" stroke="#e8c84a" stroke-width="2"/>
+  <!-- Top Right Bracket -->
+  <path d="M 375,25 L 385,25 L 385,35" fill="none" stroke="#e8c84a" stroke-width="2"/>
+  <!-- Bottom Left Bracket -->
+  <path d="M 15,265 L 15,275 L 25,275" fill="none" stroke="#e8c84a" stroke-width="2"/>
+  <!-- Bottom Right Bracket -->
+  <path d="M 385,265 L 385,275 L 375,275" fill="none" stroke="#e8c84a" stroke-width="2"/>
+
+  <!-- Info Header with Chromatic Glitch -->
+  <text x="25" y="30" fill="#eceae4" font-family="'DM Mono', monospace" font-size="12" font-weight="bold" letter-spacing="1" filter="url(#glitch)">BARBELL BENCH PRESS</text>
+  <rect x="290" y="18" width="85" height="16" rx="4" fill="rgba(232, 200, 74, 0.1)" stroke="rgba(232, 200, 74, 0.3)" stroke-width="1"/>
+  <text x="332" y="30" fill="#e8c84a" font-family="'DM Mono', monospace" font-size="9" font-weight="bold" text-anchor="middle" class="flicker">PEITO</text>
+
+  <!-- Watermark / Cybernetic Grid Details -->
+  <text x="25" y="275" fill="rgba(85, 98, 110, 0.7)" font-family="'DM Mono', monospace" font-size="8">FITTRACK ENGINE v7.1 // SIMULADOR KINETIC // AUTO-TRACKING ENEMY</text>
+  <text x="350" y="275" fill="rgba(85, 98, 110, 0.7)" font-family="'DM Mono', monospace" font-size="8">SYS.OK</text>
+
+  <style>
+    @keyframes barMove {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(48px); }
+    }
+    @keyframes armRight {
+      0%, 100% { d: path("M 190,165 L 155,140 L 130,120"); }
+      50% { d: path("M 190,165 L 175,185 L 130,168"); }
+    }
+    @keyframes armLeft {
+      0%, 100% { d: path("M 210,165 L 245,140 L 270,120"); }
+      50% { d: path("M 210,165 L 225,185 L 270,168"); }
+    }
+    @keyframes chestGlow {
+      0%, 100% { opacity: 0.2; transform: scale(0.9); }
+      50% { opacity: 0.95; transform: scale(1.2); }
+    }
+    .barbell {
+      animation: barMove 3s ease-in-out infinite;
+    }
+    .arm-r {
+      animation: armRight 3s ease-in-out infinite;
+    }
+    .arm-l {
+      animation: armLeft 3s ease-in-out infinite;
+    }
+    .target-muscle {
+      animation: chestGlow 3s ease-in-out infinite;
+      transform-origin: 200px 165px;
+    }
+  </style>
+
+  <!-- Bench representation -->
+  <rect x="110" y="166" width="180" height="8" rx="3" fill="#1e2832" stroke="rgba(232, 200, 74, 0.3)" stroke-width="1"/>
+  <line x1="140" y1="174" x2="140" y2="230" stroke="#1e2832" stroke-width="6"/>
+  <line x1="260" y1="174" x2="260" y2="230" stroke="#1e2832" stroke-width="6"/>
+
+  <!-- Stick Figure Lying Down -->
+  <!-- Head -->
+  <circle cx="160" cy="155" r="10" fill="#eceae4"/>
+  <!-- Body/Torso -->
+  <line x1="170" y1="165" x2="245" y2="165" stroke="#eceae4" stroke-width="8" stroke-linecap="round"/>
+  <!-- Legs -->
+  <path d="M 240,165 L 265,185 L 265,230" stroke="#55626e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Target Muscle Highlight (Chest) -->
+  <circle cx="195" cy="165" r="14" fill="#ef4444" opacity="0.6" filter="url(#muscle-glow)" class="target-muscle"/>
+  <circle cx="205" cy="165" r="14" fill="#ef4444" opacity="0.6" filter="url(#muscle-glow)" class="target-muscle"/>
+
+  <!-- Arms -->
+  <path class="arm-r" fill="none" stroke="#eceae4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="arm-l" fill="none" stroke="#eceae4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Barbell with weights -->
+  <g class="barbell" style="transform-origin: 200px 120px;">
+    <!-- Bar -->
+    <line x1="100" y1="120" x2="300" y2="120" stroke="#eceae4" stroke-width="4"/>
+    <!-- Hands holding bar (represented by rings/collars) -->
+    <circle cx="130" cy="120" r="3" fill="#e8c84a"/>
+    <circle cx="270" cy="120" r="3" fill="#e8c84a"/>
+    <!-- Weights Right -->
+    <rect x="290" y="100" width="8" height="40" rx="2" fill="#1e2832" stroke="#e8c84a" stroke-width="2"/>
+    <rect x="282" y="105" width="8" height="30" rx="2" fill="#1e2832" stroke="#e8c84a" stroke-width="1.5"/>
+    <!-- Weights Left -->
+    <rect x="102" y="100" width="8" height="40" rx="2" fill="#1e2832" stroke="#e8c84a" stroke-width="2"/>
+    <rect x="110" y="105" width="8" height="30" rx="2" fill="#1e2832" stroke="#e8c84a" stroke-width="1.5"/>
+  </g>
+
+  <!-- Interactive movement track -->
+  <path d="M 200,120 L 200,168" stroke="rgba(232, 200, 74, 0.15)" stroke-dasharray="4,4" stroke-width="1"/>
+  
+  <!-- Overlay Scanlines on top of everything -->
+  <rect width="100%" height="100%" fill="url(#scanlines)" style="pointer-events:none;mix-blend-mode:overlay;"/>
+</svg>
