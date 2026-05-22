@@ -406,10 +406,23 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   };
 
   const commitFinish = (vol: number) => {
+    const isCustom = todayPlan.id?.startsWith('free_') || !!todayPlan.isCustom;
     const payload = {
-      date: new Date().toISOString(), dayLabel: todayPlan.label, duration: elapsed,
-      exercises: localExs.map((ex: any, ei: number) => ({ name: ex.name, muscle: ex.muscle, sets: sets[ei].filter((s: any) => s.done).map((s: any) => ({ reps: s.reps, weight: s.weight })) })).filter((e: any) => e.sets.length > 0),
+      date: new Date().toISOString(),
+      dayLabel: todayPlan.label || 'Treino Livre',
+      duration: elapsed,
+      exercises: localExs.map((ex: any, ei: number) => ({
+        name: ex.name,
+        muscle: ex.muscle,
+        sets: sets[ei].filter((s: any) => s.done).map((s: any) => ({
+          weight: s.weight,
+          reps: s.reps,
+          rpe: s.rpe || 8
+        }))
+      })).filter((e: any) => e.sets.length > 0),
       totalVolume: vol,
+      isCustom: isCustom,
+      customExercisesList: isCustom ? todayPlan.exercises : [],
     };
     try {
       if (autoSync && syncWorker.current) {

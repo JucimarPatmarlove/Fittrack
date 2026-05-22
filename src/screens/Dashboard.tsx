@@ -200,6 +200,12 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
           </GradientButton>
       </div>
 
+      <div style={{ marginBottom: 20 }}>
+          <GradientButton variant="secondary" onClick={() => onStartWorkout('OPEN_FREE_BUILDER')} style={{ width: "100%", padding: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, fontSize: 16, border: `1px solid rgba(232, 200, 74, 0.3)` }}>
+              ⚡ TREINO LIVRE (CONSTRUTOR)
+          </GradientButton>
+      </div>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <p style={{ fontFamily: "'Bebas Neue'", fontSize: 18, letterSpacing: 2, color: C.muted }}>TREINO DE HOJE</p>
         <button onClick={handleAIGeneration} disabled={isGenerating} style={{ background: "linear-gradient(135deg, #e8c84a, #d4b83a)", color: "#000", border: "none", borderRadius: 8, padding: "6px 12px", fontFamily: "'Bebas Neue'", fontSize: 14, cursor: isGenerating ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6, opacity: isGenerating ? 0.7 : 1, boxShadow: '0 0 10px rgba(232,200,74,0.3)' }}>

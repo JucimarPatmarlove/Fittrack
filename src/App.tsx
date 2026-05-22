@@ -18,6 +18,7 @@ import { DetailedHistory } from "./components/history/DetailedHistory";
 import { PostWorkoutFeedback } from "./components/workout/PostWorkoutFeedback";
 import { PredictiveChallenges } from "./services/predictiveChallenges";
 import { RewardsStore } from "./screens/RewardsStore";
+import { FreeWorkoutBuilder } from "./components/workout/FreeWorkoutBuilder";
 
 // Componentes Pesados - Code Splitting
 const Dashboard = lazy(() => import('./screens/Dashboard'));
@@ -48,6 +49,7 @@ export default function App() {
   const [currentPlan, setCurrentPlan] = useState<any>(null);
   const [workoutData, setWorkoutData] = useState<any>(null);
   const [showClubModal, setShowClubModal] = useState(false);
+  const [showFreeBuilder, setShowFreeBuilder] = useState(false);
 
   useEffect(() => {
     // AutoBackup System (Offline First Mock)
@@ -77,6 +79,10 @@ export default function App() {
   }, []);
 
   const handleStartWorkout = (plan: any) => {
+    if (plan === 'OPEN_FREE_BUILDER') {
+      setShowFreeBuilder(true);
+      return;
+    }
     setCurrentPlan(plan);
     setView("workout");
   };
@@ -206,6 +212,15 @@ export default function App() {
       )}
 
       {showClubModal && <ClubModal onClose={() => setShowClubModal(false)} />}
+      {showFreeBuilder && (
+        <FreeWorkoutBuilder 
+          onClose={() => setShowFreeBuilder(false)}
+          onStart={(plan) => {
+            setShowFreeBuilder(false);
+            handleStartWorkout(plan);
+          }}
+        />
+      )}
     </div>
   );
 }
