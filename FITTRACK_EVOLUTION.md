@@ -1,8 +1,26 @@
 # FitTrack V7 — Documento Vivo de Evolução
 
-> **Versão:** `v1.1.0`  
-> **Última Actualização:** 2026-06-04 (JWT Auth Layer)  
+> **Versão:** `v1.2.0`  
+> **Última Actualização:** 2026-06-04 (Vercel Serverless + Auditoria)  
 > **Mantido por:** Equipa FitTrack + IAs colaboradoras  
+
+---
+
+## Índice
+
+1. [Visão Geral do Projecto](#1-visão-geral-do-projecto)
+2. [Arquitectura Actual](#2-arquitectura-actual)
+3. [Estado de Implementação](#3-estado-de-implementação)
+4. [Decisões Técnicas Importantes](#4-decisões-técnicas-importantes)
+5. [Base de Dados e Modelos de Dados](#5-base-de-dados-e-modelos-de-dados)
+6. [Integrações Externas](#6-integrações-externas)
+7. [Segurança e Privacidade](#7-segurança-e-privacidade)
+8. [Roadmap](#8-roadmap-próximos-3-meses)
+9. [Lições Aprendidas / Troubleshooting](#9-lições-aprendidas--troubleshooting)
+10. [Como Outras IAs Podem Ajudar](#10-como-outras-ias-podem-ajudar)
+11. [Zustand Stores](#11-zustand-stores-estado-global)
+12. [Testes](#12-testes)
+13. [Changelog](#13-changelog)
 
 ---
 
@@ -68,31 +86,38 @@
 ### 2.3 Estrutura de Pastas
 
 ```
-src/
-├── ai/                    # Cache layer para respostas IA
-├── components/
-│   ├── 3d/                # MuscleViewer, SmartCamera, MuscleSphere
-│   ├── challenges/        # ActiveChallenges, DeadHangWidget
-│   ├── dashboard/         # ActivityHeatmap, MuscleRecoveryRing, WeekCalendar
-│   ├── exercises/         # VideoTutorial, ExerciseTutorialExt
-│   ├── history/           # Histórico de treinos
-│   ├── onboarding/        # BeginnerGuide, FitnessAssessment
-│   ├── PlateCalculator/   # Calculadora de anilhas
-│   ├── planner/           # Planeamento semanal
-│   ├── rival/             # RivalRace, RivalResult (gamificação PvP)
-│   ├── security/          # LockScreen (PIN + PBKDF2)
-│   ├── social/            # ClubModal, ShareWorkoutModal, GymVibeWidget
-│   ├── stats/             # Estatísticas
-│   ├── ui/                # GlassCard, GlobalBackground, GlowInput, GradientButton
-│   └── workout/           # RestTimer, FreeWorkoutBuilder, WeeklyPlanGenerator, etc.
-├── data/                  # exerciseDB (77 exercícios), exerciseClassifier, constants
-├── db/                    # IndexedDB schema + encrypted layer
-├── hooks/                 # useBluetoothHRM, useAudioCoach, useMotionCounter, etc.
-├── screens/               # Dashboard, ActiveWorkout, AICoach, Trends, Settings, etc.
-├── services/              # anthropicService, trendAnalyzer, rivalAI, neuralFatigue
-├── stores/                # Zustand: useGhostStore, useEffortStore, useProgressionStore, etc.
-├── types/                 # Interfaces globais
-└── utils/                 # cryptoEngine, prescriptionEngine, loadCalculator, sanitize
+./
+├── server.js              # Proxy BFF local (Node.js nativo + Anthropic SDK)
+├── vercel.json            # Config Vercel (rewrites, functions)
+├── api/                   # Vercel serverless functions
+│   ├── claude.js          # Proxy genérico /api/claude
+│   └── generate-workout.js # Endpoint especializado /api/generate-workout
+├── .env.example           # Template de variáveis de ambiente
+└── src/
+    ├── ai/                    # Cache layer para respostas IA
+    ├── components/
+    │   ├── 3d/                # MuscleViewer, SmartCamera, MuscleSphere
+    │   ├── challenges/        # ActiveChallenges, DeadHangWidget
+    │   ├── dashboard/         # ActivityHeatmap, MuscleRecoveryRing, WeekCalendar
+    │   ├── exercises/         # VideoTutorial, ExerciseTutorialExt
+    │   ├── history/           # Histórico de treinos
+    │   ├── onboarding/        # BeginnerGuide, FitnessAssessment
+    │   ├── PlateCalculator/   # Calculadora de anilhas
+    │   ├── planner/           # Planeamento semanal
+    │   ├── rival/             # RivalRace, RivalResult (gamificação PvP)
+    │   ├── security/          # LockScreen (PIN + PBKDF2)
+    │   ├── social/            # ClubModal, ShareWorkoutModal, GymVibeWidget
+    │   ├── stats/             # Estatísticas
+    │   ├── ui/                # GlassCard, GlobalBackground, GlowInput, GradientButton
+    │   └── workout/           # RestTimer, FreeWorkoutBuilder, WeeklyPlanGenerator, etc.
+    ├── data/                  # exerciseDB (77 exercícios), exerciseClassifier, constants
+    ├── db/                    # IndexedDB schema + encrypted layer
+    ├── hooks/                 # useBluetoothHRM, useAudioCoach, useMotionCounter, etc.
+    ├── screens/               # Dashboard, ActiveWorkout, AICoach, Trends, Settings, etc.
+    ├── services/              # anthropicService, jwtEngine, trendAnalyzer, rivalAI
+    ├── stores/                # Zustand (11 stores)
+    ├── types/                 # Interfaces globais
+    └── utils/                 # cryptoEngine, prescriptionEngine, loadCalculator, sanitize
 ```
 
 ---
@@ -276,6 +301,17 @@ Atleta completa série → toggle() no ActiveWorkout
 
 > **Nota sobre o Shared Secret:** O segredo JWT (`VITE_API_SHARED_SECRET`) está no bundle do cliente. Mitigação: token expira em 60s. Evolução futura: endpoint `/api/request-token` para eliminar o segredo do cliente.
 
+### 7.1 Variáveis de Ambiente
+
+| Variável | Onde é usada | Finalidade |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | `server.js`, `api/*.js` (Vercel) | Chave da API Claude 3.5 — **SÓ no servidor** |
+| `API_SHARED_SECRET` | `server.js`, `api/*.js` (Vercel) | Segredo para verificação JWT (lado servidor) |
+| `VITE_API_SHARED_SECRET` | `jwtEngine.ts` (browser) | Segredo para geração JWT (lado cliente, exp 60s) |
+| `VITE_API_URL` | `anthropicService.ts` | Override do endpoint API (dev: vazio, prod: URL Vercel) |
+| `PORT` | `server.js` | Porta do proxy BFF local (defeito: 3001) |
+
+> ⚠️ `ANTHROPIC_API_KEY` e `API_SHARED_SECRET` **nunca** usam prefixo `VITE_`. Variáveis sem prefixo ficam apenas no Node.js.
 ---
 
 ## 8. Roadmap (próximos 3 meses)
@@ -379,6 +415,42 @@ Atleta completa série → toggle() no ActiveWorkout
 | `usePlanStore` | Plano semanal activo |
 | `useRoutineStore` | Rotinas salvas pelo utilizador |
 | `useDualWorkoutStore` | Treino dual (parceiro) |
+
+---
+
+## 12. Testes
+
+| Tipo | Ferramenta | Estado |
+|---|---|---|
+| **Unit Tests** | Vitest (planeado) | ❌ Não implementado |
+| **E2E** | Playwright (planeado) | ❌ Não implementado |
+| **Build Validation** | `vite build` | ✅ Passa sem erros |
+| **Server Validation** | `node server.js` | ✅ Arranca correctamente |
+| **Validação Manual** | iPhone via rede local (`http://IP:5173`) | ✅ Funcional |
+| **Segurança** | `grep -r sk-ant dist/` (zero matches) | ✅ API Key ausente do bundle |
+
+### Testar no Telemóvel (rede local)
+```bash
+# Terminal 1 — Backend:
+npm run server
+
+# Terminal 2 — Frontend:
+npm run dev          # já corre com --host
+
+# No telemóvel, abrir:
+# http://<IP-DO-PC>:5173
+# (descobrir IP com: ip a | grep 192)
+```
+
+---
+
+## 13. Changelog
+
+| Versão | Data | Alterações |
+|---|---|---|
+| `v1.2.0` | 2026-06-04 | Vercel serverless (`api/claude.js`, `api/generate-workout.js`), `vercel.json`, secções Índice, Variáveis de Ambiente, Testes e Changelog |
+| `v1.1.0` | 2026-06-04 | JWT HS256 (60s) via Web Crypto API nativa, `jwtEngine.ts`, gateway JWT no `server.js` |
+| `v1.0.0` | 2026-06-04 | Documento inicial — IndexedDB relacional, proxy BFF, motor analítico RPE, criptografia AES-GCM |
 
 ---
 
