@@ -8,6 +8,7 @@ import { WeekCalendar } from "../components/dashboard/WeekCalendar";
 import { RecoveryRing } from '../components/stats/RecoveryRing';
 import { RecoveryRoulette } from '../components/dashboard/RecoveryRoulette';
 import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
+import { TrendWidget } from '../components/dashboard/TrendWidget';
 import { NeuralFatigue } from "../services/neuralFatigue";
 import { calculateRecovery } from "../data/utils";
 import { AnthropicService } from "../services/anthropicService";
@@ -141,6 +142,8 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
       <WeekCalendar history={history} />
       
       <ActivityHeatmap history={history} />
+      
+      <TrendWidget history={history} />
       
       {history.length >= 3 ? (
         <RecoveryRoulette />

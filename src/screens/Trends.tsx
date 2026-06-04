@@ -1,14 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { C } from '../data/constants';
 import { GlobalBackground } from '../components/ui/GlobalBackground';
 import { GlassCard } from '../components/ui/GlassCard';
 import { NeuralFatigue } from '../services/neuralFatigue';
 import { useMilestonesStore } from '../stores/useMilestonesStore';
+import { analyzeExerciseTrend, TrendAnalysis } from '../services/trendAnalyzer';
 
 export default function Trends({ history }: any) {
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [exerciseTrend, setExerciseTrend] = useState<TrendAnalysis | null>(null);
   const prs = useMilestonesStore((state) => state.personalRecords);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (selectedExercise) {
+      setExerciseTrend(null);
+      analyzeExerciseTrend(selectedExercise).then((analysis) => {
+        if (isMounted) setExerciseTrend(analysis);
+      }).catch((e) => console.error(e));
+    } else {
+      setExerciseTrend(null);
+    }
+    return () => { isMounted = false; };
+  }, [selectedExercise]);
 
   // 1. Agrupar por semana (últimas 8 semanas)
   const weeklyData = useMemo(() => {
@@ -204,6 +219,40 @@ export default function Trends({ history }: any) {
                     {exercisePRs.find(e => e.name === selectedExercise)?.weight || 0} <span style={{ fontSize: 20 }}>kg</span>
                   </p>
                   <p style={{ fontSize: 12, color: C.muted, margin: "4px 0 0 0" }}>1RM estimado do Atleta</p>
+                  
+                  {exerciseTrend && exerciseTrend.status !== 'NO_DATA' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      style={{
+                        marginTop: 16,
+                        padding: 12,
+                        borderRadius: 8,
+                        background: 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${exerciseTrend.status === 'PROGRESSING' ? C.green : exerciseTrend.status === 'FATIGUED' ? C.danger : C.accent}55`,
+                        display: 'inline-block',
+                        textAlign: 'left',
+                        maxWidth: 300
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 16 }}>
+                          {exerciseTrend.status === 'PROGRESSING' ? '📈' : exerciseTrend.status === 'FATIGUED' ? '📉' : '⚖️'}
+                        </span>
+                        <span style={{ fontSize: 12, color: C.text, fontWeight: 'bold' }}>
+                          {exerciseTrend.status === 'PROGRESSING' ? 'CARGA ASCENDENTE' : exerciseTrend.status === 'FATIGUED' ? 'FADIGA ACUMULADA' : 'FASE DE CONSOLIDAÇÃO'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 11, color: '#f8fafc', margin: 0, lineHeight: 1.3 }}>
+                        {exerciseTrend.message}
+                      </p>
+                      {exerciseTrend.avgRpeLastWorkout && (
+                        <p style={{ fontSize: 10, color: C.muted, margin: '6px 0 0', fontFamily: "'DM Mono'" }}>
+                          RPE Médio: {exerciseTrend.avgRpeLastWorkout} | Carga: {exerciseTrend.avgWeightLastWorkout}kg
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
