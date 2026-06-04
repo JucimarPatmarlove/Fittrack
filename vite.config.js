@@ -88,6 +88,14 @@ export default defineConfig({
   ],
   server: {
     allowedHosts: true,
-    host: true
+    host: true,
+    proxy: {
+      // Em desenvolvimento, redireciona /api/* para o servidor BFF (porta 3001)
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
 })

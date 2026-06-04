@@ -8,7 +8,6 @@ import { NeuralFatigue } from '../services/neuralFatigue';
 import { useMilestonesStore } from '../stores/useMilestonesStore';
 
 export default function AICoach({ history, profile }: any) {
-    const [apiKey] = useLS<string>('anthropic_api_key', '');
     const [messages, setMessages] = useLS<any[]>('coach_chat', [
         { role: 'assistant', text: 'Eu sou a Inteligência Tática Fittrack (Motor Claude). Partilha as tuas dores ou pede re-periodização baseada no teu histórico.' }
     ]);
@@ -30,7 +29,7 @@ export default function AICoach({ history, profile }: any) {
         setMessages(newMsgs);
         setLoading(true);
 
-        const responseText = await AnthropicService.askCoach(userMsg, history, apiKey);
+        const responseText = await AnthropicService.askCoach(userMsg, history);
         
         setMessages([...newMsgs, { role: 'assistant', text: responseText }]);
         setLoading(false);
@@ -82,11 +81,7 @@ Com base nestes dados, recomenda-me:
                 </button>
             </div>
 
-            {!apiKey && (
-                <div style={{ background: `${C.red}22`, padding: 12, borderRadius: 8, border: `1px solid ${C.red}`, marginBottom: 16, fontSize: 12 }}>
-                    🚨 Adicione a Root API Key da Anthropic nas Definições para habilitar a comunicação neural.
-                </div>
-            )}
+            {/* API Key agora gerida no servidor BFF — sem necessidade de configuração no cliente */}
 
             <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 20 }}>
                 {messages.map((m, i) => (
@@ -120,8 +115,8 @@ Com base nestes dados, recomenda-me:
                     style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 24, padding: '0 16px', color: C.text, fontSize: 14 }}
                 />
                 <button 
-                    onClick={handleSend} disabled={!apiKey || loading}
-                    style={{ background: C.accent, color: '#000', border: 'none', width: 44, height: 44, borderRadius: 22, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: (!apiKey || loading) ? 0.5 : 1 }}
+                    onClick={handleSend} disabled={loading}
+                    style={{ background: C.accent, color: '#000', border: 'none', width: 44, height: 44, borderRadius: 22, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: loading ? 0.5 : 1 }}
                 >
                     ➤
                 </button>

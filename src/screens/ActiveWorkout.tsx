@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlobalBackground } from "../components/ui/GlobalBackground";
 import { GlassCard } from "../components/ui/GlassCard";
@@ -80,6 +80,9 @@ import { getPrescription } from "../utils/prescriptionEngine";
 import { ShareWorkoutModal } from "../components/social/ShareWorkoutModal";
 import { AutoRepToggle } from "../components/workout/AutoRepToggle";
 import { useAudioCoach } from "../hooks/useAudioCoach";
+import { saveSetLog, saveWorkoutSession, updatePersonalRecord, generateId } from "../db/encryptedDb";
+import { analyzeExerciseTrend, TrendAnalysis } from "../services/trendAnalyzer";
+import { getExerciseCategory } from "../data/exerciseClassifier";
 
 const WorkoutSetRow = React.memo(({
   s, ei, si, theme, C, upd, toggle, setCurrentExerciseIdx, setCurrentSetIdx, setShowPlateCalc, profile, setStartTimes, tr
@@ -219,6 +222,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   const [newPRData, setNewPRData] = useState<{ exerciseName: string, weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{ text: string, type: string } | null>(null);
   const [autoRepActive, setAutoRepActive] = useState(false);
+  const workoutIdRef = useRef<string>(generateId()); // UUID persistente para esta sessão
 
   const handleRepDetected = () => {
     if (!profile.proMode && navigator.vibrate) navigator.vibrate(20);
@@ -263,6 +267,40 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
         useMilestonesStore.getState().setPR(exName, oneRM);
         setNewPRData({ exerciseName: exName, weight: oneRM });
       }
+
+      // ── IndexedDB: Gravar SetLog cifrado ──
+      const exerciseCategory = (() => { try { return getExerciseCategory(exName); } catch { return 'compound_multi'; } })();
+      saveSetLog({
+        workoutId: workoutIdRef.current,
+        exerciseName: exName,
+        category: exerciseCategory,
+        setNumber: si + 1,
+        weightKg: currentSet.weight,
+        repsCompleted: currentSet.reps,
+        rpe: currentSet.rpe || 8,
+        estimated1RM: oneRM,
+        timestamp: Date.now(),
+      }).catch(e => console.warn('[IDB] Falha ao gravar SetLog:', e));
+
+      // ── IndexedDB: Actualizar PR na DB relacional ──
+      updatePersonalRecord(exName, oneRM, currentSet.weight, currentSet.reps)
+        .catch(e => console.warn('[IDB] Falha ao actualizar PR:', e));
+
+      // ── Trend Analyzer: Analisar tendência após gravar ──
+      analyzeExerciseTrend(exName).then((trend: TrendAnalysis) => {
+        if (trend.status === 'PROGRESSING') {
+          setAutoregulationMessage({
+            text: `💪 ${trend.message} +${trend.suggestedWeightIncrement}kg na próxima sessão!`,
+            type: 'success'
+          });
+        } else if (trend.status === 'FATIGUED') {
+          setAutoregulationMessage({
+            text: `⚠️ ${trend.message} Reduz ${Math.abs(trend.suggestedWeightIncrement)}kg.`,
+            type: 'danger'
+          });
+        }
+        // STABLE e NO_DATA — não mostram mensagem (não interromper o fluxo)
+      }).catch(e => console.warn('[TrendAnalyzer] Erro:', e));
     }
 
     setSets((prev: any) => {
@@ -424,6 +462,17 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
       isCustom: isCustom,
       customExercisesList: isCustom ? todayPlan.exercises : [],
     };
+
+    // ── IndexedDB: Gravar WorkoutSession ──
+    saveWorkoutSession({
+      date: Date.now(),
+      name: todayPlan.label || 'Treino Livre',
+      durationSeconds: elapsed,
+      readinessScore: 85, // Default, pode ser ligado ao useEffortStore no futuro
+      totalVolumeKg: vol,
+      isCompleted: true,
+    }).catch(e => console.warn('[IDB] Falha ao gravar WorkoutSession:', e));
+
     try {
       if (autoSync && syncWorker.current) {
         syncWorker.current.postMessage({

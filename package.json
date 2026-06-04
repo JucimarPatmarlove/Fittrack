@@ -11,7 +11,8 @@
     "preview:host": "vite preview --host 0.0.0.0",
     "download-exercises": "node scripts/downloadAllExerciseMedia.js",
     "generate-placeholders": "node scripts/generateSvgPlaceholders.js",
-    "generate-gifs": "node scripts/generateExerciseGifs.js"
+    "generate-gifs": "node scripts/generateExerciseGifs.js",
+    "server": "node server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.89.0",
