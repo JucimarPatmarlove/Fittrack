@@ -39,6 +39,7 @@ export interface PersonalRecord {
   best1RM: number;           // Maior 1RM estimado de sempre
   bestVolumeWeight: number;  // Maior carga levantada para 10+ reps
   lastTrainedAt: number;     // Data da última vez que fez este exercício
+  encryptedFields?: string;  // Payload cifrado (usado também para Avaliações Físicas)
 }
 
 // ─── SCHEMA DO INDEXEDDB ─────────────────────────────────────────────────────

@@ -19,7 +19,11 @@ import { GlobalBackground } from "../components/ui/GlobalBackground";
 import { GlassCard } from "../components/ui/GlassCard";
 import { GradientButton } from "../components/ui/GradientButton";
 import { WatchSyncIndicator } from "../components/WatchSyncIndicator";
+import { PhaseCard } from '../components/dashboard/PhaseCard';
+import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
+
 export default function Dashboard({ profile, setProfile, history, onStartWorkout }: any) {
+  const [showAssessment, setShowAssessment] = React.useState(!profile?.anamnesis);
   const { challenges, setChallenges } = useChallenges(history);
   
   const goal = GOALS.find(g => g.id === profile.goal);
@@ -93,6 +97,10 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
       setChallenges(updated);
   };
 
+  if (showAssessment) {
+    return <FitnessAssessment onComplete={(data: any) => { setProfile({ ...profile, ...data }); setShowAssessment(false); }} />;
+  }
+
   return (
     <GlobalBackground>
     <div style={{ padding: "18px", maxWidth: 480, margin: "0 auto", position: 'relative', zIndex: 10 }}>
@@ -134,6 +142,8 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
           </div>
         </div>
       </motion.div>
+
+      <PhaseCard history={history} profile={profile} />
 
       <GymVibeWidget onOpenVibe={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'gymvibe' }))} />
       

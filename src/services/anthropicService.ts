@@ -15,6 +15,7 @@ import { getCachedWorkout, cacheWorkout } from "../ai/cacheLayer";
 import { OfflineWorkoutEngine } from "./offlineWorkoutEngine";
 import { useEffortStore } from "../stores/useEffortStore";
 import { generateShortLivedToken } from "./jwtEngine";
+import { MacrocycleEngine } from "./macrocycleEngine";
 
 // ── URL do Proxy BFF (configurável via variável de ambiente) ──
 // Em dev: o Vite proxy redireciona /api/* → localhost:3001 (ver vite.config.js)
@@ -178,12 +179,18 @@ ${JSON.stringify(recentHistory)}
       .map(([day, focus]) => `- ${day}: Treinar com foco em "${focus}"`)
       .join('\n') : '';
 
+    const weeksActive = profile.weeksActive ?? 0;
+    const phase = MacrocycleEngine.getCurrentPhase(weeksActive);
+    const phaseRules = MacrocycleEngine.getPrescriptionRules(phase);
+
     const prompt = `
 És um treinador de elite e fisiologista com experiência clínica.
 Cria um plano de treino semanal (7 dias) perfeitamente adaptado ao atleta Fittrack.
 
 DADOS DO ATLETA (BIOFEEDBACK & LOGÍSTICA):
 - Objetivo Principal: ${profile.goal}
+- Fase Clínica Atual: ${phaseRules.phaseName}
+- Estrutura Obrigatória: ${phaseRules.trainingType}
 - Filosofia de Treino: ${profile.philosophy || 'classic'}
 - Género Biológico: ${profile.gender || 'Feminino'}
 - Peso: ${profile.weight ? profile.weight + ' kg' : 'Não especificado'}
@@ -204,8 +211,9 @@ REGRAS CORE DE PRESCRIÇÃO:
 4. Adapta volume ao tempo disponível (${profile.preferredWorkoutDuration || 60} min).
 5. Respeita lesões: ${profile.injuries?.join(', ') || 'Nenhuma'}.
 6. ${typeRequirements}
-7. ${isOvertraining ? 'OVERTRAINING: Reduz séries 20%, peso -10%, RPE máx 6.' : 'Progressão normal.'}
-8. Respeita focos específicos por dia se listados acima.
+7. ALINHAMENTO COM A FASE CLÍNICA: Utiliza obrigatoriamente a estrutura '${phaseRules.trainingType}', com ${phaseRules.sets} séries por exercício, alvo de ${phaseRules.repsTarget} repetições, descansando ${phaseRules.restSeconds} segundos.
+8. ${isOvertraining ? 'OVERTRAINING: Reduz séries 20%, peso -10%, RPE máx 6.' : 'Progressão normal.'}
+9. Respeita focos específicos por dia se listados acima.
 
 Formato JSON (sem markdown nem backticks):
 {

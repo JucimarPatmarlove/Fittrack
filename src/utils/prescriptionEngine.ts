@@ -2,6 +2,7 @@
 import { ExerciseCategory, Goal, UserLevel } from '../types/exercise';
 import { getExerciseCategory } from '../data/exerciseClassifier';
 import { calculateSuggestedWeight } from './loadCalculator';
+import { MacrocycleEngine } from '../services/macrocycleEngine';
 
 export interface UserProfile {
   sex?: 'male' | 'female' | string;
@@ -12,6 +13,7 @@ export interface UserProfile {
   trainingPhilosophy?: string;
   philosophy?: string;
   injuries?: string[];
+  weeksActive?: number;
 }
 
 export interface ExercisePrescription {
@@ -52,6 +54,20 @@ export function getPrescription(
     repsMin = 15; repsMax = 20;
     rpe = 6;
     rest = 45;
+  }
+
+  // 1.5 Macrocycle Override
+  const weeksActive = profile?.weeksActive ?? 0;
+  const macroPhase = MacrocycleEngine.getCurrentPhase(weeksActive);
+  const phaseRules = MacrocycleEngine.getPrescriptionRules(macroPhase);
+  
+  if (macroPhase !== 'ADAPTACAO' || String(level).toLowerCase() !== 'avancado') {
+    const repsMatch = phaseRules.repsTarget.match(/(\d+)-?(\d+)?/);
+    if (repsMatch) {
+      repsMin = parseInt(repsMatch[1], 10);
+      repsMax = repsMatch[2] ? parseInt(repsMatch[2], 10) : repsMin;
+    }
+    rest = phaseRules.restSeconds;
   }
 
   // Ajustes por nível

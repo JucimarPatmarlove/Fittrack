@@ -57,10 +57,10 @@ describe('prescriptionEngine — Hipertrofia Intermédio', () => {
     expect(rx.suggestedWeight).toBeLessThan(100);
   });
 
-  it('deve recomendar reps alvo entre 8 e 12 para hipertrofia', () => {
+  it('deve recomendar reps alvo entre 15 e 20 para adaptação hipertrofia', () => {
     const rx = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', prBenchPress);
-    expect(rx.repsSuggested).toBeGreaterThanOrEqual(8);
-    expect(rx.repsSuggested).toBeLessThanOrEqual(12);
+    expect(rx.repsSuggested).toBeGreaterThanOrEqual(15);
+    expect(rx.repsSuggested).toBeLessThanOrEqual(20);
     // Validar string de intervalo
     expect(rx.repsTarget).toMatch(/\d+-\d+/);
   });
@@ -70,9 +70,9 @@ describe('prescriptionEngine — Hipertrofia Intermédio', () => {
     expect(rx.rpeTarget).toBe(7);
   });
 
-  it('deve ter descanso de 60 segundos para hipertrofia', () => {
+  it('deve ter descanso de 45 segundos para adaptação hipertrofia', () => {
     const rx = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', prBenchPress);
-    expect(rx.restSeconds).toBe(60);
+    expect(rx.restSeconds).toBe(45);
   });
 
   it('deve gerar 3 séries de aquecimento quando há carga', () => {
