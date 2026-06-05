@@ -9,6 +9,8 @@ import { ClubModal } from "./components/social/ClubModal";
 import { Planner } from "./screens/Planner";
 import { LockScreen } from './components/security/LockScreen';
 import { setMasterKey } from './utils/cryptoEngine';
+import { checkForNewerBackup, importEncryptedBackup } from './services/backupService';
+import { downloadBackup } from './services/googleDrive';
 import { ProfileSchema, HistorySchema } from './utils/schemas';
 
 // ── COMPONENTES MENORES & MODULOS LAZY LOAD ─────────────────────────────────
@@ -29,6 +31,7 @@ const Trends = lazy(() => import('./screens/Trends'));
 const GymVibe = lazy(() => import('./screens/GymVibe'));
 const Milestones = lazy(() => import('./screens/Milestones'));
 const CycleReview = lazy(() => import('./screens/CycleReview'));
+const BackupScreen = lazy(() => import('./screens/BackupScreen'));
 const DeviceManager = lazy(() => import('./screens/DeviceManager').then(m => ({ default: m.DeviceManager })));
 
 const css = `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} html,body{background: #080b0f;color:#eceae4;font-family:'Outfit',sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh;letter-spacing:0.01em;} h1,h2,h3,.title{font-family:'Bebas Neue',cursive;letter-spacing:2px;} .mono{font-family:'DM Mono',monospace;letter-spacing:-0.02em;} .small{font-family:'Inter',sans-serif;font-size:0.75rem;color:#888;} input:focus{outline:none;border-color:#e8c84a !important;box-shadow: 0 0 12px rgba(232,200,74,0.15)} button:active{transform:scale(0.96)} input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none} .glass { background: rgba(18, 25, 35, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(232, 200, 74, 0.15); border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }`;
@@ -50,6 +53,15 @@ export default function App() {
   const [workoutData, setWorkoutData] = useState<any>(null);
   const [showClubModal, setShowClubModal] = useState(false);
   const [showFreeBuilder, setShowFreeBuilder] = useState(false);
+  const [pendingRestoreBackup, setPendingRestoreBackup] = useState<{ id: string; name: string; createdTime: string } | null>(null);
+
+  useEffect(() => {
+    if (isUnlocked) {
+      checkForNewerBackup().then((backup) => {
+        if (backup) setPendingRestoreBackup(backup);
+      });
+    }
+  }, [isUnlocked]);
 
   useEffect(() => {
     // AutoBackup System (Offline First Mock)
@@ -140,6 +152,18 @@ export default function App() {
     setIsUnlocked(true);
   };
 
+  const handleConfirmRestore = async () => {
+    if (!pendingRestoreBackup) return;
+    try {
+      const buffer = await downloadBackup(pendingRestoreBackup.id);
+      const blob = new Blob([buffer], { type: 'application/octet-stream' });
+      await importEncryptedBackup(blob);
+    } catch (err) {
+      alert('Falha ao restaurar backup automático: ' + (err as Error).message);
+      setPendingRestoreBackup(null);
+    }
+  };
+
   if (!isUnlocked) {
     return <LockScreen onUnlock={handleUnlock} isFirstTime={isFirstTime} />;
   }
@@ -147,6 +171,34 @@ export default function App() {
   return (
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Barlow', sans-serif" }}>
       <style>{css}</style>
+
+      {/* MODAL DE RESTAURO AUTOMÁTICO */}
+      {pendingRestoreBackup && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div className="glass" style={{ maxWidth: 400, width: '100%', padding: 24, textAlign: 'center' }}>
+            <span style={{ fontSize: 40, display: 'block', marginBottom: 16 }}>☁️</span>
+            <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 24, color: C.accent, marginBottom: 8, letterSpacing: 1 }}>BACKUP DETETADO</h2>
+            <p style={{ fontSize: 14, color: C.text, marginBottom: 16 }}>
+              Encontrámos um backup mais recente na tua Google Drive ({new Date(pendingRestoreBackup.createdTime).toLocaleString()}).
+              Desejas sincronizar agora e restaurar os teus dados de treino?
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button 
+                onClick={handleConfirmRestore}
+                style={{ flex: 1, background: C.accent, color: '#000', border: 'none', borderRadius: 8, padding: 12, fontFamily: "'Bebas Neue'", fontSize: 16, cursor: 'pointer' }}
+              >
+                RESTOURAR AGORA
+              </button>
+              <button 
+                onClick={() => setPendingRestoreBackup(null)}
+                style={{ flex: 1, background: 'transparent', color: C.muted, border: `1px solid ${C.muted}`, borderRadius: 8, padding: 12, fontFamily: "'Bebas Neue'", fontSize: 16, cursor: 'pointer' }}
+              >
+                IGNORAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
@@ -166,6 +218,7 @@ export default function App() {
             {view === "cyclereview" && <motion.div key="cyclereview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} /></motion.div>}
             {view === "devices" && <motion.div key="devices" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><DeviceManager /></motion.div>}
             {view === "rewards" && <motion.div key="rewards" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><RewardsStore onClose={() => setView("dashboard")} /></motion.div>}
+            {view === "backup" && <motion.div key="backup" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><BackupScreen /></motion.div>}
           </AnimatePresence>
         </Suspense>
       </ErrorBoundary>

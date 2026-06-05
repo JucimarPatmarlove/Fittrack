@@ -149,13 +149,23 @@ export default function Settings({ profile, setProfile, onReset }: any) {
 
       <div className="glass" style={{ padding: 14, marginBottom: 20 }}>
         <p style={{ fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, color: C.text, marginBottom: 8 }}>BACKUP DE DADOS</p>
-        <button onClick={exportBackup} style={{ width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.accent, cursor: "pointer", fontFamily: "'Bebas Neue'", fontSize: 16, marginBottom: 12 }}>
-            📦 EXPORTAR DADOS (JSON)
+        
+        <button onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'backup' }))} style={{ width: "100%", background: `linear-gradient(135deg, rgba(232, 200, 74, 0.2), ${C.bg})`, color: C.accent, border: `1px solid ${C.accent}`, borderRadius: 8, padding: 12, cursor: "pointer", fontFamily: "'Bebas Neue'", fontSize: 18, letterSpacing: 1, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <span>☁️ BYOC GOOGLE DRIVE BACKUP</span>
+          <span>&gt;</span>
         </button>
-        <label style={{ display: "block", width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text, cursor: "pointer", fontFamily: "'Bebas Neue'", fontSize: 16, textAlign: "center" }}>
-            📥 IMPORTAR / RESTAURAR
-            <input type="file" accept=".json" onChange={handleImport} style={{ display: "none" }} />
-        </label>
+
+        <p style={{ fontSize: 12, color: C.muted, marginBottom: 8, textAlign: 'center' }}>Ou exportar ficheiro local (JSON bruto):</p>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={exportBackup} style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text, cursor: "pointer", fontFamily: "'Bebas Neue'", fontSize: 14 }}>
+              📦 EXPORTAR
+          </button>
+          <label style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text, cursor: "pointer", fontFamily: "'Bebas Neue'", fontSize: 14, textAlign: "center" }}>
+              📥 IMPORTAR
+              <input type="file" accept=".json" onChange={handleImport} style={{ display: "none" }} />
+          </label>
+        </div>
       </div>
 
       <div style={{ background: C.card, border: `1px solid ${C.red}44`, borderRadius: 12, padding: 14 }}>
