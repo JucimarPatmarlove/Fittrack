@@ -422,12 +422,12 @@ Atleta completa série → toggle() no ActiveWorkout
 
 | Tipo | Ferramenta | Estado |
 |---|---|---|
-| **Unit Tests** | Vitest (planeado) | ❌ Não implementado |
-| **E2E** | Playwright (planeado) | ❌ Não implementado |
+| **Unit Tests** | Vitest (52 testes) | ✅ Implementado |
+| **E2E** | Playwright | ⚠️ Parcial (`auth.spec.ts`, `workout.spec.ts` criados) |
 | **Build Validation** | `vite build` | ✅ Passa sem erros |
 | **Server Validation** | `node server.js` | ✅ Arranca correctamente |
-| **Validação Manual** | iPhone via rede local (`http://IP:5173`) | ✅ Funcional |
-| **Segurança** | `grep -r sk-ant dist/` (zero matches) | ✅ API Key ausente do bundle |
+| **Segurança (API Key)** | `grep -r sk-ant dist/` | ✅ OK |
+| **JWT Secret Exposure** | `grep -r VITE_API_SHARED_SECRET dist/` | ✅ Eliminado |
 
 ### Testar no Telemóvel (rede local)
 ```bash
@@ -448,6 +448,7 @@ npm run dev          # já corre com --host
 
 | Versão | Data | Alterações |
 |---|---|---|
+| `v1.3.0` | 2026-06-05 | Hardening Zero Trust (VITE_API_SHARED_SECRET removido), Vite manualChunks (<500KB bundle base), Playwright E2E. |
 | `v1.2.0` | 2026-06-04 | Vercel serverless (`api/claude.js`, `api/generate-workout.js`), `vercel.json`, secções Índice, Variáveis de Ambiente, Testes e Changelog |
 | `v1.1.0` | 2026-06-04 | JWT HS256 (60s) via Web Crypto API nativa, `jwtEngine.ts`, gateway JWT no `server.js` |
 | `v1.0.0` | 2026-06-04 | Documento inicial — IndexedDB relacional, proxy BFF, motor analítico RPE, criptografia AES-GCM |

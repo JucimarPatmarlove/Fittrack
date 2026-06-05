@@ -1,17 +1,21 @@
 // src/services/jwtEngine.ts
+interface CachedToken {
+  token: string;
+  expiresAt: number;
+}
 
-let cachedToken: { token: string; expiresAt: number } | null = null;
+let cachedToken: CachedToken | null = null;
 
 export async function generateShortLivedToken(): Promise<string> {
   const now = Date.now();
   if (cachedToken && cachedToken.expiresAt > now) return cachedToken.token;
 
+  const API_URL = '/api/request-token';
   const nonce = crypto.randomUUID();
   const timestamp = now;
-  const apiUrl = '/api/request-token';
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nonce, timestamp }),
@@ -26,12 +30,13 @@ export async function generateShortLivedToken(): Promise<string> {
     return token;
   } catch (err) {
     console.error('[JWT] Falha ao obter token do servidor:', err);
-    // Em desenvolvimento offline, podemos permitir um token dummy (apenas para testes locais)
+
+    // Fallback APENAS em desenvolvimento, com aviso explícito
     if (import.meta.env.DEV) {
-      console.warn('[JWT] Modo dev offline – utilizando token dummy. NÃO SEGURO!');
+      console.warn('[JWT] Modo DEV: a utilizar token dummy. NÃO USAR EM PRODUÇÃO.');
       return 'dev-dummy-token';
     }
-    throw new Error('Não foi possível obter token de segurança. Verifique a ligação ao servidor.');
+    throw new Error('Não foi possível estabelecer ligação segura. Verifique a rede.');
   }
 }
 

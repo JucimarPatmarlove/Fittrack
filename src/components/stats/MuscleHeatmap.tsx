@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, Suspense } from 'react';
 import { WorkoutSession } from '../../types';
-import { MuscleViewer } from '../3d/MuscleViewer';
+const MuscleViewer = React.lazy(() => import('../3d/MuscleViewer').then(module => ({ default: module.MuscleViewer })));
 
 export const MuscleHeatmap = ({ workouts }: { workouts: WorkoutSession[] }) => {
     // useMemo protege a RAM de recalcular isto a cada renderização desnecessária
@@ -42,7 +42,9 @@ export const MuscleHeatmap = ({ workouts }: { workouts: WorkoutSession[] }) => {
 
             {/* Muscle 3D Holographic Viewer */}
             <div style={{ marginBottom: 20 }}>
-                <MuscleViewer fatigueStats={fatigueStats} />
+                <Suspense fallback={<div style={{height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#55626e'}}>A carregar mapa muscular...</div>}>
+                    <MuscleViewer fatigueStats={fatigueStats} />
+                </Suspense>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
