@@ -21,6 +21,7 @@ export interface UserProfile {
 export interface ExerciseSet {
     reps: number;
     weight: number;
+    rpe?: number;
     done?: boolean;
     isWarmup?: boolean;
 }
@@ -37,6 +38,7 @@ export interface WorkoutSession {
     duration: number;
     exercises: ExerciseSession[];
     totalVolume: number;
+    avgRPE?: number;
     intensity?: string | number;
     notes?: string;
     calories?: number;

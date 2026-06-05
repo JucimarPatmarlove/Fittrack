@@ -26,6 +26,12 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
     const [injuries, setInjuries] = useState(profile.injuries?.join(', ') || '');
     const [philosophy, setPhilosophy] = useState(profile.philosophy || 'classic');
     const [classicStyle, setClassicStyle] = useState(profile.classicStyle || 'upper_lower');
+    const [dayPreferences, setDayPreferences] = useState<Record<string, string>>(profile.dayPreferences || {});
+    const [customDays, setCustomDays] = useState<string[]>(
+        Object.entries(profile.dayPreferences || {}).filter(([day, val]) => {
+            return val && !["Padrão", "Pernas", "Peito", "Costas", "Ombros", "Braços", "Core", "Cardio/HIIT"].includes(val);
+        }).map(([day]) => day)
+    );
     
     const { setCurrentPlan } = usePlanStore();
     
@@ -58,7 +64,8 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
             availableEquipment: [equipment],
             trainingDays: trainingDays,
             preferredWorkoutDuration: Number(duration),
-            injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+            injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s),
+            dayPreferences: dayPreferences
         });
         setStep('generate');
     };
@@ -77,7 +84,8 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
             availableEquipment: [equipment],
             trainingDays: trainingDays,
             preferredWorkoutDuration: Number(duration),
-            injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+            injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s),
+            dayPreferences: dayPreferences
         }, philosophy);
         
         setIsGenerating(false);
@@ -200,6 +208,63 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
                                 );
                             })}
                         </div>
+
+                        {trainingDays.length > 0 && (
+                            <div style={{ marginTop: 12, marginBottom: 16 }}>
+                                <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>FOCO POR DIA DE TREINO</label>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                    {trainingDays.map(day => {
+                                        const currentVal = dayPreferences[day] || "Padrão";
+                                        const isCustom = customDays.includes(day);
+                                        const selectValue = isCustom ? "custom" : (["Padrão", "Pernas", "Peito", "Costas", "Ombros", "Braços", "Core", "Cardio/HIIT"].includes(currentVal) ? currentVal : "Padrão");
+
+                                        return (
+                                            <div key={day} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 8 }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                    <span style={{ fontSize: 13, fontWeight: "bold", width: 70, color: C.accent }}>{day}</span>
+                                                    <select 
+                                                        value={selectValue} 
+                                                        onChange={e => {
+                                                            const val = e.target.value;
+                                                            if (val === "custom") {
+                                                                setCustomDays(prev => [...prev, day]);
+                                                                setDayPreferences(prev => ({ ...prev, [day]: "" }));
+                                                            } else {
+                                                                setCustomDays(prev => prev.filter(d => d !== day));
+                                                                setDayPreferences(prev => ({ ...prev, [day]: val }));
+                                                            }
+                                                        }}
+                                                        style={{ flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 8px", color: C.text, fontSize: 12 }}
+                                                    >
+                                                        <option value="Padrão">Padrão (IA decide)</option>
+                                                        <option value="Pernas">Pernas (Inferiores)</option>
+                                                        <option value="Peito">Peito</option>
+                                                        <option value="Costas">Costas</option>
+                                                        <option value="Ombros">Ombros</option>
+                                                        <option value="Braços">Braços (Bíceps/Tríceps)</option>
+                                                        <option value="Core">Core / Abdominais</option>
+                                                        <option value="Cardio/HIIT">Cardio / HIIT</option>
+                                                        <option value="custom">Outro (Personalizado...)</option>
+                                                    </select>
+                                                </div>
+                                                {isCustom && (
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Ex: Pernas (Foco Quadríceps)" 
+                                                        value={dayPreferences[day] || ""} 
+                                                        onChange={e => {
+                                                            const val = e.target.value;
+                                                            setDayPreferences(prev => ({ ...prev, [day]: val }));
+                                                        }}
+                                                        style={{ width: "100%", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 8px", color: C.text, fontSize: 12, marginTop: 6 }}
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
                         <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>EQUIPAMENTO</label>
                         <select value={equipment} onChange={e => setEquipment(e.target.value)} style={{ width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text, marginBottom: 12 }}>

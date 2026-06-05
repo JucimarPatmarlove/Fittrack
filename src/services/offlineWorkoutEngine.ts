@@ -52,18 +52,66 @@ export class OfflineWorkoutEngine {
     }
 
     // Assign the raw split days to the user's selected days, filling the rest with rest days
+    const dayPreferences = profile.dayPreferences || {};
     const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
     let splitIndex = 0;
 
     const finalPlan = daysOfWeek.map(day => {
-        if (activeDays.includes(day) && splitIndex < rawSplit.length) {
-            const workoutDay = rawSplit[splitIndex];
-            splitIndex++;
-            return {
-                day: day,
-                focus: workoutDay.title,
-                exercises: workoutDay.exercises
-            };
+        if (activeDays.includes(day)) {
+            const prefVal = dayPreferences[day];
+            if (prefVal && prefVal !== 'Padrão') {
+                const prefLower = prefVal.toLowerCase();
+                let exercises: string[] = [];
+                let focusTitle = prefVal;
+                
+                if (prefLower.includes('perna') || prefLower.includes('leg') || prefLower.includes('coxa') || prefLower.includes('glúteo')) {
+                    exercises = [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Pernas (${prefVal})`;
+                } else if (prefLower.includes('peito') || prefLower.includes('chest')) {
+                    exercises = [...getRandom(pool.peito, 3), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Peito (${prefVal})`;
+                } else if (prefLower.includes('costa') || prefLower.includes('back') || prefLower.includes('lats')) {
+                    exercises = [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 2)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Costas (${prefVal})`;
+                } else if (prefLower.includes('ombro') || prefLower.includes('shoulder')) {
+                    exercises = [...getRandom(pool.ombros, 3), ...getRandom(pool.core, 2)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Ombros (${prefVal})`;
+                } else if (prefLower.includes('braço') || prefLower.includes('braco') || prefLower.includes('arm') || prefLower.includes('bícep') || prefLower.includes('trícep')) {
+                    exercises = [...getRandom(pool.bracos, 4), ...getRandom(pool.core, 1)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Braços (${prefVal})`;
+                } else if (prefLower.includes('core') || prefLower.includes('abdo') || prefLower.includes('plank')) {
+                    exercises = [...getRandom(pool.core, 4)];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Core (${prefVal})`;
+                } else if (prefLower.includes('cardio') || prefLower.includes('hiit') || prefLower.includes('respir')) {
+                    exercises = ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'Squat Jumps'];
+                    focusTitle = prefVal.includes('(') ? prefVal : `Cardio / HIIT (${prefVal})`;
+                } else {
+                    exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 1)];
+                    focusTitle = prefVal;
+                }
+                
+                return {
+                    day: day,
+                    focus: focusTitle,
+                    exercises: exercises
+                };
+            }
+
+            if (splitIndex < rawSplit.length) {
+                const workoutDay = rawSplit[splitIndex];
+                splitIndex++;
+                return {
+                    day: day,
+                    focus: workoutDay.title,
+                    exercises: workoutDay.exercises
+                };
+            } else {
+                return {
+                    day: day,
+                    focus: 'Treino Geral',
+                    exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 1)]
+                };
+            }
         } else {
             return {
                 day: day,

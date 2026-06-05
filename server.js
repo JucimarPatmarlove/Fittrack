@@ -269,7 +269,54 @@ const server = createServer(async (req, res) => {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // JWT GATEWAY — Validação de token em TODOS os pedidos POST
+  // POST /api/request-token — Emissão de JWT efémero (SEM autenticação)
+  // ══════════════════════════════════════════════════════════════════
+  if (method === 'POST' && url === '/api/request-token') {
+    try {
+      const body = await readBody(req);
+      const { nonce, timestamp } = JSON.parse(body);
+      const now = Date.now();
+
+      if (!timestamp || Math.abs(now - timestamp) > 10000) {
+        sendJSON(res, 400, { error: 'Pedido expirado ou relógio dessincronizado.' }, origin);
+        return;
+      }
+      if (!nonce || typeof nonce !== 'string' || nonce.length < 16) {
+        sendJSON(res, 400, { error: 'Nonce inválido (mín. 16 caracteres).' }, origin);
+        return;
+      }
+
+      if (!JWT_SHARED_SECRET) {
+        // Dev mode sem segredo: emitir token dummy
+        sendJSON(res, 200, { token: 'dev-no-secret-token' }, origin);
+        return;
+      }
+
+      // Gerar JWT com crypto nativo
+      const nowSec = Math.floor(now / 1000);
+      const header = { alg: 'HS256', typ: 'JWT' };
+      const payload = { origin: origin || 'local', nonce, iat: nowSec, exp: nowSec + 60 };
+
+      const { webcrypto: wc } = await import('crypto');
+      const headerB64 = Buffer.from(JSON.stringify(header)).toString('base64url');
+      const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+      const signingInput = `${headerB64}.${payloadB64}`;
+
+      const { createHmac } = await import('crypto');
+      const sig = createHmac('sha256', JWT_SHARED_SECRET).update(signingInput).digest('base64url');
+
+      const token = `${signingInput}.${sig}`;
+      console.log(`[BFF] 🎟️ Token emitido para ${clientIP} (exp: 60s)`);
+      sendJSON(res, 200, { token }, origin);
+    } catch (e) {
+      console.error('[BFF] ❌ Erro ao emitir token:', e.message);
+      sendJSON(res, 500, { error: 'Erro ao emitir token.' }, origin);
+    }
+    return;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // JWT GATEWAY — Validação de token em TODOS os outros pedidos POST
   // ══════════════════════════════════════════════════════════════════
   if (method === 'POST') {
     const authHeader = req.headers.authorization;

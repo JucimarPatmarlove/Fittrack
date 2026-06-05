@@ -445,6 +445,14 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
 
   const commitFinish = (vol: number) => {
     const isCustom = todayPlan.id?.startsWith('free_') || !!todayPlan.isCustom;
+
+    // Calcular RPE médio das séries concluídas
+    const doneSetsArr = sets.flat().filter((s: any) => s.done);
+    const totalRpe = doneSetsArr.reduce((sum: number, s: any) => sum + (s.rpe || 8), 0);
+    const avgRPE = doneSetsArr.length > 0
+      ? Math.round((totalRpe / doneSetsArr.length) * 10) / 10
+      : 0;
+
     const payload = {
       date: new Date().toISOString(),
       dayLabel: todayPlan.label || 'Treino Livre',
@@ -459,6 +467,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
         }))
       })).filter((e: any) => e.sets.length > 0),
       totalVolume: vol,
+      avgRPE,
       isCustom: isCustom,
       customExercisesList: isCustom ? todayPlan.exercises : [],
     };

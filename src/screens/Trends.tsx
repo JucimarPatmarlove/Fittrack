@@ -6,6 +6,7 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { NeuralFatigue } from '../services/neuralFatigue';
 import { useMilestonesStore } from '../stores/useMilestonesStore';
 import { analyzeExerciseTrend, TrendAnalysis } from '../services/trendAnalyzer';
+import { ClinicalAnalytics } from '../components/dashboard/ClinicalAnalytics';
 
 export default function Trends({ history }: any) {
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
@@ -96,7 +97,8 @@ export default function Trends({ history }: any) {
             </h1>
         </motion.div>
 
-        {/* Gráfico de Volume Semanal */}
+        {/* ── Painel de Análise Clínica de Fadiga Neural ── */}
+        <ClinicalAnalytics history={history} />
         <GlassCard style={{ padding: 20 }}>
           <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 20, color: C.text, margin: "0 0 16px 0", letterSpacing: 1 }}>📊 VOLUME SEMANAL (kg)</h2>
           <div style={{ position: 'relative', height: 180, width: "100%", marginTop: 16 }}>

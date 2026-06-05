@@ -82,6 +82,14 @@ export const exerciseCategoryMap: Record<string, ExerciseCategory> = {
   "Sandbag Carry": "compound_multi",
 };
 
+// Mapa case-insensitive para lookup robusto
+const categoryMapLower: Record<string, ExerciseCategory> = Object.fromEntries(
+  Object.entries(exerciseCategoryMap).map(([k, v]) => [k.toLowerCase(), v])
+);
+
 export function getExerciseCategory(exerciseName: string): ExerciseCategory {
-  return exerciseCategoryMap[exerciseName] || 'isolation_uni';
+  // Tenta lookup exacto primeiro, depois case-insensitive
+  return exerciseCategoryMap[exerciseName]
+    || categoryMapLower[exerciseName.toLowerCase()]
+    || 'isolation_uni';
 }

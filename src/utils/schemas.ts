@@ -11,7 +11,13 @@ export const ProfileSchema = z.object({
   classicStyle: z.string().optional(),
   age: z.number().min(14).max(100).optional(),
   injuries: z.array(z.string()).optional(),
-});
+  gender: z.string().optional(),
+  height: z.number().optional(),
+  availableEquipment: z.array(z.string()).optional(),
+  trainingDays: z.array(z.string()).optional(),
+  preferredWorkoutDuration: z.number().optional(),
+  dayPreferences: z.record(z.string()).optional(),
+}).passthrough();
 
 
 export const SetSchema = z.object({
