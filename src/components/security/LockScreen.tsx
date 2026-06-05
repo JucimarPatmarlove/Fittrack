@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { C } from '../../data/constants';
 import { deriveKey, decryptData } from '../../utils/cryptoEngine';
 import { rotateMasterKey, RotationProgress } from '../../services/keyRotationService';
+import { migrateLocalStorageToEncrypted, SENSITIVE_STORE_NAMES } from '../../stores/encryptedPersist';
 
 interface LockScreenProps {
   onUnlock: (key: CryptoKey) => void;
@@ -48,6 +49,8 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
         }
       }
 
+      await migrateLocalStorageToEncrypted(key, [...SENSITIVE_STORE_NAMES]);
+      
       onUnlock(key);
     } catch {
       setError('PIN incorreto ou dados corrompidos');

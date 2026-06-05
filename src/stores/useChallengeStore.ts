@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 
 export interface DailyChecklist {
     date: string;
@@ -116,6 +117,9 @@ export const useChallengeStore = create<ChallengeStore>()(
         return dailyChecklists.length ? (completed / dailyChecklists.length) * 100 : 0;
       },
     }),
-    { name: 'challenge-90-storage' }
+    {
+      name: 'challenge-store',
+      storage: createEncryptedStorage()
+    }
   )
 );

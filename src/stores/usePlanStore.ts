@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 
 export type PlanType = 'hipertrofia' | 'forca' | 'anatoly' | 'fullbody' | 'calistenia';
 
@@ -33,6 +34,9 @@ export const usePlanStore = create<PlanState>()(
           history: [...get().history, plan].slice(-10) 
       })
     }),
-    { name: 'ft_ai_plans' }
+    {
+      name: 'plan-store',
+      storage: createEncryptedStorage()
+    }
   )
 );

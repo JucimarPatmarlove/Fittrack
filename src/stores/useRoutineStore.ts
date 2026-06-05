@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 import { WORKOUT_PLANS } from '../data/constants';
 
 interface RoutinePlan {
@@ -64,6 +65,9 @@ export const useRoutineStore = create<RoutineState>()(
         activeRoutineId: routine.id
       }))
     }),
-    { name: 'ft_routines' }
+    {
+      name: 'routine-store',
+      storage: createEncryptedStorage()
+    }
   )
 );

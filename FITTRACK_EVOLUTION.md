@@ -402,19 +402,19 @@ Atleta completa série → toggle() no ActiveWorkout
 
 ## 11. Zustand Stores (Estado Global)
 
-| Store | Responsabilidade |
-|---|---|
-| `useGhostStore` | Ghost Mode — histórico de performance para competir contra ti mesmo |
-| `useProgressionStore` | Tracking de sucesso/falha por exercício para auto-progressão |
-| `useEffortStore` | Pontos de esforço semanal (overtraining detection) |
-| `useMilestonesStore` | Personal Records (PRs) — cache rápido |
-| `useDeviceStore` | Estado de dispositivos Bluetooth conectados |
-| `useChallengeStore` | Desafios activos e completados |
-| `useSocialStore` | Dados sociais (club, amigos) |
-| `useVibeStore` | Gym Vibe — ambiente do ginásio |
-| `usePlanStore` | Plano semanal activo |
-| `useRoutineStore` | Rotinas salvas pelo utilizador |
-| `useDualWorkoutStore` | Treino dual (parceiro) |
+| Store | Responsabilidade | Cifrada? |
+|---|---|---|
+| `useGhostStore` | Ghost Mode — histórico de performance para competir contra ti mesmo | ✅ Sim (IDB) |
+| `useProgressionStore` | Tracking de sucesso/falha por exercício para auto-progressão | ✅ Sim (IDB) |
+| `useEffortStore` | Pontos de esforço semanal (overtraining detection) | ✅ Sim (IDB) |
+| `useMilestonesStore` | Personal Records (PRs) — cache rápido | ✅ Sim (IDB) |
+| `useChallengeStore` | Desafios activos e completados | ✅ Sim (IDB) |
+| `usePlanStore` | Plano semanal activo | ✅ Sim (IDB) |
+| `useRoutineStore` | Rotinas salvas pelo utilizador | ✅ Sim (IDB) |
+| `useDeviceStore` | Estado de dispositivos Bluetooth conectados | Não (Local) |
+| `useSocialStore` | Dados sociais (club, amigos) | Não (Local) |
+| `useVibeStore` | Gym Vibe — ambiente do ginásio | Não (Local) |
+| `useDualWorkoutStore` | Treino dual (parceiro) | Não (Local) |
 
 ---
 
@@ -448,6 +448,7 @@ npm run dev          # já corre com --host
 
 | Versão | Data | Alterações |
 |---|---|---|
+| `v1.4.0` | 2026-06-05 | Zustand Cifrado (IDB transparente via `encryptedPersist.ts`), `manualChunks` optimizado (<300KB), Zero Trust /api/request-token |
 | `v1.3.0` | 2026-06-05 | Hardening Zero Trust (VITE_API_SHARED_SECRET removido), Vite manualChunks (<500KB bundle base), Playwright E2E. |
 | `v1.2.0` | 2026-06-04 | Vercel serverless (`api/claude.js`, `api/generate-workout.js`), `vercel.json`, secções Índice, Variáveis de Ambiente, Testes e Changelog |
 | `v1.1.0` | 2026-06-04 | JWT HS256 (60s) via Web Crypto API nativa, `jwtEngine.ts`, gateway JWT no `server.js` |

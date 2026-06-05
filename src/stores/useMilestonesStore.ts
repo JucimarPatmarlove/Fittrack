@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 
 interface MilestonesState {
   prs: Record<string, number>;
@@ -27,7 +28,8 @@ export const useMilestonesStore = create<MilestonesState>()(
       }
     }),
     {
-      name: 'ft_milestones'
+      name: 'milestones-store',
+      storage: createEncryptedStorage()
     }
   )
 );

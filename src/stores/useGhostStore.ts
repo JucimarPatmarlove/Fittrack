@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 import { GhostSetRecord, DailyGhostStats } from '../types/ghost';
 
 interface GhostStore {
@@ -154,7 +155,8 @@ export const useGhostStore = create<GhostStore>()(
       },
     }),
     {
-      name: 'ghost-storage',
+      name: 'ghost-store',
+      storage: createEncryptedStorage(),
     }
   )
 );

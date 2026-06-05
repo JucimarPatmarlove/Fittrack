@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 
 interface EffortSession {
   id: string;
@@ -74,7 +75,8 @@ export const useEffortStore = create<EffortState>()(
       }
     }),
     {
-      name: 'ft_effort_store'
+      name: 'effort-store',
+      storage: createEncryptedStorage()
     }
   )
 );

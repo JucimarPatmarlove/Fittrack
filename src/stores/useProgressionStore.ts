@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createEncryptedStorage } from './encryptedPersist';
 
 interface ExerciseProgress {
   consecutiveSuccesses: number;          // séries bem sucedidas seguidas
@@ -114,6 +115,9 @@ export const useProgressionStore = create<ProgressionStore>()(
       shouldIncrease: (name) => get().exercises[name]?.suggestedIncrease || false,
       shouldDeload: (name) => get().exercises[name]?.deloadSuggested || false,
     }),
-    { name: 'progression-storage' }
+    { 
+      name: 'progression-store',
+      storage: createEncryptedStorage() 
+    }
   )
 );
