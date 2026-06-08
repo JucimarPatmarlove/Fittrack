@@ -12,12 +12,15 @@ import { TrendWidget } from '../components/dashboard/TrendWidget';
 import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
 import { CycleTracker } from '../components/dashboard/CycleTracker';
 import { VirtualPet } from '../components/dashboard/VirtualPet';
-import { NeuralFatigue } from "../services/neuralFatigue";
+import { getEnhancedReadinessScore } from "../services/neuralFatigue";
+import { analyzeInjuryRisk, InjuryAssessment } from '../services/injuryPredictor';
+import { useHealthStore } from '../stores/useHealthStore';
 import { calculateRecovery } from "../data/utils";
 import { AnthropicService } from "../services/anthropicService";
 import { GymVibeWidget } from "../components/social/GymVibeWidget";
 import { WeeklyPlanGenerator } from "../components/workout/WeeklyPlanGenerator";
 import { usePlanStore } from "../stores/usePlanStore";
+import { getMissedDays, getCurrentStreak } from '../utils/missedDaysDetector';
 import { GlobalBackground } from "../components/ui/GlobalBackground";
 import { GlassCard } from "../components/ui/GlassCard";
 import { GradientButton } from "../components/ui/GradientButton";
@@ -37,7 +40,12 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
   
   const currentPlan = usePlanStore((s) => s.currentPlan);
 
-  const readiness = NeuralFatigue.calculateReadiness(history);
+  const { readinessScore, readinessLabel, readinessColor, isSyncing, syncHealthData } = useHealthStore();
+
+  React.useEffect(() => {
+    syncHealthData(history, false);
+  }, [history, syncHealthData]);
+
   const recoveryData = calculateRecovery(history, profile.goal);
 
   // Perfil demográfico
@@ -52,6 +60,16 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
   const [forgivenessAlert, setForgivenessAlert] = React.useState<{forgiven: boolean, remainingMinutes: number} | null>(null);
   const [aiReportModal, setAiReportModal] = React.useState<{reasoning: string, workout: any} | null>(null);
   const [showWeeklyPlan, setShowWeeklyPlan] = React.useState(false);
+  const [injuryData, setInjuryData] = React.useState<InjuryAssessment | null>(null);
+
+  React.useEffect(() => {
+    const loadRisk = async () => {
+      const userId = profile?.id || 'default';
+      const risk = await analyzeInjuryRisk(userId, demographicProfile);
+      setInjuryData(risk);
+    };
+    loadRisk();
+  }, [demographicProfile, profile]);
 
   React.useEffect(() => {
      if (history.length === 0) return;
@@ -82,6 +100,10 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
     });
     return Array.from(freq.entries()).sort((a: any, b: any) => b[1] - a[1]).slice(0, 6).map(([name]) => name);
   }, [history]);
+
+  const plannedDays = profile?.trainingDays?.map((d: any) => Number(d)) || [];
+  const missedRecent = React.useMemo(() => getMissedDays(history, plannedDays, 3), [history, plannedDays]);
+  const streak = React.useMemo(() => getCurrentStreak(history), [history]);
 
   const handleAIGeneration = async () => {
     if (history.length < 3) {
@@ -180,6 +202,23 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
         maxItems={4} 
       />
 
+      {injuryData && injuryData.overallRisk !== 'LOW' && (
+        <GlassCard style={{ padding: 16, marginBottom: 20, borderLeft: '4px solid #ff3366' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 24 }}>⚠️</span>
+            <div>
+              <p style={{ fontFamily: "'Bebas Neue'", color: '#ff3366', fontSize: 16, margin: 0 }}>Alerta de Risco de Lesão</p>
+              <p style={{ fontSize: 13, color: '#eceae4', margin: '4px 0' }}>{injuryData.warnings[0]}</p>
+              {(injuryData.restrictedExercises?.length ?? 0) > 0 && (
+                <p style={{ fontSize: 11, color: '#55626e', margin: 0, fontFamily: 'monospace' }}>
+                  Evitar: {injuryData.restrictedExercises!.join(', ')}
+                </p>
+              )}
+            </div>
+          </div>
+        </GlassCard>
+      )}
+
       {/* Cycle Tracker - só para perfil female_cycle_synced */}
       {demoFeatures.showCycleTracker && <CycleTracker />}
 
@@ -215,19 +254,34 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
              <div style={{ position: 'relative', width: 44, height: 44 }}>
                <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
                  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                 <circle cx="50" cy="50" r="42" fill="none" stroke={readiness.color} strokeWidth="8"
-                   strokeDasharray={`${(readiness.score / 100) * 264} 264`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s ease-out' }} />
+                 <circle cx="50" cy="50" r="42" fill="none" stroke={readinessColor} strokeWidth="8"
+                   strokeDasharray={`${((readinessScore ?? 100) / 100) * 264} 264`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s ease-out' }} />
                </svg>
-               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 'bold', color: readiness.color }}>
-                 {readiness.score}
+               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 'bold', color: readinessColor }}>
+                 {isSyncing && readinessScore === null ? '...' : (readinessScore ?? 100)}
                </div>
              </div>
              <div>
                  <span style={{ fontSize: 10, color: C.muted, fontWeight: 'bold', display: 'block', letterSpacing: 1 }}>READINESS</span>
-                 <span style={{ fontSize: 11, color: readiness.color, lineHeight: 1.2 }}>{readiness.label}</span>
+                 <span style={{ fontSize: 11, color: readinessColor, lineHeight: 1.2 }}>{readinessLabel || 'A Analisar...'}</span>
              </div>
         </GlassCard>
       </div>
+
+      {missedRecent.length > 0 && (
+        <div style={{ marginBottom: 20, padding: 12, background: 'rgba(232, 74, 74, 0.1)', borderLeft: '4px solid #e84a4a', borderRadius: 8 }}>
+          <p style={{ fontSize: 13, color: '#e84a4a', fontWeight: 'bold', marginBottom: 4 }}>⚠️ Dias sem treino</p>
+          <p style={{ fontSize: 12, color: C.text, margin: 0, lineHeight: 1.4 }}>
+            Faltaste {missedRecent.map(d => d.dayOfWeek).join(', ')}. Vamos retomar hoje com carga ajustada?
+          </p>
+        </div>
+      )}
+      
+      {streak > 0 && (
+        <div style={{ textAlign: 'right', fontSize: 12, color: C.accent, fontWeight: 'bold', marginBottom: 16 }}>
+          🔥 Sequência atual: {streak} dia(s)
+        </div>
+      )}
 
       <div style={{ marginBottom: 20 }}>
           <RecoveryRing recoveryData={recoveryData} />

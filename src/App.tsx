@@ -60,7 +60,32 @@ export default function App() {
       checkForNewerBackup().then((backup) => {
         if (backup) setPendingRestoreBackup(backup);
       });
+    } else {
+      const sessionPin = sessionStorage.getItem('fittrack_session_pin');
+      if (sessionPin) {
+        import('./utils/cryptoEngine').then(async ({ deriveKey, setMasterKey }) => {
+          try {
+            const key = await deriveKey(sessionPin);
+            setMasterKey(key);
+            setIsUnlocked(true);
+          } catch (e) {
+            console.error('Falha no auto-login:', e);
+          }
+        });
+      }
     }
+
+    const checkDatabaseIntegrity = async () => {
+      try {
+        const { getDB } = await import('./db/schema');
+        const db = await getDB();
+        const count = await db.count('personalRecords');
+        if (count === 0 && sessionStorage.getItem('fittrack_session_pin')) {
+          console.warn('[App] IndexedDB vazia. O navegador limpou a base de dados.');
+        }
+      } catch (e) {}
+    };
+    checkDatabaseIntegrity();
   }, [isUnlocked]);
 
   useEffect(() => {
@@ -267,6 +292,7 @@ export default function App() {
       {showClubModal && <ClubModal onClose={() => setShowClubModal(false)} />}
       {showFreeBuilder && (
         <FreeWorkoutBuilder 
+          profile={profile}
           onClose={() => setShowFreeBuilder(false)}
           onStart={(plan) => {
             setShowFreeBuilder(false);

@@ -3,6 +3,8 @@ import { ExerciseCategory, Goal, UserLevel } from '../types/exercise';
 import { getExerciseCategory } from '../data/exerciseClassifier';
 import { calculateSuggestedWeight } from './loadCalculator';
 import { MacrocycleEngine } from '../services/macrocycleEngine';
+import { getMissedDays } from './missedDaysDetector';
+import { WorkoutSession } from '../types';
 
 export interface UserProfile {
   sex?: 'male' | 'female' | string;
@@ -35,7 +37,8 @@ export function getPrescription(
   profile: UserProfile | undefined,
   exerciseName: string,
   historicalPR?: { weight: number; reps: number } | null,
-  phase?: 'powerlifting' | 'bodybuilding'
+  phase?: 'powerlifting' | 'bodybuilding',
+  history?: WorkoutSession[]
 ): ExercisePrescription {
   const category = getExerciseCategory(exerciseName);
   const goal: Goal = profile?.goal || 'hipertrofia';
@@ -114,6 +117,17 @@ export function getPrescription(
     suggestedWeight = 20; // fallback razoável para iniciante
   }
 
+  // 3.5 Ajuste de Missed Days
+  let explanation = `Baseado no teu 1RM estimado de ${Math.round(oneRM)}kg e no teu objectivo de ${goal}, recomendamos ${suggestedWeight}kg para ${targetReps} reps.`;
+
+  const plannedDays = (profile as any)?.trainingDays?.map((d: any) => Number(d)) || [];
+  const missedDays = history ? getMissedDays(history, plannedDays, 3).length : 0;
+  if (missedDays > 0) {
+    const reduction = 0.9; // reduz 10%
+    suggestedWeight = Math.max(0, Math.round(suggestedWeight * reduction));
+    explanation += ` Como faltaste ${missedDays} dia(s) planeado(s), ajustámos a carga para te reinserires com segurança.`;
+  }
+
   // 4. Criar presets (Força, Resistência, Volume)
   const strengthReps = Math.max(3, targetReps - 5);
   const strengthWeight = calculateSuggestedWeight({
@@ -140,8 +154,7 @@ export function getPrescription(
   const volumeWeight = suggestedWeight; // mantém peso
   const volumeSetsDelta = 1; // adiciona uma série
 
-  // 5. Explicação textual
-  let explanation = `Baseado no teu 1RM estimado de ${Math.round(oneRM)}kg e no teu objectivo de ${goal}, recomendamos ${suggestedWeight}kg para ${targetReps} reps.`;
+  // 5. Explicação textual complementar
   if (category === 'compound_multi') explanation += ` Este é um exercício composto, por isso a carga pode ser mais elevada.`;
   else if (category === 'isolation_multi') explanation += ` Este é um exercício de isolamento, por isso a carga é naturalmente mais baixa.`;
 

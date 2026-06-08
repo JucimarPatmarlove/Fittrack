@@ -2,6 +2,7 @@ import React from "react";
 import { C, GOALS } from "../data/constants";
 import { useLS } from "../hooks";
 import { sanitizeText } from "../utils/sanitize";
+import { HealthSyncSettings } from "../components/settings/HealthSyncSettings";
 
 export default function Settings({ profile, setProfile, onReset }: any) {
   const exportBackup = () => {
@@ -56,6 +57,8 @@ export default function Settings({ profile, setProfile, onReset }: any) {
         <span>⌚ SMARTWATCHES & SENSORES BLE</span>
         <span style={{ color: '#38bdf8' }}>&gt;</span>
       </button>
+
+      <HealthSyncSettings />
       
       <div className="glass" style={{ padding: 14, marginBottom: 20 }}>
         <p style={{ fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, color: C.text, marginBottom: 8 }}>O TEU PERFIL</p>

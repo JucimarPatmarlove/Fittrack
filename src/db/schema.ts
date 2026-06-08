@@ -225,4 +225,10 @@ export async function getAllPersonalRecords(): Promise<PersonalRecord[]> {
   return db.getAll('personalRecords');
 }
 
+export async function getAllUniqueExercises(): Promise<string[]> {
+  const db = await getDB();
+  const keys = await db.getAllKeysFromIndex('setLogs', 'by-exerciseName');
+  return Array.from(new Set(keys));
+}
+
 export { generateId };

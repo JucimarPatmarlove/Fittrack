@@ -18,6 +18,7 @@ import {
   getPersonalRecord,
   getAllPersonalRecords,
   getAllWorkouts,
+  getAllUniqueExercises as getAllExercisesFromHistory,
   generateId,
 } from './schema';
 import { getMasterKey } from '../utils/cryptoEngine';
@@ -176,5 +177,6 @@ export {
   getPersonalRecord,
   getAllPersonalRecords,
   getAllWorkouts,
+  getAllExercisesFromHistory,
   generateId,
 };

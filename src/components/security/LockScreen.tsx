@@ -51,6 +51,8 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
 
       await migrateLocalStorageToEncrypted(key, [...SENSITIVE_STORE_NAMES]);
       
+      sessionStorage.setItem('fittrack_session_pin', pin);
+
       onUnlock(key);
     } catch {
       setError('PIN incorreto ou dados corrompidos');

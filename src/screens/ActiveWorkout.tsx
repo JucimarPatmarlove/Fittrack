@@ -80,7 +80,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
 
   const [sets, setSets] = useState(() => localExs.map((ex: any) => {
     const pr = getHistoricalPR(ex.name);
-    const prescription = getPrescription(profile, ex.name, pr, todayPlan.phase);
+    const prescription = getPrescription(profile, ex.name, pr, todayPlan.phase, history);
     const startW = prescription.suggestedWeight || ProgressionSystem.calculateNextWeight((pr?.weight || 0), (pr?.reps || 10), 10);
     return Array.from({ length: 3 }, () => ({ reps: prescription.repsSuggested, weight: startW, rpe: prescription.rpeTarget, done: false }));
   }));
@@ -496,7 +496,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
               setSets((prev: any) => {
                 const newSets = newExs.map(ex => {
                   const pr = getHistoricalPR(ex.name);
-                  const prescription = getPrescription(profile, ex.name, pr, todayPlan.phase);
+                  const prescription = getPrescription(profile, ex.name, pr, todayPlan.phase, history);
                   const startW = prescription.suggestedWeight || ProgressionSystem.calculateNextWeight((pr?.weight || 0), (pr?.reps || 10), 10);
                   return Array.from({ length: 3 }, () => ({ reps: prescription.repsSuggested, weight: startW, rpe: prescription.rpeTarget, done: false }));
                 });

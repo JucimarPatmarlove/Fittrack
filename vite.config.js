@@ -59,6 +59,8 @@ export default defineConfig({
             },
           },
         ],
+        skipWaiting: false,
+        clientsClaim: true,
       },
       devOptions: { enabled: true },
     }),

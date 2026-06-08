@@ -2,8 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { C, EXERCISE_DB } from '../../data/constants';
 import { ExerciseLibrary } from './ExerciseLibrary';
+import { analyzeInjuryRisk, InjuryAssessment } from '../../services/injuryPredictor';
+import { DemographicEngine } from '../../services/demographicEngine';
+import { QRSyncModal } from '../social/QRSyncModal';
+import { SyncData } from '../../services/p2pSync';
 
 interface FreeWorkoutBuilderProps {
+  profile?: any;
   onClose: () => void;
   onStart: (plan: any) => void;
 }
@@ -49,7 +54,7 @@ const EQUIPMENT_EMOJIS: Record<string, string> = {
   'Outros': '📦'
 };
 
-export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps) {
+export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBuilderProps) {
   const [step, setStep] = useState(1);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
@@ -68,6 +73,25 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
   const [selectingExerciseIndex, setSelectingExerciseIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAllPool, setShowAllPool] = useState(false);
+  const [injuryData, setInjuryData] = useState<InjuryAssessment | null>(null);
+
+  // P2P states
+  const [showP2P, setShowP2P] = useState(false);
+  const [p2pData, setP2pData] = useState<SyncData | null>(null);
+
+  useEffect(() => {
+    const loadRisk = async () => {
+      const demographicProfile = DemographicEngine.getProfileType(
+        profile?.age || 30,
+        profile?.gender || 'other',
+        profile?.wantsCycleSyncing || false
+      );
+      const userId = profile?.id || 'default';
+      const risk = await analyzeInjuryRisk(userId, demographicProfile);
+      setInjuryData(risk);
+    };
+    if (profile) loadRisk();
+  }, [profile]);
 
   // Filter pool based on choices
   const fullPool = useMemo(() => {
@@ -75,6 +99,10 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
       name: key,
       ...EXERCISE_DB[key]
     }));
+
+    if (injuryData?.restrictedExercises) {
+      pool = pool.filter(ex => !injuryData.restrictedExercises!.includes(ex.name.toLowerCase()));
+    }
 
     // Filter by Muscle
     if (selectedMuscles.length > 0) {
@@ -120,6 +148,10 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
   }, [selectedMuscles, selectedEquipment]);
 
   const toggleSelection = (item: string, list: string[], setList: any) => {
+    if (injuryData?.restrictedExercises?.includes(item.toLowerCase()) && !list.includes(item)) {
+      alert(`⚠️ Exercício de alto risco (${item}) não recomendado. Escolha uma alternativa de baixo impacto.`);
+      return;
+    }
     setList(list.includes(item) ? list.filter(i => i !== item) : [...list, item]);
   };
 
@@ -760,6 +792,41 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
             >
               {step === 3 ? 'INICIAR TREINO AGORA' : 'AVANÇAR'}
             </button>
+
+            {step === 3 && exercisesList.length > 0 && (
+              <button 
+                onClick={() => {
+                  setP2pData({
+                    type: 'plan',
+                    version: '1.0',
+                    content: {
+                      id: `free_${Date.now()}`, 
+                      label: workoutFormat === 'circuit' ? "Treino Livre (Circuito)" : "Treino Livre (Auto-Regulado)", 
+                      exercises: exercisesList,
+                      type: workoutFormat,
+                      rounds: workoutFormat === 'circuit' ? circuitRounds : undefined,
+                      restBetweenRounds: workoutFormat === 'circuit' ? circuitRest : undefined
+                    }
+                  });
+                  setShowP2P(true);
+                }}
+                style={{ 
+                  marginTop: '12px', 
+                  width: '100%', 
+                  background: 'transparent', 
+                  color: C.accent, 
+                  border: `1px solid ${C.accent}`, 
+                  borderRadius: '12px', 
+                  padding: '12px', 
+                  fontFamily: "'Bebas Neue'", 
+                  fontSize: '16px', 
+                  letterSpacing: '1px', 
+                  cursor: 'pointer', 
+                }}
+              >
+                📤 PARTILHAR TREINO VIA QR
+              </button>
+            )}
           </>
         )}
       </div>
@@ -774,6 +841,17 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
             setShowLibraryModal(false);
           }}
           onClose={() => setShowLibraryModal(false)}
+        />
+      )}
+
+      {/* MODAL P2P SYNC */}
+      {showP2P && (
+        <QRSyncModal
+          isOpen={showP2P}
+          onClose={() => setShowP2P(false)}
+          mode="send"
+          dataToSend={p2pData!}
+          onDataReceived={() => {}}
         />
       )}
     </div>

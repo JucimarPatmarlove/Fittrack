@@ -1,4 +1,5 @@
 import { WorkoutSession } from "../types";
+import { healthBridge, HealthMetrics } from './healthBridge';
 
 export const NeuralFatigue = {
     // Retorna um Readiness Score entre 0 e 100
@@ -57,3 +58,60 @@ export const NeuralFatigue = {
         return { score, label, color };
     }
 };
+
+export async function getEnhancedReadinessScore(history: WorkoutSession[]): Promise<{ score: number, label: string, color: string, clinicalNotes: string[] }> {
+    const baseReadiness = NeuralFatigue.calculateReadiness(history);
+    
+    let healthScore = baseReadiness.score;
+    const clinicalNotes: string[] = [];
+
+    try {
+        const sync = await healthBridge.autoSync();
+        if (sync.success) {
+            const metrics = sync.metrics;
+            let penalty = 0;
+            
+            if (metrics.steps < 5000) {
+                penalty += 10;
+                clinicalNotes.push('NEAT baixo hoje (< 5000 passos). Fluxo sanguíneo reduzido para recuperação ativa.');
+            }
+            if (metrics.sleepHours && metrics.sleepHours < 6) {
+                penalty += 15;
+                clinicalNotes.push(`Privação de sono (${metrics.sleepHours.toFixed(1)}h). Risco de lesão elevado e síntese proteica comprometida.`);
+            } else if (metrics.sleepHours && metrics.sleepHours >= 8) {
+                penalty -= 5;
+                clinicalNotes.push('Recuperação anabólica otimizada (>8h de sono).');
+            }
+            if (metrics.heartRateResting && metrics.heartRateResting > 80) {
+                penalty += 10;
+                clinicalNotes.push(`FC de repouso elevada (${Math.round(metrics.heartRateResting)}bpm). Possível fadiga do SNC.`);
+            }
+            if (metrics.heartRateVariability && metrics.heartRateVariability < 40) {
+                penalty += 10;
+                clinicalNotes.push(`HRV muito baixo (${Math.round(metrics.heartRateVariability)}ms). Sistema Simpático sobrecarregado.`);
+            }
+
+            healthScore -= penalty;
+        }
+    } catch (e) {
+        // Ignora erros silenciosamente
+    }
+
+    healthScore = Math.max(0, Math.min(100, Math.round(healthScore)));
+    
+    let label = baseReadiness.label;
+    let color = baseReadiness.color;
+    
+    if (healthScore < 40) {
+        label = "Exaustão (Rest Day aconselhado)";
+        color = "#d90429";
+    } else if (healthScore < 70) {
+        label = "Fadiga Moderada";
+        color = "#fb8500";
+    } else {
+        label = "Totalmente Recuperado";
+        color = "#38b000";
+    }
+
+    return { score: healthScore, label, color, clinicalNotes };
+}
