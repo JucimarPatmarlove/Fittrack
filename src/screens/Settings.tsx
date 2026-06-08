@@ -95,6 +95,49 @@ export default function Settings({ profile, setProfile, onReset }: any) {
             />
           </div>
         </div>
+
+        {/* --- Campos Demográficos --- */}
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>IDADE</label>
+            <input
+              type="number"
+              min={6}
+              max={100}
+              value={profile.age || ''}
+              onChange={e => setProfile({ ...profile, age: parseInt(e.target.value) })}
+              style={{ width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text }}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>GÉNERO</label>
+            <select
+              value={profile.gender || 'other'}
+              onChange={e => setProfile({ ...profile, gender: e.target.value })}
+              style={{ width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text }}
+            >
+              <option value="other">Prefiro não dizer</option>
+              <option value="male">Masculino</option>
+              <option value="female">Feminino</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Ciclo sincronizado - só aparece se género=female */}
+        {profile.gender === 'female' && (
+          <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px", background: profile.wantsCycleSyncing ? `rgba(167,139,250,0.15)` : C.bg, border: `1px solid ${profile.wantsCycleSyncing ? '#a78bfa' : C.border}`, borderRadius: 8, cursor: "pointer", marginBottom: 16 }}>
+            <input
+              type="checkbox"
+              checked={profile.wantsCycleSyncing || false}
+              onChange={e => setProfile({ ...profile, wantsCycleSyncing: e.target.checked })}
+              style={{ width: 18, height: 18, accentColor: '#a78bfa' }}
+            />
+            <div>
+              <span style={{ fontSize: 14, color: profile.wantsCycleSyncing ? '#a78bfa' : C.text, fontWeight: 'bold' }}>🔄 SINCRONIZAR CICLO MENSTRUAL</span>
+              <span style={{ display: "block", fontSize: 11, color: C.muted }}>Adapta a intensidade do treino à tua fase do ciclo.</span>
+            </div>
+          </label>
+        )}
         
         <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px", background: profile.proMode ? `${C.accent}22` : C.bg, border: `1px solid ${profile.proMode ? C.accent : C.border}`, borderRadius: 8, cursor: "pointer" }}>
            <input type="checkbox" checked={profile.proMode || false} onChange={e => setProfile({ ...profile, proMode: e.target.checked })} style={{ width: 18, height: 18, accentColor: C.accent }} />

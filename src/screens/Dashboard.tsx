@@ -9,6 +9,9 @@ import { RecoveryRing } from '../components/stats/RecoveryRing';
 import { RecoveryRoulette } from '../components/dashboard/RecoveryRoulette';
 import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
 import { TrendWidget } from '../components/dashboard/TrendWidget';
+import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
+import { CycleTracker } from '../components/dashboard/CycleTracker';
+import { VirtualPet } from '../components/dashboard/VirtualPet';
 import { NeuralFatigue } from "../services/neuralFatigue";
 import { calculateRecovery } from "../data/utils";
 import { AnthropicService } from "../services/anthropicService";
@@ -21,6 +24,7 @@ import { GradientButton } from "../components/ui/GradientButton";
 import { WatchSyncIndicator } from "../components/WatchSyncIndicator";
 import { PhaseCard } from '../components/dashboard/PhaseCard';
 import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
+import { DemographicEngine } from '../services/demographicEngine';
 
 export default function Dashboard({ profile, setProfile, history, onStartWorkout }: any) {
   const [showAssessment, setShowAssessment] = React.useState(!profile?.anamnesis);
@@ -35,6 +39,14 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
 
   const readiness = NeuralFatigue.calculateReadiness(history);
   const recoveryData = calculateRecovery(history, profile.goal);
+
+  // Perfil demográfico
+  const demographicProfile = DemographicEngine.getProfileType(
+    profile.age || 30,
+    profile.gender || 'other',
+    profile.wantsCycleSyncing || false
+  );
+  const demoFeatures = DemographicEngine.getFeatures(demographicProfile);
 
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [forgivenessAlert, setForgivenessAlert] = React.useState<{forgiven: boolean, remainingMinutes: number} | null>(null);
@@ -61,6 +73,14 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
      const handleOpenWeeklyPlan = () => setShowWeeklyPlan(true);
      window.addEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
      return () => window.removeEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
+  }, [history]);
+
+  const recentTopExercises = React.useMemo(() => {
+    const freq = new Map();
+    history.forEach((w: any) => {
+      w.exercises.forEach((ex: any) => freq.set(ex.name, (freq.get(ex.name) || 0) + 1));
+    });
+    return Array.from(freq.entries()).sort((a: any, b: any) => b[1] - a[1]).slice(0, 6).map(([name]) => name);
   }, [history]);
 
   const handleAIGeneration = async () => {
@@ -154,6 +174,17 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
       <ActivityHeatmap history={history} />
       
       <TrendWidget history={history} />
+
+      <TrendDashboardSection 
+        recentExercises={recentTopExercises} 
+        maxItems={4} 
+      />
+
+      {/* Cycle Tracker - só para perfil female_cycle_synced */}
+      {demoFeatures.showCycleTracker && <CycleTracker />}
+
+      {/* Virtual Pet - só para crianças (youth_gamified) */}
+      {demographicProfile === 'youth_gamified' && <VirtualPet xp={profile.xp || 0} />}
       
       {history.length >= 3 ? (
         <RecoveryRoulette />

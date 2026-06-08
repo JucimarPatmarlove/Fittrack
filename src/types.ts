@@ -36,7 +36,7 @@ export interface UserProfile {
     name: string;
     goal: string;
     level: string;
-    weight: number; 
+    weight: number;
     height?: number;
     fitnessLevel?: string;
     availableEquipment?: string[];
@@ -45,10 +45,19 @@ export interface UserProfile {
     preferredWorkoutDuration?: number;
     mainLimitation?: string;
     xp?: number;
-    gender?: string;
+    // ── Campos Demográficos (DemographicEngine) ──
+    /** Idade em anos. Determina perfil youth_gamified (≤14) ou senior_joint_focus (≥60). */
+    age?: number;
+    /** Género do utilizador. 'female' activa opção de sincronização de ciclo. */
+    gender?: 'male' | 'female' | 'other' | string;
+    /** Activa o CycleTracker e modulação de intensidade para perfil female_cycle_synced. */
+    wantsCycleSyncing?: boolean;
+    // ── Campos de Preferência ──
     workoutStyle?: string;
     trainingDays?: string[];
     philosophy?: string;
+    proMode?: boolean;
+    dayPreferences?: Record<string, string>;
     anamnesis?: Anamnesis;
     bodyMeasurements?: BodyMeasurements[];
     startDate?: number;

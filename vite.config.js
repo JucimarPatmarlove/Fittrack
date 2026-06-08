@@ -33,9 +33,32 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        // Ignorar chunks grandes de ML/3D no precache do service worker
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2,mp4,webm}'],
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB limit para vídeos curtos
+        runtimeCaching: [
+          {
+            urlPattern: /\.(mp4|webm|mov)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'video-cache',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 dias
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/.*\.(mp4|webm)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'external-video-cache',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+        ],
       },
       devOptions: { enabled: true },
     }),

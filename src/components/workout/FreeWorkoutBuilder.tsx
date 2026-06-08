@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { C, EXERCISE_DB } from '../../data/constants';
+import { ExerciseLibrary } from './ExerciseLibrary';
 
 interface FreeWorkoutBuilderProps {
   onClose: () => void;
@@ -61,6 +62,7 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
 
   // Selected exercises list state
   const [exercisesList, setExercisesList] = useState<string[]>([]);
+  const [showLibraryModal, setShowLibraryModal] = useState(false);
 
   // Exercise Selector states
   const [selectingExerciseIndex, setSelectingExerciseIndex] = useState<number | null>(null);
@@ -664,26 +666,50 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
                       </div>
 
                       {/* SHUFFLE / REGENERATE ALL BUTTON */}
-                      <button
-                        onClick={regenerateAll}
-                        style={{
-                          background: 'rgba(255,255,255,0.03)',
-                          color: C.accent,
-                          border: `1px dashed rgba(232, 200, 74, 0.4)`,
-                          borderRadius: '10px',
-                          padding: '10px',
-                          fontSize: '12px',
-                          fontFamily: "'Bebas Neue'",
-                          letterSpacing: '1px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px'
-                        }}
-                      >
-                        🎲 REGENERAR TODO O TREINO
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => setShowLibraryModal(true)}
+                          style={{
+                            flex: 1,
+                            background: `linear-gradient(135deg, ${C.accent}, #a8e000)`,
+                            color: '#080b0f',
+                            border: 'none',
+                            borderRadius: '10px',
+                            padding: '10px',
+                            fontSize: '13px',
+                            fontFamily: "'Bebas Neue'",
+                            letterSpacing: '1px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          + ADICIONAR DA BIBLIOTECA
+                        </button>
+                        <button
+                          onClick={regenerateAll}
+                          style={{
+                            flex: 1,
+                            background: 'rgba(255,255,255,0.03)',
+                            color: C.accent,
+                            border: `1px dashed rgba(232, 200, 74, 0.4)`,
+                            borderRadius: '10px',
+                            padding: '10px',
+                            fontSize: '13px',
+                            fontFamily: "'Bebas Neue'",
+                            letterSpacing: '1px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          🎲 REGENERAR TUDO
+                        </button>
+                      </div>
 
                     </div>
                   ) : (
@@ -737,6 +763,19 @@ export function FreeWorkoutBuilder({ onClose, onStart }: FreeWorkoutBuilderProps
           </>
         )}
       </div>
+
+      {/* MODAL DE BIBLIOTECA */}
+      {showLibraryModal && (
+        <ExerciseLibrary
+          onCreateWorkout={(names) => {
+            // Merge unique names
+            const newNames = names.filter(n => !exercisesList.includes(n));
+            setExercisesList([...exercisesList, ...newNames]);
+            setShowLibraryModal(false);
+          }}
+          onClose={() => setShowLibraryModal(false)}
+        />
+      )}
     </div>
   );
 }

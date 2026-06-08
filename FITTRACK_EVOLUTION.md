@@ -1,7 +1,7 @@
 # FitTrack V7 — Documento Vivo de Evolução
 
-> **Versão:** `v1.2.0`  
-> **Última Actualização:** 2026-06-04 (Vercel Serverless + Auditoria)  
+> **Versão:** `v1.6.0`  
+> **Última Actualização:** 2026-06-08 (UI/UX Evolution: Cyberpunk Neon & Exercise Presentation)  
 > **Mantido por:** Equipa FitTrack + IAs colaboradoras  
 
 ---
@@ -35,10 +35,10 @@
 | **Diferenciais** | Criptografia local AES-GCM dos dados, motor de prescrição RPE-based, proxy BFF Zero Trust, gamificação Ghost Mode + Rival AI, integração Bluetooth HRM/FTMS, Audio Coach, contagem automática de reps via DeviceMotion/MediaPipe |
 
 ### Métricas do Codebase
-- **115 ficheiros fonte** (`.ts` / `.tsx`)
-- **~13.000 linhas de código**
-- **77 exercícios** na base de dados (`exerciseDB.ts`) com metadados de músculo e equipamento
-- **83 exercícios classificados** biomecanicamente (`exerciseClassifier.ts`)
+- **132+ ficheiros fonte** (`.ts` / `.tsx`)
+- **~16.000 linhas de código**
+- **77 exercícios** na base de dados (`exerciseDB.ts`) — sincronizados com `exerciseClassifier.ts` (validado por `scripts/validate-exercise-db.js`)
+- **52 testes unitários** a passar (Vitest)
 
 ---
 
@@ -110,13 +110,13 @@
     │   ├── stats/             # Estatísticas
     │   ├── ui/                # GlassCard, GlobalBackground, GlowInput, GradientButton
     │   └── workout/           # RestTimer, FreeWorkoutBuilder, WeeklyPlanGenerator, etc.
-    ├── data/                  # exerciseDB (77 exercícios), exerciseClassifier, constants
+    ├── data/                  # exerciseDB (77 exerc.), exerciseClassifier, constants
     ├── db/                    # IndexedDB schema + encrypted layer
     ├── hooks/                 # useBluetoothHRM, useAudioCoach, useMotionCounter, etc.
     ├── screens/               # Dashboard, ActiveWorkout, AICoach, Trends, Settings, etc.
-    ├── services/              # anthropicService, jwtEngine, trendAnalyzer, rivalAI
+    ├── services/              # anthropicService, jwtEngine, trendAnalyzer, rivalAI, demographicEngine
     ├── stores/                # Zustand (11 stores)
-    ├── types/                 # Interfaces globais
+    ├── types/                 # exercise.ts (ExerciseDefinition + Goal + Modality + JointImpactLevel)
     └── utils/                 # cryptoEngine, prescriptionEngine, loadCalculator, sanitize
 ```
 
@@ -299,7 +299,7 @@ Atleta completa série → toggle() no ActiveWorkout
 | **Anti-Replay** | JWT `exp` a 60s + validação de `iat` (clock skew máx 5s) |
 | **Data Ownership** | Modelo Zero Trust — dados cifrados localmente, utilizador é dono |
 
-> **Nota sobre o Shared Secret:** O segredo JWT (`VITE_API_SHARED_SECRET`) está no bundle do cliente. Mitigação: token expira em 60s. Evolução futura: endpoint `/api/request-token` para eliminar o segredo do cliente.
+> **Nota sobre o Shared Secret (v1.5.0):** O `VITE_API_SHARED_SECRET` foi **completamente removido** do bundle de produção via `/api/request-token`. Verificado por `npm run check-jwt` (grep nos artefactos de build) — resultado: ✅ não exposto.
 
 ### 7.1 Variáveis de Ambiente
 
@@ -448,6 +448,8 @@ npm run dev          # já corre com --host
 
 | Versão | Data | Alterações |
 |---|---|---|
+| `v1.6.0` | 2026-06-08 | **Evolução UI/UX**: `VideoTutorial` reformulado com sistema de abas (Demo, Passos, Músculos), tracker de passos de execução, cores neon dinâmicas por grupo muscular. `ExerciseLibrary` com suporte a vista em Grelha (Grid) vs Lista, thumbnails reais (GIF/SVG) carregadas via lazy loading e acentos de cor glassmorphism para rápida identificação. |
+| `v1.5.0` | 2026-06-08 | **Cross-Training Engine** (AMRAP/EMOM/Mobilidade), **DemographicEngine** (Female/Senior/Youth), `CycleTracker`, `VirtualPet`, `WorkoutModeSelector`, `MobilityTimer`. **Hardening Documental**: `generate_briefing.sh` com caminhos relativos + exerciseDB.ts; `scripts/check-jwt-secret.sh`; `scripts/validate-exercise-db.js`. Correcção de 77 vs 83 (era falso positivo — ambos têm 77). Tipos `ExerciseDefinition` expandidos com `Goal`, `Modality`, `JointImpactLevel`. |
 | `v1.4.0` | 2026-06-05 | Zustand Cifrado (IDB transparente via `encryptedPersist.ts`), `manualChunks` optimizado (<300KB), Zero Trust /api/request-token |
 | `v1.3.0` | 2026-06-05 | Hardening Zero Trust (VITE_API_SHARED_SECRET removido), Vite manualChunks (<500KB bundle base), Playwright E2E. |
 | `v1.2.0` | 2026-06-04 | Vercel serverless (`api/claude.js`, `api/generate-workout.js`), `vercel.json`, secções Índice, Variáveis de Ambiente, Testes e Changelog |

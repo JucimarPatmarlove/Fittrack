@@ -17,7 +17,21 @@ export const EXERCISE_DB: Record<string, any> = {
   "Seated Cable Row": { muscle: "Costas", equipment: "Máquina de Cabos", base: { hipertrofia: [4, 8, 12] } },
   "T-Bar Row": { muscle: "Costas", equipment: "Barra", base: { hipertrofia: [4, 8, 12] } },
   "Rack Pull": { muscle: "Costas", equipment: "Barra", base: { hipertrofia: [4, 8, 12] } },
-  "Barbell Back Squat": { muscle: "Pernas", equipment: "Barra", base: { hipertrofia: [4, 8, 12] } },
+  "Barbell Back Squat": { 
+    muscle: "Pernas", 
+    equipment: "Barra", 
+    base: { hipertrofia: [4, 8, 12] },
+    media: {
+      gif: '/assets/exercises/squat-preview.gif',
+      video: 'https://cdn.coverr.co/videos/coverr-man-doing-squats-in-a-gym-5154/1080p.mp4',
+    },
+    instructions: [
+      'Posiciona a barra nos trapézios e afasta os pés à largura dos ombros.',
+      'Inicia o movimento fletindo a anca para trás e dobrando os joelhos.',
+      'Desce até a anca passar a linha dos joelhos (quebra a paralela).',
+      'Sobe de forma explosiva mantendo o peito alto e o core contraído.'
+    ]
+  },
   "Front Squat": { muscle: "Pernas", equipment: "Barra", base: { hipertrofia: [4, 8, 12] } },
   "Goblet Squat": { muscle: "Pernas", equipment: "Halteres", base: { hipertrofia: [4, 8, 12] } },
   "Barbell Deadlift": { muscle: "Pernas", equipment: "Barra", base: { hipertrofia: [4, 8, 12] } },

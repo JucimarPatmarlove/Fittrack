@@ -8,6 +8,8 @@
     "build": "vite build",
     "postbuild": "npm run security-check",
     "security-check": "if grep -qr 'sk-ant' dist/ 2>/dev/null; then echo '🚨 CHAVE ANTHROPIC NO BUNDLE!' && exit 1; else echo '✅ Zero Trust OK: Nenhum segredo no frontend.'; fi",
+    "check-jwt": "bash scripts/check-jwt-secret.sh",
+    "validate-exercises": "node scripts/validate-exercise-db.js",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "preview": "vite preview",
     "preview:host": "vite preview --host 0.0.0.0",

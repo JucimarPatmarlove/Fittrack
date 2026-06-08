@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GlobalBackground } from "../components/ui/GlobalBackground";
 import { GlassCard } from "../components/ui/GlassCard";
 import { GradientButton } from "../components/ui/GradientButton";
+import { WorkoutModeSelector, WorkoutMode } from "../components/workout/WorkoutModeSelector";
+import { MobilityTimer } from "../components/workout/MobilityTimer";
+import { DemographicEngine } from "../services/demographicEngine";
 
 // --- STYLES CYBERPUNK ---
 const theme = {
@@ -130,6 +133,32 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   const [roundExercisesCompleted, setRoundExercisesCompleted] = useState<string[]>([]);
   const { speak } = useAudioCoach();
 
+  // ── MODO DE TREINO (AMRAP / EMOM / Mobilidade / Clássico) ──
+  const [workoutMode, setWorkoutMode] = useState<WorkoutMode>('classic');
+
+  // AMRAP: tempo total fixo (15 min por defeito)
+  const [amrapDuration, setAmrapDuration] = useState(15 * 60);
+  const [amrapTimeLeft, setAmrapTimeLeft] = useState(15 * 60);
+  const [amrapRunning, setAmrapRunning] = useState(false);
+  const [roundsCompleted, setRoundsCompleted] = useState(0);
+
+  // EMOM: intervalo de 1 minuto
+  const [emomRemainingSeconds, setEmomRemainingSeconds] = useState(60);
+  const [emomRound, setEmomRound] = useState(1);
+  const [emomRunning, setEmomRunning] = useState(false);
+
+  // ── PERFIL DEMOGRÁFICO ──
+  const demographicProfile = DemographicEngine.getProfileType(
+    profile.age || 30,
+    profile.gender || 'other',
+    profile.wantsCycleSyncing || false
+  );
+  const demoFeatures = DemographicEngine.getFeatures(demographicProfile);
+
+  // Slider de dor articular (para idosos)
+  const [jointPain, setJointPain] = useState(0);
+  const isHighImpactPainful = demoFeatures.autoReplaceImpact && jointPain >= 7;
+
   const [showPlateCalc, setShowPlateCalc] = useState(false);
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
   const [currentSetIdx, setCurrentSetIdx] = useState(0);
@@ -156,6 +185,31 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
     const t = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(t);
   }, []);
+
+  // ── AMRAP Timer ──
+  useEffect(() => {
+    if (workoutMode !== 'amrap' || !amrapRunning) return;
+    if (amrapTimeLeft <= 0) {
+      setAmrapRunning(false);
+      navigator.vibrate?.([300, 100, 300, 100, 300]);
+      return;
+    }
+    const interval = setInterval(() => setAmrapTimeLeft(p => p - 1), 1000);
+    return () => clearInterval(interval);
+  }, [workoutMode, amrapRunning, amrapTimeLeft]);
+
+  // ── EMOM Timer ──
+  useEffect(() => {
+    if (workoutMode !== 'emom' || !emomRunning) return;
+    if (emomRemainingSeconds <= 0) {
+      navigator.vibrate?.(500);
+      setEmomRemainingSeconds(60);
+      setEmomRound(r => r + 1);
+      return;
+    }
+    const interval = setInterval(() => setEmomRemainingSeconds(p => p - 1), 1000);
+    return () => clearInterval(interval);
+  }, [workoutMode, emomRunning, emomRemainingSeconds]);
 
   const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   const totalSets = sets.flat().length;
@@ -515,6 +569,119 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
             />
           </div>
 
+          {/* ── SELETOR DE MODO DE TREINO ── */}
+          <div style={{ marginBottom: 16 }}>
+            <WorkoutModeSelector mode={workoutMode} onChange={(m) => {
+              setWorkoutMode(m);
+              if (m === 'amrap') { setAmrapTimeLeft(amrapDuration); setAmrapRunning(false); }
+              if (m === 'emom') { setEmomRemainingSeconds(60); setEmomRound(1); setEmomRunning(false); }
+            }} />
+
+            {/* HUD AMRAP */}
+            {workoutMode === 'amrap' && (
+              <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 14, padding: 16, marginTop: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 10, color: '#f97316', fontFamily: "'DM Mono'", letterSpacing: 2 }}>TEMPO RESTANTE</p>
+                    <p style={{ fontFamily: "'DM Mono'", fontSize: 32, color: amrapTimeLeft < 60 ? '#ef4444' : '#f97316', fontWeight: 700 }}>
+                      {Math.floor(amrapTimeLeft / 60)}:{(amrapTimeLeft % 60).toString().padStart(2, '0')}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: 10, color: '#55626e', fontFamily: "'DM Mono'", letterSpacing: 2 }}>RONDAS</p>
+                    <p style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: '#f97316' }}>{roundsCompleted}</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => setAmrapRunning(r => !r)}
+                    disabled={amrapTimeLeft <= 0}
+                    style={{ flex: 2, background: amrapRunning ? 'rgba(239,68,68,0.2)' : 'rgba(249,115,22,0.2)', border: `1px solid ${amrapRunning ? '#ef4444' : '#f97316'}`, borderRadius: 10, padding: 10, color: amrapRunning ? '#fca5a5' : '#f97316', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
+                  >
+                    {amrapRunning ? '⏸ PAUSAR' : amrapTimeLeft <= 0 ? '✓ FIM' : '▶ INICIAR'}
+                  </button>
+                  <button
+                    onClick={() => setRoundsCompleted(r => r + 1)}
+                    style={{ flex: 1, background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 10, padding: 10, color: '#f97316', fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, cursor: 'pointer' }}
+                  >
+                    + RONDA
+                  </button>
+                  <button
+                    onClick={() => { setAmrapTimeLeft(amrapDuration); setAmrapRunning(false); setRoundsCompleted(0); }}
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', color: '#55626e', fontFamily: "'Bebas Neue'", fontSize: 14, cursor: 'pointer' }}
+                  >
+                    ↺
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* HUD EMOM */}
+            {workoutMode === 'emom' && (
+              <div style={{ background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 14, padding: 16, marginTop: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 10, color: '#38bdf8', fontFamily: "'DM Mono'", letterSpacing: 2 }}>TEMPO P/ PRÓXIMA RONDA</p>
+                    <p style={{ fontFamily: "'DM Mono'", fontSize: 40, color: emomRemainingSeconds <= 10 ? '#ef4444' : '#38bdf8', fontWeight: 700, lineHeight: 1 }}>
+                      {emomRemainingSeconds}<span style={{ fontSize: 16 }}>s</span>
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: 10, color: '#55626e', fontFamily: "'DM Mono'", letterSpacing: 2 }}>RONDA</p>
+                    <p style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: '#38bdf8' }}>#{emomRound}</p>
+                  </div>
+                </div>
+                {/* Barra de progresso do minuto */}
+                <div style={{ width: '100%', height: 4, background: 'rgba(0,0,0,0.4)', borderRadius: 2, overflow: 'hidden', marginBottom: 10 }}>
+                  <div style={{ height: '100%', width: `${((60 - emomRemainingSeconds) / 60) * 100}%`, background: 'linear-gradient(90deg, #38bdf8, #0ea5e9)', borderRadius: 2, transition: 'width 1s linear' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => setEmomRunning(r => !r)}
+                    style={{ flex: 2, background: emomRunning ? 'rgba(239,68,68,0.2)' : 'rgba(56,189,248,0.2)', border: `1px solid ${emomRunning ? '#ef4444' : '#38bdf8'}`, borderRadius: 10, padding: 10, color: emomRunning ? '#fca5a5' : '#38bdf8', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
+                  >
+                    {emomRunning ? '⏸ PAUSAR' : '▶ INICIAR'}
+                  </button>
+                  <button
+                    onClick={() => { setEmomRunning(false); setEmomRemainingSeconds(60); setEmomRound(1); }}
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', color: '#55626e', fontFamily: "'Bebas Neue'", fontSize: 14, cursor: 'pointer' }}
+                  >
+                    ↺
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* SLIDER DOR ARTICULAR (Idosos) */}
+            {demoFeatures.rpeType === 'joint_pain_scale' && (
+              <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: 14, marginTop: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <p style={{ fontSize: 11, color: '#fca5a5', fontFamily: "'DM Mono'", letterSpacing: 1 }}>🦴 DOR ARTICULAR</p>
+                  <span style={{ fontFamily: "'DM Mono'", fontSize: 16, color: jointPain >= 7 ? '#ef4444' : jointPain >= 4 ? '#f97316' : '#3dd68c', fontWeight: 700 }}>
+                    {jointPain}/10
+                  </span>
+                </div>
+                <input
+                  type="range" min={0} max={10} value={jointPain}
+                  onChange={(e) => setJointPain(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: jointPain >= 7 ? '#ef4444' : jointPain >= 4 ? '#f97316' : '#3dd68c', cursor: 'pointer' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                  <span style={{ fontSize: 9, color: '#3dd68c' }}>Nenhuma</span>
+                  <span style={{ fontSize: 9, color: '#f97316' }}>Moderada</span>
+                  <span style={{ fontSize: 9, color: '#ef4444' }}>Máxima</span>
+                </div>
+                {isHighImpactPainful && (
+                  <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8 }}>
+                    <p style={{ fontSize: 11, color: '#fca5a5', lineHeight: 1.4 }}>
+                      ⚠️ Dor elevada detetada! Os exercícios de alto impacto foram adaptados para proteger as tuas articulações.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <RivalRace rivalState={rivalState} elapsed={elapsed} currentVolume={currentVolume} />
 
           <AnimatePresence>
@@ -574,17 +741,29 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
             />
           )}
 
-          <WorkoutExerciseList
-            localExs={localExs} sets={sets} todayPlan={todayPlan} profile={profile}
-            history={history} theme={theme} C={C} openIdx={openIdx} setOpenIdx={setOpenIdx}
-            getRecommendedReps={getRecommendedReps} getHistoricalPR={getHistoricalPR}
-            getPrescription={getPrescription} checkAutoProgression={checkAutoProgression}
-            ME={ME} speak={speak} applyStrengthPreset={applyStrengthPreset}
-            applyEndurancePreset={applyEndurancePreset} applyVolumePreset={applyVolumePreset}
-            addWarmups={addWarmups} upd={upd} toggle={toggle} setCurrentExerciseIdx={setCurrentExerciseIdx}
-            setCurrentSetIdx={setCurrentSetIdx} setShowPlateCalc={setShowPlateCalc}
-            setStartTimes={setStartTimes} setGhostPRs={setGhostPRs}
-          />
+          {/* MODO MOBILIDADE: substitui a lista por temporizadores */}
+          {workoutMode === 'mobility' ? (
+            <div>
+              <p style={{ fontSize: 10, color: '#a78bfa', fontFamily: "'DM Mono'", letterSpacing: 2, marginBottom: 12 }}>🧘 EXERCÍCIOS DE MOBILIDADE</p>
+              {localExs.map((ex: any, i: number) => (
+                <MobilityTimer key={i} exerciseName={ex.name} defaultSeconds={30} />
+              ))}
+            </div>
+          ) : (
+            <WorkoutExerciseList
+              localExs={isHighImpactPainful ? localExs.map((ex: any) => ({ ...ex, name: DemographicEngine.replaceHighImpactExercise(ex.name), _originalName: ex.name })) : localExs}
+              sets={sets} todayPlan={todayPlan} profile={profile}
+              history={history} theme={theme} C={C} openIdx={openIdx} setOpenIdx={setOpenIdx}
+              getRecommendedReps={getRecommendedReps} getHistoricalPR={getHistoricalPR}
+              getPrescription={getPrescription} checkAutoProgression={checkAutoProgression}
+              ME={ME} speak={speak} applyStrengthPreset={applyStrengthPreset}
+              applyEndurancePreset={applyEndurancePreset} applyVolumePreset={applyVolumePreset}
+              addWarmups={addWarmups} upd={upd} toggle={toggle} setCurrentExerciseIdx={setCurrentExerciseIdx}
+              setCurrentSetIdx={setCurrentSetIdx} setShowPlateCalc={setShowPlateCalc}
+              setStartTimes={setStartTimes} setGhostPRs={setGhostPRs}
+              hideWeight={demoFeatures.hideWeight}
+            />
+          )}
 
           <button onClick={() => setShowLibrary(true)} style={{ width: "100%", background: "none", border: `2px dashed ${C.border}`, borderRadius: 12, padding: 18, color: C.accent, fontFamily: "'Bebas Neue'", fontSize: 18, letterSpacing: 2, cursor: "pointer", marginTop: 10 }}>
             + ADICIONAR EXERCÍCIO

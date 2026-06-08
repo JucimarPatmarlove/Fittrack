@@ -29,3 +29,8 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+
+# Artefactos gerados automaticamente (não versionar)
+fittrack_briefing.md
+docs/walkthrough.md
+test-output.log
