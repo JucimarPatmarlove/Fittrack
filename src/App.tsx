@@ -12,6 +12,8 @@ import { setMasterKey } from './utils/cryptoEngine';
 import { checkForNewerBackup, importEncryptedBackup } from './services/backupService';
 import { downloadBackup } from './services/googleDrive';
 import { ProfileSchema, HistorySchema } from './utils/schemas';
+import { UserProfile, WorkoutSession, WorkoutPlan } from './types';
+import { syncUserStats } from './services/gamificationEngine';
 
 // ── COMPONENTES MENORES & MODULOS LAZY LOAD ─────────────────────────────────
 import { FitnessAssessment } from "./components/onboarding/FitnessAssessment";
@@ -47,10 +49,10 @@ export default function App() {
   const isFirstTime = !localStorage.getItem('fit_profile');
 
   const [view, setView] = useState("dashboard"); // "dashboard", "workout", "settings", "assessment", "guide", "feedback", "history"
-  const [profile, setProfile] = useLS<any>("fit_profile", { name: "Atleta", goal: "hipertrofia", level: "beginner", weight: 70, xp: 0 }, ProfileSchema);
-  const [history, setHistory] = useLS<any[]>("fit_history", [], HistorySchema);
-  const [currentPlan, setCurrentPlan] = useState<any>(null);
-  const [workoutData, setWorkoutData] = useState<any>(null);
+  const [profile, setProfile] = useLS<UserProfile>("fit_profile", { name: "Atleta", goal: "hipertrofia", level: "beginner", weight: 70, xp: 0 } as UserProfile, ProfileSchema);
+  const [history, setHistory] = useLS<WorkoutSession[]>("fit_history", [], HistorySchema);
+  const [currentPlan, setCurrentPlan] = useState<WorkoutPlan | string | null>(null);
+  const [workoutData, setWorkoutData] = useState<WorkoutSession | null>(null);
   const [showClubModal, setShowClubModal] = useState(false);
   const [showFreeBuilder, setShowFreeBuilder] = useState(false);
   const [pendingRestoreBackup, setPendingRestoreBackup] = useState<{ id: string; name: string; createdTime: string } | null>(null);
@@ -110,12 +112,12 @@ export default function App() {
     };
     silentBackup();
 
-    const handleNavigate = (e: any) => setView(e.detail);
+    const handleNavigate = (e: CustomEvent | Event) => setView((e as CustomEvent).detail);
     window.addEventListener('NAVIGATE_TO', handleNavigate);
     return () => window.removeEventListener('NAVIGATE_TO', handleNavigate);
   }, []);
 
-  const handleStartWorkout = (plan: any) => {
+  const handleStartWorkout = (plan: WorkoutPlan | string) => {
     if (plan === 'OPEN_FREE_BUILDER') {
       setShowFreeBuilder(true);
       return;
@@ -124,19 +126,14 @@ export default function App() {
     setView("workout");
   };
 
-  const handleFinishWorkout = (data: any) => {
+  const handleFinishWorkout = (data: WorkoutSession) => {
     setWorkoutData(data);
     setView("feedback");
   };
 
-  const handleFeedbackSubmit = (feedback: any) => {
-    // Calcular XP a atribuir neste treino:
-    const baseXP = workoutData?.duration ? Math.round(workoutData.duration / 60) * 10 : 100;
-    const additionalXP = feedback.difficulty === 'hard' ? 50 : 20;
-    let challengeXP = 0;
-
+  const handleFeedbackSubmit = async (feedback: { difficulty: string, notes?: string }) => {
     const finalData = { ...workoutData, feedback };
-    const newHistory = [...history, finalData];
+    const newHistory = [...history, finalData as WorkoutSession];
 
     // Verificar desafios batidos
     try {
@@ -147,7 +144,6 @@ export default function App() {
         challenges = challenges.map((c: any) => {
           if (c.status === 'active' && PredictiveChallenges.evaluateChallenge(c, finalData, newHistory)) {
             c.status = 'completed';
-            challengeXP += c.xpReward;
             updated = true;
           }
           return c;
@@ -156,10 +152,19 @@ export default function App() {
       }
     } catch (e) { }
 
-    const totalXPGained = baseXP + additionalXP + challengeXP;
-
     setHistory(newHistory);
-    setProfile((p: any) => ({ ...p, xp: (p.xp || 0) + totalXPGained })); // Gamification progress!
+
+    try {
+      // Gamification progress real-time com IndexedDB
+      const stats = await syncUserStats(profile.xp || 0, workoutData?.id || '');
+      setProfile((p: UserProfile) => ({ ...p, xp: stats.newTotalXP })); // Gamification progress!
+      
+      if (stats.levelUp) {
+        alert(`🏆 PARABÉNS! Subiste para o nível ${stats.newLevel?.level}: ${stats.newLevel?.title}!`);
+      }
+    } catch (err) {
+      console.warn('Erro a processar XP:', err);
+    }
 
     setWorkoutData(null);
     setCurrentPlan(null);
@@ -231,7 +236,7 @@ export default function App() {
             {view === "dashboard" && <motion.div key="dash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}><Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} /></motion.div>}
             {view === "workout" && currentPlan && <motion.div key="work" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}><ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => { setCurrentPlan(null); setView("dashboard"); }} /></motion.div>}
             {view === "settings" && <motion.div key="set" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><Settings profile={profile} setProfile={setProfile} onReset={handleReset} /></motion.div>}
-            {view === "assessment" && <motion.div key="asses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><FitnessAssessment onComplete={(data: any) => { setProfile({ ...profile, ...data }); setView("dashboard"); }} /></motion.div>}
+            {view === "assessment" && <motion.div key="asses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><FitnessAssessment onComplete={(data: Partial<UserProfile>) => { setProfile({ ...profile, ...data } as UserProfile); setView("dashboard"); }} /></motion.div>}
             {view === "guide" && <motion.div key="gui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><BeginnerGuide onComplete={() => setView("dashboard")} /></motion.div>}
             {view === "history" && <motion.div key="hist" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}><DetailedHistory workouts={history} profile={profile} onStartWorkout={handleStartWorkout} /></motion.div>}
             {view === "feedback" && <motion.div key="feed" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}><PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} /></motion.div>}

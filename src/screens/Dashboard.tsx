@@ -12,8 +12,9 @@ import { TrendWidget } from '../components/dashboard/TrendWidget';
 import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
 import { CycleTracker } from '../components/dashboard/CycleTracker';
 import { VirtualPet } from '../components/dashboard/VirtualPet';
-import { getEnhancedReadinessScore } from "../services/neuralFatigue";
 import { analyzeInjuryRisk, InjuryAssessment } from '../services/injuryPredictor';
+import { getCurrentLevel, LEVEL_THRESHOLDS } from '../services/gamificationEngine';
+import { calculateReadinessScore, ReadinessSnapshot } from '../services/recoveryEngine';
 import { useHealthStore } from '../stores/useHealthStore';
 import { calculateRecovery } from "../data/utils";
 import { AnthropicService } from "../services/anthropicService";
@@ -26,6 +27,7 @@ import { GlassCard } from "../components/ui/GlassCard";
 import { GradientButton } from "../components/ui/GradientButton";
 import { WatchSyncIndicator } from "../components/WatchSyncIndicator";
 import { PhaseCard } from '../components/dashboard/PhaseCard';
+import { VTaperWidget } from '../components/dashboard/VTaperWidget';
 import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
 import { DemographicEngine } from '../services/demographicEngine';
 
@@ -34,13 +36,21 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
   const { challenges, setChallenges } = useChallenges(history);
   
   const goal = GOALS.find(g => g.id === profile.goal);
-  const level = Math.floor((profile.xp || 0) / 1000) + 1;
-  const xp = (profile.xp || 0) % 1000;
-  const progressPct = (xp / 1000) * 100;
+  
+  const levelInfo = getCurrentLevel(profile.xp || 0);
+  const nextLevelInfo = LEVEL_THRESHOLDS.find(t => t.level === levelInfo.level + 1) || { xpRequired: levelInfo.xpRequired + 10000 };
+  const currentLevelXP = levelInfo.xpRequired;
+  const nextLevelXP = nextLevelInfo.xpRequired;
+  const progressPct = Math.min(100, (((profile.xp || 0) - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
   
   const currentPlan = usePlanStore((s) => s.currentPlan);
 
-  const { readinessScore, readinessLabel, readinessColor, isSyncing, syncHealthData } = useHealthStore();
+  const { readinessScore: oldReadiness, isSyncing, syncHealthData } = useHealthStore();
+  const [readiness, setReadiness] = React.useState<ReadinessSnapshot | null>(null);
+
+  React.useEffect(() => {
+    calculateReadinessScore().then(setReadiness).catch(console.warn);
+  }, []);
 
   React.useEffect(() => {
     syncHealthData(history, false);
@@ -180,12 +190,15 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ background: C.accentLow, color: C.accent, borderRadius: 12, padding: "6px 12px", fontSize: 14, fontWeight: "bold", display: "inline-block", border: `1px solid ${C.accent}44` }}>
-            Lvl {level}
+            Nível {levelInfo.level}
           </div>
+          <p style={{ fontSize: 10, color: C.muted, marginTop: 4, fontFamily: "'DM Mono'" }}>{levelInfo.title.toUpperCase()}</p>
         </div>
       </motion.div>
 
       <PhaseCard history={history} profile={profile} />
+
+      <VTaperWidget profile={profile} />
 
       <GymVibeWidget onOpenVibe={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'gymvibe' }))} />
       
@@ -238,7 +251,7 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
         <GlassCard style={{ padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 8, fontWeight: 600 }}>
             <span>XP PARA LEVEL UP</span>
-            <span className="mono" style={{ color: C.accent }}>{xp} / 1000</span>
+            <span className="mono" style={{ color: C.accent }}>{(profile.xp || 0) - currentLevelXP} / {nextLevelXP - currentLevelXP}</span>
             </div>
             <div style={{ width: "100%", height: 6, background: 'rgba(0,0,0,0.5)', borderRadius: 3, overflow: "hidden", border: '1px solid rgba(255,255,255,0.05)' }}>
             <motion.div
@@ -254,16 +267,18 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
              <div style={{ position: 'relative', width: 44, height: 44 }}>
                <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
                  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                 <circle cx="50" cy="50" r="42" fill="none" stroke={readinessColor} strokeWidth="8"
-                   strokeDasharray={`${((readinessScore ?? 100) / 100) * 264} 264`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s ease-out' }} />
+                 <circle cx="50" cy="50" r="42" fill="none" stroke={readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent} strokeWidth="8"
+                   strokeDasharray={`${((readiness?.score ?? oldReadiness ?? 100) / 100) * 264} 264`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s ease-out' }} />
                </svg>
-               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 'bold', color: readinessColor }}>
-                 {isSyncing && readinessScore === null ? '...' : (readinessScore ?? 100)}
+               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 'bold', color: readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent }}>
+                 {readiness?.score ?? oldReadiness ?? 100}
                </div>
              </div>
              <div>
-                 <span style={{ fontSize: 10, color: C.muted, fontWeight: 'bold', display: 'block', letterSpacing: 1 }}>READINESS</span>
-                 <span style={{ fontSize: 11, color: readinessColor, lineHeight: 1.2 }}>{readinessLabel || 'A Analisar...'}</span>
+                 <span style={{ fontSize: 10, color: C.muted, fontWeight: 'bold', display: 'block', letterSpacing: 1 }}>READINESS SCORE</span>
+                 <span style={{ fontSize: 11, color: readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent, lineHeight: 1.2 }}>
+                   {readiness ? (readiness.status.charAt(0).toUpperCase() + readiness.status.slice(1)) : 'A Analisar...'}
+                 </span>
              </div>
         </GlassCard>
       </div>

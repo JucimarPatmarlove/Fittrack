@@ -214,6 +214,7 @@ REGRAS CORE DE PRESCRIÇÃO:
 7. ALINHAMENTO COM A FASE CLÍNICA: Utiliza obrigatoriamente a estrutura '${phaseRules.trainingType}', com ${phaseRules.sets} séries por exercício, alvo de ${phaseRules.repsTarget} repetições, descansando ${phaseRules.restSeconds} segundos.
 8. ${isOvertraining ? 'OVERTRAINING: Reduz séries 20%, peso -10%, RPE máx 6.' : 'Progressão normal.'}
 9. Respeita focos específicos por dia se listados acima.
+${profile.goal === 'v_taper_aesthetics' ? '10. V-TAPER AESTHETICS: Prioriza exercícios de ombros laterais e dorsais (largura). Evita exercícios pesados para oblíquos (como flexões laterais) e quadríceps muito massivos. Inclui "Stomach Vacuum" diariamente.' : ''}
 
 Formato JSON (sem markdown nem backticks):
 {

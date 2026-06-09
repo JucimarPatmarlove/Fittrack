@@ -34,21 +34,21 @@ export const useGhostStore = create<GhostStore>()(
       calculateGhostTarget: (exerciseId) => {
         const historyJSON = localStorage.getItem('fit_history');
         if (!historyJSON) return null;
-        const mainHistory = JSON.parse(historyJSON) || [];
+        const mainHistory: WorkoutSession[] = JSON.parse(historyJSON) || [];
         
         let recentTotal = 0;
         let recentCount = 0;
-        let bestRecord: any = null;
+        let bestRecord: { weight: number; reps: number } | null = null;
         let maxVolume = 0;
         
         const now = Date.now();
         const ninetyDaysMillis = 90 * 24 * 60 * 60 * 1000;
 
-        mainHistory.forEach((session: any) => {
+        mainHistory.forEach((session: WorkoutSession) => {
            const sets = session.sets[exerciseId];
            const sessionDate = new Date(session.date).getTime();
            if (sets && (now - sessionDate < ninetyDaysMillis)) {
-               sets.forEach((serie: any) => {
+               sets.forEach((serie: { done: boolean; reps: number; weight: number }) => {
                    if (serie.done && serie.reps && serie.weight) {
                        const vol = serie.reps * serie.weight;
                        recentTotal += vol;

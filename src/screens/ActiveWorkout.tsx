@@ -61,7 +61,7 @@ import { useAudioCoach } from "../hooks/useAudioCoach";
 import { saveSetLog, saveWorkoutSession, updatePersonalRecord, generateId } from "../db/encryptedDb";
 import { analyzeExerciseTrend, TrendAnalysis } from "../services/trendAnalyzer";
 import { getExerciseCategory } from "../data/exerciseClassifier";
-
+import { preWorkoutSafetyCheck, InjuryRiskReport } from "../services/injuryPredictionEngine";
 import { WorkoutSetRow } from "../components/workout/WorkoutSetRow";
 
 export default function ActiveWorkout({ todayPlan, profile, history, onFinish, onCancel }: any) {
@@ -102,6 +102,16 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   const ftms = useFitnessMachine();
   const { autoSync } = useDeviceStore();
   const syncWorker = React.useRef<Worker | null>(null);
+
+  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskReport | null>(null);
+
+  useEffect(() => {
+    preWorkoutSafetyCheck().then(res => {
+      if (res.overrideRequired) {
+        setInjuryRisk(res.report);
+      }
+    }).catch(e => console.warn('[InjuryPrediction] Erro:', e));
+  }, []);
 
   useEffect(() => {
     try {
@@ -422,6 +432,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
       : 0;
 
     const payload = {
+      id: workoutIdRef.current,
       date: new Date().toISOString(),
       dayLabel: todayPlan.label || 'Treino Livre',
       duration: elapsed,
@@ -442,6 +453,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
 
     // ── IndexedDB: Gravar WorkoutSession ──
     saveWorkoutSession({
+      id: workoutIdRef.current,
       date: Date.now(),
       name: todayPlan.label || 'Treino Livre',
       durationSeconds: elapsed,
@@ -449,7 +461,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
       totalVolumeKg: vol,
       avgRPE,
       isCompleted: true,
-    }).catch(e => console.warn('[IDB] Falha ao gravar WorkoutSession:', e));
+    } as any).catch(e => console.warn('[IDB] Falha ao gravar WorkoutSession:', e));
 
     try {
       if (autoSync && syncWorker.current) {
@@ -523,6 +535,47 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => setConfirmCancel(false)} style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 11, color: C.text, cursor: "pointer", fontWeight: 600 }}>Voltar</button>
                 <button onClick={onCancel} style={{ flex: 1, background: C.red, border: "none", borderRadius: 8, padding: 11, color: "#fff", cursor: "pointer", fontWeight: 700 }}>Sair</button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {injuryRisk && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 24 }}>
+            <div style={{ background: '#1a1f26', border: `2px solid ${injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316'}`, borderRadius: 16, padding: 30, maxWidth: 400, width: "100%" }}>
+              <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                <span style={{ fontSize: 40 }}>{injuryRisk.overallRisk === 'critical' ? '🛑' : '⚠️'}</span>
+                <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 28, color: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316', margin: '10px 0 5px' }}>
+                  RISCO DE LESÃO DETETADO
+                </h2>
+                <p style={{ color: '#94a3b8', fontSize: 14 }}>O sistema de segurança clínica identificou anomalias no teu padrão de treino.</p>
+              </div>
+              
+              <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 8, padding: 16, marginBottom: 20 }}>
+                {injuryRisk.flags.slice(0, 2).map((flag, i) => (
+                  <div key={i} style={{ marginBottom: i === 0 ? 12 : 0, display: 'flex', gap: 10 }}>
+                    <span style={{ color: flag.severity === 'critical' ? '#ef4444' : '#f97316' }}>•</span>
+                    <span style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 1.4 }}>{flag.message}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ color: '#86efac', fontSize: 12, fontWeight: 'bold', marginBottom: 8 }}>RECOMENDAÇÃO CLÍNICA:</p>
+                {injuryRisk.recommendations.map((rec, i) => (
+                  <p key={i} style={{ color: '#cbd5e1', fontSize: 13, margin: '0 0 4px', paddingLeft: 10, borderLeft: '2px solid #86efac' }}>{rec}</p>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: 'column', gap: 10 }}>
+                {injuryRisk.overallRisk !== 'critical' && (
+                  <button onClick={() => setInjuryRisk(null)} style={{ background: 'transparent', border: `1px solid #475569`, borderRadius: 8, padding: 14, color: '#94a3b8', cursor: "pointer", fontWeight: 600, fontSize: 14 }}>
+                    Estou ciente, assumir risco e treinar
+                  </button>
+                )}
+                <button onClick={onCancel} style={{ background: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316', border: "none", borderRadius: 8, padding: 14, color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 16 }}>
+                  {injuryRisk.overallRisk === 'critical' ? 'Aceitar Recomendação e Descansar' : 'Cancelar Treino'}
+                </button>
               </div>
             </div>
           </div>

@@ -69,10 +69,15 @@ export default async function handler(req, res) {
   }
 
   // ── Processar pedido ──
-  const { systemPrompt, userPrompt, maxTokens = 1500 } = req.body;
+  const { systemPrompt, userPrompt, maxTokens = 1500, profile } = req.body;
 
   if (!systemPrompt && !userPrompt) {
     return res.status(400).json({ error: 'Missing prompt: envia systemPrompt e/ou userPrompt.' });
+  }
+
+  let finalSystemPrompt = systemPrompt || 'És o treinador IA do FitTrack, especialista em periodização e biomecânica. Output STRICT JSON.';
+  if (profile?.goal === 'v_taper_aesthetics') {
+    finalSystemPrompt += '\n\nO utilizador tem como objetivo **V-Taper Aesthetics** (estética em V). Prioriza exercícios que aumentem a largura dos ombros (deltoides laterais) e do latíssimo do dorso. Evita exercícios que possam hipertrofiar os oblíquos (ex: flexões laterais com peso). Recomenda a prática diária de Stomach Vacuum para afinar a cintura.';
   }
 
   try {
@@ -87,8 +92,8 @@ export default async function handler(req, res) {
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: maxTokens,
         temperature: 0.3,
-        system: systemPrompt || 'És o treinador IA do FitTrack, especialista em periodização e biomecânica. Output STRICT JSON.',
-        messages: [{ role: 'user', content: userPrompt || systemPrompt }],
+        system: finalSystemPrompt,
+        messages: [{ role: 'user', content: userPrompt || finalSystemPrompt }],
       }),
     });
 

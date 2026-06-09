@@ -3,6 +3,7 @@
 // Usa a biblioteca 'idb' (já instalada) como wrapper tipado sobre o IndexedDB nativo.
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { runMigrations, CURRENT_DB_VERSION } from './migrations';
 
 // ─── INTERFACES DOS MODELOS ──────────────────────────────────────────────────
 
@@ -16,6 +17,9 @@ export interface WorkoutSession {
   totalVolumeKg: number;     // Somatório do peso levantado
   avgRPE?: number;           // RPE médio do treino
   isCompleted: boolean;
+  sleepHours?: number;
+  stressLevel?: number;      // 1-10 auto-reportado
+  preWorkoutRPE?: number;    // Perceived readiness
 }
 
 /** Registo de séries (onde a IA vai buscar os dados reais) */
@@ -30,7 +34,9 @@ export interface SetLog {
   rpe: number;               // Esforço sentido (1-10)
   estimated1RM: number;      // Cálculo automático (peso * (1 + reps/30))
   timestamp: number;
-  // Campo para dados cifrados (quando criptografia activa)
+  tempoSeconds?: number;     // Tempo sob tensão
+  rangeOfMotion?: number;    // % de ROM completo (MediaPipe)
+  barVelocity?: number;      // Velocidade média da barra (m/s)
   encryptedFields?: string;  // Payload cifrado AES-GCM (substitui weightKg/repsCompleted/rpe/estimated1RM)
 }
 
@@ -41,17 +47,31 @@ export interface PersonalRecord {
   bestVolumeWeight: number;  // Maior carga levantada para 10+ reps
   lastTrainedAt: number;     // Data da última vez que fez este exercício
   encryptedFields?: string;  // Payload cifrado (usado também para Avaliações Físicas)
+  streakWeeks?: number;       // Semanas consecutivas com este exercício
+  totalSessions?: number;     // Total de sessões com este exercício
+}
+
+/** NOVO: Métricas de recuperação (HRV, sono, fadiga) */
+export interface RecoveryMetric {
+  id: string;
+  date: number;
+  type: 'hrv' | 'sleep' | 'readiness' | 'soreness' | 'mood';
+  value: number;
+  source: 'manual' | 'bluetooth' | 'apple_health' | 'google_fit';
+  notes?: string;
+  timestamp: number;
 }
 
 // ─── SCHEMA DO INDEXEDDB ─────────────────────────────────────────────────────
 
-interface FitTrackDBSchema extends DBSchema {
+export interface FitTrackDBSchema extends DBSchema {
   workouts: {
     key: string;
     value: WorkoutSession;
     indexes: {
       'by-date': number;
-      'by-completed': string; // IDB não suporta boolean como índice, usamos string 'true'/'false'
+      'by-completed': string;
+      'by-name': string;
     };
   };
   setLogs: {
@@ -61,7 +81,7 @@ interface FitTrackDBSchema extends DBSchema {
       'by-workoutId': string;
       'by-exerciseName': string;
       'by-timestamp': number;
-      'by-exercise-timestamp': [string, number]; // índice composto para queries eficientes
+      'by-exercise-timestamp': [string, number];
     };
   };
   personalRecords: {
@@ -71,32 +91,33 @@ interface FitTrackDBSchema extends DBSchema {
       'by-lastTrained': number;
     };
   };
+  recoveryMetrics: {
+    key: string;
+    value: RecoveryMetric;
+    indexes: {
+      'by-date': number;
+      'by-type': string;
+      'by-date-type': [number, string];
+    };
+  };
 }
 
 // ─── SINGLETON DA BASE DE DADOS ──────────────────────────────────────────────
 
 const DB_NAME = 'FitTrack_V7_Database';
-const DB_VERSION = 1;
 
 let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
 
-/**
- * Obtém a instância singleton da base de dados.
- * Inicializa na primeira chamada, reutiliza nas seguintes.
- */
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<FitTrackDBSchema>(DB_NAME, DB_VERSION, {
-    upgrade(db) {
-      // ── Workouts Store ──
+  dbInstance = await openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
+    async upgrade(db, oldVersion, newVersion) {
       if (!db.objectStoreNames.contains('workouts')) {
         const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
         workoutStore.createIndex('by-date', 'date');
         workoutStore.createIndex('by-completed', 'isCompleted');
       }
-
-      // ── SetLogs Store ──
       if (!db.objectStoreNames.contains('setLogs')) {
         const setLogStore = db.createObjectStore('setLogs', { keyPath: 'id' });
         setLogStore.createIndex('by-workoutId', 'workoutId');
@@ -104,12 +125,12 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
         setLogStore.createIndex('by-timestamp', 'timestamp');
         setLogStore.createIndex('by-exercise-timestamp', ['exerciseName', 'timestamp']);
       }
-
-      // ── PersonalRecords Store ──
       if (!db.objectStoreNames.contains('personalRecords')) {
         const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
         prStore.createIndex('by-lastTrained', 'lastTrainedAt');
       }
+      
+      await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION);
     },
   });
 
@@ -118,12 +139,10 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
 
 // ─── OPERAÇÕES CRUD BÁSICAS ──────────────────────────────────────────────────
 
-/** Gerar UUID compatível com todos os browsers */
 function generateId(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  // Fallback para browsers sem crypto.randomUUID
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -132,7 +151,6 @@ function generateId(): string {
 }
 
 // ── Workouts ──
-
 export async function addWorkoutSession(session: Omit<WorkoutSession, 'id'>): Promise<string> {
   const db = await getDB();
   const id = generateId();
@@ -152,7 +170,6 @@ export async function getAllWorkouts(): Promise<WorkoutSession[]> {
 }
 
 // ── SetLogs ──
-
 export async function addSetLog(setLog: Omit<SetLog, 'id'>): Promise<string> {
   const db = await getDB();
   const id = generateId();
@@ -175,26 +192,17 @@ export async function getRecentSetLogsByExercise(exerciseName: string, limit = 5
   const db = await getDB();
   const tx = db.transaction('setLogs', 'readonly');
   const index = tx.store.index('by-exercise-timestamp');
-  
-  // IDBKeyRange para filtrar por exerciseName (qualquer timestamp)
-  const range = IDBKeyRange.bound(
-    [exerciseName, 0],
-    [exerciseName, Number.MAX_SAFE_INTEGER]
-  );
-  
+  const range = IDBKeyRange.bound([exerciseName, 0], [exerciseName, Number.MAX_SAFE_INTEGER]);
   const results: SetLog[] = [];
-  let cursor = await index.openCursor(range, 'prev'); // 'prev' = mais recentes primeiro
-  
+  let cursor = await index.openCursor(range, 'prev');
   while (cursor && results.length < limit) {
     results.push(cursor.value);
     cursor = await cursor.continue();
   }
-  
   return results;
 }
 
 // ── PersonalRecords ──
-
 export async function getPersonalRecord(exerciseName: string): Promise<PersonalRecord | undefined> {
   const db = await getDB();
   return db.get('personalRecords', exerciseName);
@@ -203,20 +211,18 @@ export async function getPersonalRecord(exerciseName: string): Promise<PersonalR
 export async function upsertPersonalRecord(pr: PersonalRecord): Promise<void> {
   const db = await getDB();
   const existing = await db.get('personalRecords', pr.exerciseName);
-  
   if (!existing) {
     await db.put('personalRecords', pr);
     return;
   }
-  
-  // Só actualiza se for melhor
   const updated: PersonalRecord = {
     exerciseName: pr.exerciseName,
     best1RM: Math.max(existing.best1RM, pr.best1RM),
     bestVolumeWeight: Math.max(existing.bestVolumeWeight, pr.bestVolumeWeight),
     lastTrainedAt: Math.max(existing.lastTrainedAt, pr.lastTrainedAt),
+    streakWeeks: pr.streakWeeks || existing.streakWeeks,
+    totalSessions: (existing.totalSessions || 0) + (pr.totalSessions || 1),
   };
-  
   await db.put('personalRecords', updated);
 }
 
@@ -229,6 +235,42 @@ export async function getAllUniqueExercises(): Promise<string[]> {
   const db = await getDB();
   const keys = await db.getAllKeysFromIndex('setLogs', 'by-exerciseName');
   return Array.from(new Set(keys));
+}
+
+// ── RecoveryMetrics ──
+export async function addRecoveryMetric(metric: Omit<RecoveryMetric, 'id'>): Promise<string> {
+  const db = await getDB();
+  const id = generateId();
+  const record: RecoveryMetric = { ...metric, id };
+  await db.put('recoveryMetrics', record);
+  return id;
+}
+
+export async function getRecoveryMetricsByDateRange(
+  startDate: number,
+  endDate: number,
+  type?: RecoveryMetric['type']
+): Promise<RecoveryMetric[]> {
+  const db = await getDB();
+  if (type) {
+    const tx = db.transaction('recoveryMetrics', 'readonly');
+    const index = tx.store.index('by-date-type');
+    const range = IDBKeyRange.bound([startDate, type], [endDate, type]);
+    return index.getAll(range);
+  }
+  const tx = db.transaction('recoveryMetrics', 'readonly');
+  const index = tx.store.index('by-date');
+  const range = IDBKeyRange.bound(startDate, endDate);
+  return index.getAll(range);
+}
+
+export async function getLatestRecoveryMetric(type: RecoveryMetric['type']): Promise<RecoveryMetric | undefined> {
+  const db = await getDB();
+  const tx = db.transaction('recoveryMetrics', 'readonly');
+  const index = tx.store.index('by-type');
+  const allOfType = await index.getAll(type);
+  if (allOfType.length === 0) return undefined;
+  return allOfType.sort((a, b) => b.timestamp - a.timestamp)[0];
 }
 
 export { generateId };

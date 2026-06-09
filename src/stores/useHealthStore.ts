@@ -17,7 +17,7 @@ interface HealthState {
   lastSyncTimestamp: number | null;
 
   // Ações
-  syncHealthData: (history: any[], forceRefresh?: boolean) => Promise<void>;
+  syncHealthData: (history: WorkoutSession[], forceRefresh?: boolean) => Promise<void>;
   loadFromEncryptedStorage: () => Promise<void>;
   clearData: () => void;
 }
@@ -54,7 +54,7 @@ export const useHealthStore = create<HealthState>((set, get) => ({
     }
   },
 
-  syncHealthData: async (history: any[], forceRefresh = false) => {
+  syncHealthData: async (history: WorkoutSession[], forceRefresh = false) => {
     const now = Date.now();
     const { biometrics, lastSyncTimestamp, loadFromEncryptedStorage } = get();
 

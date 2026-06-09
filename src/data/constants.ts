@@ -11,6 +11,7 @@ export const GOALS = [
     { id: "forca", label: "Força", icon: "🏋️", desc: "Cargas máximas", color: "#e8a44a" },
     { id: "perda_peso", label: "Perda de Peso", icon: "🔥", desc: "Queimar gordura", color: "#3dd68c" },
     { id: "condicionamento", label: "Condicionamento", icon: "⚡", desc: "Resistência", color: "#4a9ee8" },
+    { id: "v_taper_aesthetics", label: "V-Taper Aesthetics", icon: "📐", desc: "Foco em ombros e dorsais", color: "#ccff00" },
 ];
 
 import { EXERCISE_DB } from './exerciseDB';

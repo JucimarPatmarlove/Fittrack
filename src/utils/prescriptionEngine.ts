@@ -31,6 +31,11 @@ export interface ExercisePrescription {
     endurance: { weight: number; reps: number };
     volume: { weight: number; reps: number; setsDelta: number };
   };
+  vTaperModifiers?: {
+    priority: string[];
+    avoid: string[];
+    includeStomachVacuum: boolean;
+  };
 }
 
 export function getPrescription(
@@ -57,6 +62,10 @@ export function getPrescription(
     repsMin = 15; repsMax = 20;
     rpe = 6;
     rest = 45;
+  } else if (gStr === 'v_taper_aesthetics') {
+    repsMin = 10; repsMax = 15;
+    rpe = 8;
+    rest = 60;
   }
 
   // 1.5 Macrocycle Override
@@ -158,6 +167,19 @@ export function getPrescription(
   if (category === 'compound_multi') explanation += ` Este é um exercício composto, por isso a carga pode ser mais elevada.`;
   else if (category === 'isolation_multi') explanation += ` Este é um exercício de isolamento, por isso a carga é naturalmente mais baixa.`;
 
+  let vTaperModifiers;
+  if (goal === 'v_taper_aesthetics') {
+      vTaperModifiers = {
+          priority: ['Ombros', 'Costas'],
+          avoid: ['Oblíquos', 'Quadríceps'],
+          includeStomachVacuum: true
+      };
+      const exNameLower = exerciseName.toLowerCase();
+      if (exNameLower.includes('lateral') || exNameLower.includes('pull') || exNameLower.includes('face')) {
+          explanation += ` Modo V-Taper: Volume focado para maximizar a largura.`;
+      }
+  }
+
   // 6. Séries de aquecimento (apenas para cargas > 0)
   const warmupSets = suggestedWeight > 0 ? [
     { weightPercent: 0.5, reps: Math.min(8, targetReps) },
@@ -178,5 +200,6 @@ export function getPrescription(
       endurance: { weight: enduranceWeight, reps: enduranceReps },
       volume: { weight: volumeWeight, reps: targetReps, setsDelta: volumeSetsDelta },
     },
+    vTaperModifiers,
   };
 }

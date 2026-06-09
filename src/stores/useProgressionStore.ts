@@ -22,7 +22,7 @@ interface ProgressionStore {
   history: ExerciseHistory[];
   exercises: Record<string, ExerciseProgress>;
   getRecommendedReps: (exerciseId: string, currentTargetReps: number) => number;
-  recordSession: (exerciseId: string, sets: any[], targetReps: number) => void;
+  recordSession: (exerciseId: string, sets: { reps: number; weight: number; rpe?: number }[], targetReps: number) => void;
   recordSuccess: (exerciseName: string, repsDone: number, repsTarget: number, rpe: number) => void;
   recordFailure: (exerciseName: string) => void;
   shouldIncrease: (exerciseName: string) => boolean;

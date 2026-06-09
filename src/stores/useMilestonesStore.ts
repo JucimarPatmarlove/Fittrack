@@ -34,7 +34,7 @@ export const useMilestonesStore = create<MilestonesState>()(
   )
 );
 
-export function calculateStreak(history: any[]): number {
+export function calculateStreak(history: WorkoutSession[]): number {
   if (!history || history.length === 0) return 0;
   
   const dates = history.map(w => new Date(w.date).toISOString().split('T')[0]);

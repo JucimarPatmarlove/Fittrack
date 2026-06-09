@@ -29,6 +29,7 @@ export type Goal =
   | 'mobilidade'
   | 'saude_articular'   // Reabilitação, longevidade (seniors)
   | 'perda_de_peso'
+  | 'v_taper_aesthetics'
   | string;             // Compatibilidade com valores legados
 
 /**
