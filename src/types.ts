@@ -62,6 +62,12 @@ export interface UserProfile {
     bodyMeasurements?: BodyMeasurements[];
     startDate?: number;
     weeksActive?: number;
+    // ── Campos Nutricionais (NutritionEngine) ──
+    targetCalories?: number;
+    targetProtein?: number;
+    targetCarb?: number;
+    targetFat?: number;
+    activityLevel?: string;
 }
 
 export interface ExerciseSet {

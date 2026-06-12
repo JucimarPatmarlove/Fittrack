@@ -171,6 +171,138 @@ export async function updatePersonalRecord(
   await rawUpsertPersonalRecord(pr);
 }
 
+// ─── OPERAÇÕES CIFRADAS: Nutrição e Saúde ──────────────────────────────────────
+
+import {
+  DailyMealLog,
+  HydrationLog,
+  WeightLog,
+  getDailyMealLog as rawGetDailyMealLog,
+  upsertDailyMealLog as rawUpsertDailyMealLog,
+  getHydrationLog as rawGetHydrationLog,
+  upsertHydrationLog as rawUpsertHydrationLog,
+  getWeightLog as rawGetWeightLog,
+  upsertWeightLog as rawUpsertWeightLog,
+  getAllWeightLogs as rawGetAllWeightLogs,
+} from './schema';
+
+export async function saveDailyMealLog(log: Omit<DailyMealLog, 'encryptedFields'>): Promise<void> {
+  const key = getMasterKey();
+  if (!key) return rawUpsertDailyMealLog(log);
+
+  const sensitive = {
+    breakfast: log.breakfast,
+    lunch: log.lunch,
+    snack: log.snack,
+    dinner: log.dinner,
+  };
+  const encryptedPayload = await encryptJSON(sensitive, key);
+
+  await rawUpsertDailyMealLog({
+    date: log.date,
+    breakfast: [],
+    lunch: [],
+    snack: [],
+    dinner: [],
+    encryptedFields: encryptedPayload,
+  });
+}
+
+export async function getDailyMealLogDecrypted(date: string): Promise<DailyMealLog | undefined> {
+  const key = getMasterKey();
+  const rawLog = await rawGetDailyMealLog(date);
+  if (!rawLog) return undefined;
+  if (!key || !rawLog.encryptedFields) return rawLog;
+
+  try {
+    const sensitive = await decryptJSON<Omit<DailyMealLog, 'date' | 'encryptedFields'>>(rawLog.encryptedFields, key);
+    return { ...rawLog, ...sensitive };
+  } catch (e) {
+    console.warn('[EncryptedDB] Falha ao decifrar DailyMealLog:', rawLog.date, e);
+    return rawLog;
+  }
+}
+
+export async function saveHydrationLog(log: Omit<HydrationLog, 'encryptedFields'>): Promise<void> {
+  const key = getMasterKey();
+  if (!key) return rawUpsertHydrationLog(log);
+
+  const sensitive = { mlConsumed: log.mlConsumed };
+  const encryptedPayload = await encryptJSON(sensitive, key);
+
+  await rawUpsertHydrationLog({
+    date: log.date,
+    mlConsumed: 0,
+    encryptedFields: encryptedPayload,
+  });
+}
+
+export async function getHydrationLogDecrypted(date: string): Promise<HydrationLog | undefined> {
+  const key = getMasterKey();
+  const rawLog = await rawGetHydrationLog(date);
+  if (!rawLog) return undefined;
+  if (!key || !rawLog.encryptedFields) return rawLog;
+
+  try {
+    const sensitive = await decryptJSON<{ mlConsumed: number }>(rawLog.encryptedFields, key);
+    return { ...rawLog, mlConsumed: sensitive.mlConsumed };
+  } catch (e) {
+    console.warn('[EncryptedDB] Falha ao decifrar HydrationLog:', rawLog.date, e);
+    return rawLog;
+  }
+}
+
+export async function saveWeightLog(log: Omit<WeightLog, 'encryptedFields'>): Promise<void> {
+  const key = getMasterKey();
+  if (!key) return rawUpsertWeightLog(log);
+
+  const sensitive = { weight: log.weight };
+  const encryptedPayload = await encryptJSON(sensitive, key);
+
+  await rawUpsertWeightLog({
+    date: log.date,
+    weight: 0,
+    encryptedFields: encryptedPayload,
+  });
+}
+
+export async function getWeightLogDecrypted(date: string): Promise<WeightLog | undefined> {
+  const key = getMasterKey();
+  const rawLog = await rawGetWeightLog(date);
+  if (!rawLog) return undefined;
+  if (!key || !rawLog.encryptedFields) return rawLog;
+
+  try {
+    const sensitive = await decryptJSON<{ weight: number }>(rawLog.encryptedFields, key);
+    return { ...rawLog, weight: sensitive.weight };
+  } catch (e) {
+    console.warn('[EncryptedDB] Falha ao decifrar WeightLog:', rawLog.date, e);
+    return rawLog;
+  }
+}
+
+export async function getAllWeightLogsDecrypted(): Promise<WeightLog[]> {
+  const key = getMasterKey();
+  const rawLogs = await rawGetAllWeightLogs();
+  
+  if (!key) return rawLogs;
+
+  const decrypted: WeightLog[] = [];
+  for (const log of rawLogs) {
+    if (log.encryptedFields) {
+      try {
+        const sensitive = await decryptJSON<{ weight: number }>(log.encryptedFields, key);
+        decrypted.push({ ...log, weight: sensitive.weight });
+      } catch (e) {
+        decrypted.push(log);
+      }
+    } else {
+      decrypted.push(log);
+    }
+  }
+  return decrypted;
+}
+
 // ─── RE-EXPORTS ──────────────────────────────────────────────────────────────
 
 export {

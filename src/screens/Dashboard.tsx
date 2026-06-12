@@ -30,6 +30,7 @@ import { PhaseCard } from '../components/dashboard/PhaseCard';
 import { VTaperWidget } from '../components/dashboard/VTaperWidget';
 import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
 import { DemographicEngine } from '../services/demographicEngine';
+import { NutritionDashboardSection } from '../components/dashboard/NutritionDashboardSection';
 
 export default function Dashboard({ profile, setProfile, history, onStartWorkout }: any) {
   const [showAssessment, setShowAssessment] = React.useState(!profile?.anamnesis);
@@ -231,6 +232,8 @@ export default function Dashboard({ profile, setProfile, history, onStartWorkout
           </div>
         </GlassCard>
       )}
+
+      <NutritionDashboardSection profile={profile} />
 
       {/* Cycle Tracker - só para perfil female_cycle_synced */}
       {demoFeatures.showCycleTracker && <CycleTracker />}

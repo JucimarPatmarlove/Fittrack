@@ -62,6 +62,40 @@ export interface RecoveryMetric {
   timestamp: number;
 }
 
+/** NUTRIÇÃO: Item de Refeição */
+export interface MealItem {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carb: number;
+  fat: number;
+}
+
+/** NUTRIÇÃO: Registo Diário de Refeições */
+export interface DailyMealLog {
+  date: string; // YYYY-MM-DD
+  breakfast: MealItem[];
+  lunch: MealItem[];
+  snack: MealItem[];
+  dinner: MealItem[];
+  encryptedFields?: string; // Para Zero Trust
+}
+
+/** NUTRIÇÃO: Hidratação Diária */
+export interface HydrationLog {
+  date: string; // YYYY-MM-DD
+  mlConsumed: number;
+  encryptedFields?: string; // Para Zero Trust
+}
+
+/** NUTRIÇÃO: Histórico de Peso Corporal */
+export interface WeightLog {
+  date: string; // YYYY-MM-DD
+  weight: number; // kg
+  encryptedFields?: string; // Para Zero Trust
+}
+
 // ─── SCHEMA DO INDEXEDDB ─────────────────────────────────────────────────────
 
 export interface FitTrackDBSchema extends DBSchema {
@@ -99,6 +133,18 @@ export interface FitTrackDBSchema extends DBSchema {
       'by-type': string;
       'by-date-type': [number, string];
     };
+  };
+  meals: {
+    key: string;
+    value: DailyMealLog;
+  };
+  hydration: {
+    key: string;
+    value: HydrationLog;
+  };
+  weightHistory: {
+    key: string;
+    value: WeightLog;
   };
 }
 
@@ -271,6 +317,42 @@ export async function getLatestRecoveryMetric(type: RecoveryMetric['type']): Pro
   const allOfType = await index.getAll(type);
   if (allOfType.length === 0) return undefined;
   return allOfType.sort((a, b) => b.timestamp - a.timestamp)[0];
+}
+
+// ── Nutrição e Saúde ──
+export async function getDailyMealLog(date: string): Promise<DailyMealLog | undefined> {
+  const db = await getDB();
+  return db.get('meals', date);
+}
+
+export async function upsertDailyMealLog(log: DailyMealLog): Promise<void> {
+  const db = await getDB();
+  await db.put('meals', log);
+}
+
+export async function getHydrationLog(date: string): Promise<HydrationLog | undefined> {
+  const db = await getDB();
+  return db.get('hydration', date);
+}
+
+export async function upsertHydrationLog(log: HydrationLog): Promise<void> {
+  const db = await getDB();
+  await db.put('hydration', log);
+}
+
+export async function getWeightLog(date: string): Promise<WeightLog | undefined> {
+  const db = await getDB();
+  return db.get('weightHistory', date);
+}
+
+export async function upsertWeightLog(log: WeightLog): Promise<void> {
+  const db = await getDB();
+  await db.put('weightHistory', log);
+}
+
+export async function getAllWeightLogs(): Promise<WeightLog[]> {
+  const db = await getDB();
+  return db.getAll('weightHistory');
 }
 
 export { generateId };

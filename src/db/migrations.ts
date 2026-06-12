@@ -2,7 +2,7 @@
 import { IDBPDatabase } from 'idb';
 import { FitTrackDBSchema } from './schema';
 
-export const CURRENT_DB_VERSION = 2;
+export const CURRENT_DB_VERSION = 3;
 
 interface Migration {
   version: number;
@@ -32,6 +32,21 @@ const migrations: Migration[] = [
       }
     },
   },
+  {
+    version: 3,
+    name: 'Adiciona meals, hydration, weightHistory',
+    up: (db) => {
+      if (!db.objectStoreNames.contains('meals')) {
+        db.createObjectStore('meals', { keyPath: 'date' });
+      }
+      if (!db.objectStoreNames.contains('hydration')) {
+        db.createObjectStore('hydration', { keyPath: 'date' });
+      }
+      if (!db.objectStoreNames.contains('weightHistory')) {
+        db.createObjectStore('weightHistory', { keyPath: 'date' });
+      }
+    },
+  },
 ];
 
 export async function runMigrations(
@@ -55,7 +70,7 @@ export async function checkSchemaHealth(): Promise<{
 }> {
   const { getDB } = await import('./schema');
   const db = await getDB();
-  const expected = ['workouts', 'setLogs', 'personalRecords', 'recoveryMetrics'];
+  const expected = ['workouts', 'setLogs', 'personalRecords', 'recoveryMetrics', 'meals', 'hydration', 'weightHistory'];
   const missing = expected.filter((s: string) => !db.objectStoreNames.contains(s as any));
   return {
     healthy: missing.length === 0,
@@ -64,3 +79,4 @@ export async function checkSchemaHealth(): Promise<{
     missingStores: missing,
   };
 }
+

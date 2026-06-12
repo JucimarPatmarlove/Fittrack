@@ -23,6 +23,9 @@ import { PostWorkoutFeedback } from "./components/workout/PostWorkoutFeedback";
 import { PredictiveChallenges } from "./services/predictiveChallenges";
 import { RewardsStore } from "./screens/RewardsStore";
 import { FreeWorkoutBuilder } from "./components/workout/FreeWorkoutBuilder";
+import NutritionPlanner from './screens/NutritionPlanner';
+import { useNutritionStore } from './stores/useNutritionStore';
+import { getTodayDateString } from './services/nutritionEngine';
 
 // Componentes Pesados - Code Splitting
 const Dashboard = lazy(() => import('./screens/Dashboard'));
@@ -249,6 +252,16 @@ export default function App() {
             {view === "gymvibe" && <motion.div key="gymvibe" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><GymVibe profile={profile} /></motion.div>}
             {view === "milestones" && <motion.div key="milestones" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Milestones history={history} /></motion.div>}
             {view === "cyclereview" && <motion.div key="cyclereview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} /></motion.div>}
+            {view === "nutrition" && <motion.div key="nutrition" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
+              <NutritionPlanner 
+                profile={profile} 
+                meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as any} 
+                onUpdateProfile={(p) => setProfile({ ...profile, ...p })} 
+                onAddMealItem={(type, item) => useNutritionStore.getState().addMeal(getTodayDateString(), type, item as any)} 
+                onRemoveMealItem={(type, id) => useNutritionStore.getState().removeMeal(getTodayDateString(), type, id)} 
+                currentDate={getTodayDateString()} 
+              />
+            </motion.div>}
             {view === "devices" && <motion.div key="devices" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><DeviceManager /></motion.div>}
             {view === "rewards" && <motion.div key="rewards" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><RewardsStore onClose={() => setView("dashboard")} /></motion.div>}
             {view === "backup" && <motion.div key="backup" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><BackupScreen /></motion.div>}
