@@ -46,11 +46,13 @@ const LoadingFallback = () => (
 
 export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const isFirstTime = !localStorage.getItem('fit_profile');
+  // Marca persistente que sobrevive à migração de encriptação
+  // O antigo check 'fit_profile' falhava porque a migração remove essa chave do localStorage
+  const isFirstTime = !localStorage.getItem('fittrack_initialized');
 
   const [view, setView] = useState("dashboard"); // "dashboard", "workout", "settings", "assessment", "guide", "feedback", "history"
-  const [profile, setProfile] = useLS<UserProfile>("fit_profile", { name: "Atleta", goal: "hipertrofia", level: "beginner", weight: 70, xp: 0 } as UserProfile, ProfileSchema);
-  const [history, setHistory] = useLS<WorkoutSession[]>("fit_history", [], HistorySchema);
+  const [profile, setProfile] = useLS<UserProfile>("fit_profile", { name: "Atleta", goal: "hipertrofia", level: "beginner", weight: 70, xp: 0 } as UserProfile, ProfileSchema, isUnlocked);
+  const [history, setHistory] = useLS<WorkoutSession[]>("fit_history", [], HistorySchema, isUnlocked);
   const [currentPlan, setCurrentPlan] = useState<WorkoutPlan | string | null>(null);
   const [workoutData, setWorkoutData] = useState<WorkoutSession | null>(null);
   const [showClubModal, setShowClubModal] = useState(false);
@@ -174,6 +176,7 @@ export default function App() {
   const handleReset = () => {
     setHistory([]);
     setProfile({ name: "Atleta", goal: "hipertrofia", level: "beginner", weight: 70, xp: 0 });
+    localStorage.removeItem('fittrack_initialized'); // Permite re-onboarding após reset total
     setView("dashboard");
   };
 

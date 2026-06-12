@@ -6,10 +6,12 @@ import { getMasterKey, encryptData, decryptData } from '../utils/cryptoEngine';
 export { useGhostMode } from './useGhostMode';
 
 // Hook para Persistência Híbrida (IDB + LS) com suporte a Encriptação Zero Trust
-export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((prev: T) => T)) => void] {
+export function useLS<T>(key: string, def: T, validator?: any, ready = true): [T, (val: T | ((prev: T) => T)) => void] {
     const [v, sv] = useState<T>(def);
 
     useEffect(() => {
+        if (!ready) return; // Espera até o masterKey estar disponível (após desbloqueio)
+
         const load = async () => {
             try {
                 const mk = getMasterKey();
@@ -50,7 +52,7 @@ export function useLS<T>(key: string, def: T, validator?: any): [T, (val: T | ((
             }
         };
         load();
-    }, [key, validator]);
+    }, [key, validator, ready]);
 
     const set = useCallback((val: T | ((prev: T) => T)) => {
         sv(prev => {
