@@ -15,8 +15,8 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
     },
-    // Excluir node_modules e dist
-    exclude: ['**/node_modules/**', '**/dist/**', '**/dev-dist/**'],
+    // Excluir node_modules e dist e testes e2e do Playwright
+    exclude: ['**/node_modules/**', '**/dist/**', '**/dev-dist/**', 'tests/e2e/**'],
     // Coverage com v8
     coverage: {
       provider: 'v8',

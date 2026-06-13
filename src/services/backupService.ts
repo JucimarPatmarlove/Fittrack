@@ -57,11 +57,20 @@ export async function exportEncryptedBackup(): Promise<Blob> {
     req.onerror = () => reject('Erro ao aceder ao IDB do Zustand');
   });
 
+  // NOVO: Ler idb-keyval (fit_history, fit_profile, etc)
+  const { entries } = await import('idb-keyval');
+  const idbKeyvals = await entries();
+  const idbData: Record<string, any> = {};
+  for (const [k, v] of idbKeyvals) {
+    idbData[k as string] = v;
+  }
+
   const exportData = {
     version: 'v1',
     timestamp: Date.now(),
     indexeddb: { workouts, setLogs, personalRecords },
     zustand: zustandState,
+    idbKeyval: idbData,
   };
 
   const jsonString = JSON.stringify(exportData);
@@ -112,6 +121,14 @@ export async function importEncryptedBackup(encryptedBlob: Blob): Promise<void> 
     };
     req.onerror = () => reject('Erro ao aceder ao IDB do Zustand no restore');
   });
+
+  // 3. Restaurar idb-keyval
+  if (data.idbKeyval) {
+    const { set } = await import('idb-keyval');
+    for (const [k, v] of Object.entries(data.idbKeyval)) {
+      await set(k, v);
+    }
+  }
 
   // Recarregar a página para re-hidratar os stores
   window.location.reload();

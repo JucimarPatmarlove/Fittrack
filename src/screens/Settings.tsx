@@ -4,12 +4,23 @@ import { useLS } from "../hooks";
 import { sanitizeText } from "../utils/sanitize";
 import { HealthSyncSettings } from "../components/settings/HealthSyncSettings";
 
-export default function Settings({ profile, setProfile, onReset }: any) {
-  const exportBackup = () => {
+interface SettingsProps {
+  profile: any;
+  setProfile: (p: any) => void;
+  onReset: () => void;
+}
+
+export default function Settings({ profile, setProfile, onReset }: SettingsProps) {
+  const exportBackup = async () => {
+      const { get } = await import('idb-keyval');
+      const profileData = await get('fit_profile') || JSON.parse(localStorage.getItem('fit_profile') || '{}');
+      const historyData = await get('fit_history') || JSON.parse(localStorage.getItem('fit_history') || '[]');
+      const challengesData = await get('fit_challenges') || JSON.parse(localStorage.getItem('fit_challenges') || '[]');
+      
       const data = {
-          profile: JSON.parse(localStorage.getItem('fit_profile') || '{}'),
-          history: JSON.parse(localStorage.getItem('fit_history') || '[]'),
-          challenges: JSON.parse(localStorage.getItem('fit_challenges') || '[]')
+          profile: profileData,
+          history: historyData,
+          challenges: challengesData
       };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);

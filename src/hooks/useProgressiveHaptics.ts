@@ -1,5 +1,14 @@
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
+
 export const useProgressiveHaptics = () => {
     const triggerRestTimerHaptic = (secondsRemaining: number) => {
+        if (Capacitor.isNativePlatform()) {
+            if (secondsRemaining === 3) Haptics.impact({ style: ImpactStyle.Light });
+            else if (secondsRemaining === 1) Haptics.impact({ style: ImpactStyle.Medium });
+            else if (secondsRemaining === 0) Haptics.impact({ style: ImpactStyle.Heavy });
+            return;
+        }
         if (!navigator.vibrate) return;
 
         if (secondsRemaining === 3) {
@@ -12,6 +21,11 @@ export const useProgressiveHaptics = () => {
     };
 
     const triggerRepCompletionHaptic = (isPR: boolean) => {
+        if (Capacitor.isNativePlatform()) {
+            if (isPR) Haptics.impact({ style: ImpactStyle.Heavy });
+            else Haptics.impact({ style: ImpactStyle.Light });
+            return;
+        }
         if (!navigator.vibrate) return;
         
         if (isPR) {

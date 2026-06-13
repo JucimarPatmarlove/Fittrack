@@ -3,6 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateReadinessScore } from '../recoveryEngine';
 import * as schemaDb from '../../db/schema';
 
+// ─── INJETA O MOCK DO BROWSER AQUI ───
+globalThis.IDBKeyRange = {
+  bound: vi.fn(),
+  lowerBound: vi.fn(),
+  upperBound: vi.fn(),
+  only: vi.fn(),
+} as any;
+// ─────────────────────────────────────
+
 vi.mock('../../db/schema', () => ({
   getRecoveryMetricsByDateRange: vi.fn(),
   getDB: vi.fn(),

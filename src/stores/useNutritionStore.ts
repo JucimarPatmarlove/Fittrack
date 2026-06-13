@@ -16,6 +16,12 @@ interface NutritionState {
   weightHistory: WeightLog[];
   isLoading: boolean;
   
+  // Novas propriedades pedidas pelo Dashboard
+  profile: any;
+  meals: DailyMealLog[];
+  hydration: HydrationLog[];
+  currentDate: string;
+  
   // Actions
   loadNutritionData: (date: string) => Promise<void>;
   addMeal: (date: string, mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', meal: MealItem) => Promise<void>;
@@ -23,6 +29,11 @@ interface NutritionState {
   updateHydration: (date: string, ml: number) => Promise<void>;
   addWeightLog: (date: string, weight: number) => Promise<void>;
   loadAllWeightLogs: () => Promise<void>;
+  
+  // Aliases e Novas Actions pedidas pelo Dashboard
+  setCurrentDate: (date: string) => void;
+  setWeight: (weight: number) => Promise<void>;
+  addWater: (amountMl: number) => Promise<void>;
 }
 
 const createEmptyMealLog = (date: string): DailyMealLog => ({
@@ -33,11 +44,32 @@ const createEmptyMealLog = (date: string): DailyMealLog => ({
   dinner: []
 });
 
+const getProfileSafe = () => {
+  try {
+    const p = JSON.parse(localStorage.getItem('fittrack_profile') || '{}');
+    return {
+      weight: 75, height: 175, age: 30, gender: "male",
+      goal: "maintain", activityLevel: "moderate",
+      targetCalories: 2300, targetProtein: 140, targetCarb: 270, targetFat: 68,
+      ...p
+    };
+  } catch(e) {
+    return { weight: 75, targetCalories: 2300, targetProtein: 140, targetCarb: 270, targetFat: 68 };
+  }
+};
+
 export const useNutritionStore = create<NutritionState>((set, get) => ({
   currentMealLog: null,
   currentHydration: null,
   weightHistory: [],
   isLoading: false,
+  
+  profile: getProfileSafe(),
+  meals: [],
+  hydration: [],
+  currentDate: new Date().toISOString().split('T')[0],
+
+  setCurrentDate: (date: string) => set({ currentDate: date }),
 
   loadNutritionData: async (date: string) => {
     set({ isLoading: true });
@@ -47,9 +79,14 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
         getHydrationLogDecrypted(date)
       ]);
       
+      const loadedMeal = mealLog || createEmptyMealLog(date);
+      const loadedHydration = hydrationLog || { date, mlConsumed: 0 };
+      
       set({ 
-        currentMealLog: mealLog || createEmptyMealLog(date),
-        currentHydration: hydrationLog || { date, mlConsumed: 0 },
+        currentMealLog: loadedMeal,
+        currentHydration: loadedHydration,
+        meals: [loadedMeal],
+        hydration: [loadedHydration],
         isLoading: false
       });
     } catch (err) {
@@ -73,9 +110,8 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     
     await saveDailyMealLog(updatedLog);
     
-    // Se a data alterada for a data atual no state, atualiza o state
     if (state.currentMealLog?.date === date) {
-      set({ currentMealLog: updatedLog });
+      set({ currentMealLog: updatedLog, meals: [updatedLog] });
     }
   },
 
@@ -95,7 +131,7 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     await saveDailyMealLog(updatedLog);
     
     if (state.currentMealLog?.date === date) {
-      set({ currentMealLog: updatedLog });
+      set({ currentMealLog: updatedLog, meals: [updatedLog] });
     }
   },
 
@@ -115,15 +151,13 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     await saveHydrationLog(updatedLog);
     
     if (state.currentHydration?.date === date) {
-      set({ currentHydration: updatedLog });
+      set({ currentHydration: updatedLog, hydration: [updatedLog] });
     }
   },
 
   addWeightLog: async (date: string, weight: number) => {
     const newLog = { date, weight };
     await saveWeightLog(newLog);
-    
-    // Atualiza history e recarrega
     await get().loadAllWeightLogs();
   },
 
@@ -132,7 +166,21 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
       const logs = await getAllWeightLogsDecrypted();
       set({ weightHistory: logs.sort((a, b) => a.date.localeCompare(b.date)) });
     } catch (err) {
-      console.error('[NutritionStore] Erro ao carregar histórico de peso:', err);
+      console.error('[NutritionStore] Erro ao carregar histórico:', err);
     }
+  },
+
+  // Aliases para o Dashboard
+  addWater: async (amountMl: number) => {
+    await get().updateHydration(get().currentDate, amountMl);
+  },
+
+  setWeight: async (weight: number) => {
+    const currentProfile = get().profile;
+    const updatedProfile = { ...currentProfile, weight };
+    localStorage.setItem('fittrack_profile', JSON.stringify(updatedProfile));
+    set({ profile: updatedProfile });
+    
+    await get().addWeightLog(get().currentDate, weight);
   }
 }));

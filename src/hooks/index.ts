@@ -4,9 +4,11 @@ import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 import { getMasterKey, encryptData, decryptData } from '../utils/cryptoEngine';
 export { useGhostMode } from './useGhostMode';
+export { useFitnessData } from './useFitnessData';
 
 // Hook para Persistência Híbrida (IDB + LS) com suporte a Encriptação Zero Trust
-export function useLS<T>(key: string, def: T, validator?: any, ready = true): [T, (val: T | ((prev: T) => T)) => void] {
+// idbOnly=true: dados pesados (fit_history) escrevem APENAS no IDB, não no localStorage (evita bloqueio síncrono e limite de 5-10MB)
+export function useLS<T>(key: string, def: T, validator?: any, ready = true, idbOnly = false): [T, (val: T | ((prev: T) => T)) => void] {
     const [v, sv] = useState<T>(def);
 
     useEffect(() => {
@@ -66,7 +68,11 @@ export function useLS<T>(key: string, def: T, validator?: any, ready = true): [T
                     if (mk) {
                         toSave = await encryptData(mk, toSave);
                     }
-                    localStorage.setItem(key, toSave);
+                    // Para dados pesados (idbOnly=true): escrita exclusiva no IDB
+                    // Evita bloqueio síncrono do localStorage e o limite de 5-10MB
+                    if (!idbOnly) {
+                        localStorage.setItem(key, toSave);
+                    }
                     idbSet(key, toSave).catch(() => { });
                 } catch (e) {
                     console.error("Save error", e);
@@ -90,12 +96,39 @@ export function useWakeLock(on: boolean) {
     }, [on]);
 }
 
-// Hook de Beep para o temporizador
+// Hook de Beep para o temporizador (com fix de autoplay policy)
+// O AudioContext só é criado/resumed após interação do utilizador via initAudio().
+// Navegadores modernos bloqueiam AudioContext.resume() sem user gesture.
 export function useBeep() {
     const ctx = useRef<AudioContext | null>(null);
+    const [isReady, setIsReady] = useState(false);
+
+    // Deve ser chamado dentro de um handler de evento do utilizador (onClick, etc.)
+    const initAudio = useCallback(() => {
+        try {
+            if (!ctx.current) {
+                ctx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+            if (ctx.current.state === 'suspended') {
+                ctx.current.resume().then(() => setIsReady(true));
+            } else {
+                setIsReady(true);
+            }
+        } catch {
+            console.warn('[useBeep] AudioContext não suportado neste browser.');
+        }
+    }, []);
+
     const beep = useCallback((f = 880, d = 0.13, v = 0.3) => {
         try {
-            if (!ctx.current) ctx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            if (!ctx.current) {
+                // Fallback: criar e tentar resumir (pode falhar sem interação)
+                ctx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+            // Tentar resumir caso esteja suspenso (browsers exigem user gesture)
+            if (ctx.current.state === 'suspended') {
+                ctx.current.resume().catch(() => {});
+            }
             const o = ctx.current.createOscillator(), g = ctx.current.createGain();
             o.connect(g); g.connect(ctx.current.destination);
             o.frequency.value = f; g.gain.value = v; o.start(); o.stop(ctx.current.currentTime + d);
@@ -108,7 +141,7 @@ export function useBeep() {
         setTimeout(() => beep(698, 0.22), 330);
     }, [beep]);
 
-    return { beep, done };
+    return { beep, done, initAudio, isReady };
 }
 
 // Hook de cronômetro

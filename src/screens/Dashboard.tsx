@@ -1,385 +1,311 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Flame, Droplet, Sparkles, TrendingUp, UtensilsCrossed, Activity, TrendingDown } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from "recharts";
+import { useNutritionStore } from "../stores/useNutritionStore";
+import { TrendDashboardSection } from "../components/dashboard/TrendDashboardSection"; // Componente ACWR
+import { P2PSyncModal } from "../components/social/P2PSyncModal";
+import { getTodayDateString } from "../services/nutritionEngine";
+import { EmptyState } from "../components/ui/EmptyState";
 import { motion } from "framer-motion";
-import { C, GOALS, WORKOUT_PLANS } from "../data/constants";
-import { NextWorkoutSuggestion } from "../components/workout/NextWorkoutSuggestion";
-import { useChallenges } from "../hooks/useChallenges";
-import { ActiveChallenges } from "../components/challenges/ActiveChallenges";
-import { WeekCalendar } from "../components/dashboard/WeekCalendar";
-import { RecoveryRing } from '../components/stats/RecoveryRing';
-import { RecoveryRoulette } from '../components/dashboard/RecoveryRoulette';
-import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
-import { TrendWidget } from '../components/dashboard/TrendWidget';
-import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
-import { CycleTracker } from '../components/dashboard/CycleTracker';
-import { VirtualPet } from '../components/dashboard/VirtualPet';
-import { analyzeInjuryRisk, InjuryAssessment } from '../services/injuryPredictor';
-import { getCurrentLevel, LEVEL_THRESHOLDS } from '../services/gamificationEngine';
-import { calculateReadinessScore, ReadinessSnapshot } from '../services/recoveryEngine';
-import { useHealthStore } from '../stores/useHealthStore';
-import { calculateRecovery } from "../data/utils";
-import { AnthropicService } from "../services/anthropicService";
-import { GymVibeWidget } from "../components/social/GymVibeWidget";
-import { WeeklyPlanGenerator } from "../components/workout/WeeklyPlanGenerator";
-import { usePlanStore } from "../stores/usePlanStore";
-import { getMissedDays, getCurrentStreak } from '../utils/missedDaysDetector';
-import { GlobalBackground } from "../components/ui/GlobalBackground";
-import { GlassCard } from "../components/ui/GlassCard";
-import { GradientButton } from "../components/ui/GradientButton";
-import { WatchSyncIndicator } from "../components/WatchSyncIndicator";
-import { PhaseCard } from '../components/dashboard/PhaseCard';
-import { VTaperWidget } from '../components/dashboard/VTaperWidget';
-import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
-import { DemographicEngine } from '../services/demographicEngine';
-import { NutritionDashboardSection } from '../components/dashboard/NutritionDashboardSection';
 
-export default function Dashboard({ profile, setProfile, history, onStartWorkout }: any) {
-  const [showAssessment, setShowAssessment] = React.useState(!profile?.anamnesis);
-  const { challenges, setChallenges } = useChallenges(history);
+export default function Dashboard({ history = [], onStartWorkout }: { history?: any[], onStartWorkout?: any }) {
+  const { profile, meals, hydration, weightHistory, currentDate, addWater, setWeight, loadNutritionData, loadAllWeightLogs, setCurrentDate } = useNutritionStore();
+  const [quickWeight, setQuickWeight] = useState(profile.weight?.toString() || "75");
+  const [showP2P, setShowP2P] = useState(false);
+
+  // Carregar dados no mount
+  useEffect(() => {
+    const today = getTodayDateString();
+    setCurrentDate(today);
+    loadNutritionData(today);
+    loadAllWeightLogs();
+  }, [loadNutritionData, loadAllWeightLogs, setCurrentDate]);
+
+  const caloriesBurned = 350; // Mock: Aqui podes ligar ao teu useWorkoutStore
   
-  const goal = GOALS.find(g => g.id === profile.goal);
-  
-  const levelInfo = getCurrentLevel(profile.xp || 0);
-  const nextLevelInfo = LEVEL_THRESHOLDS.find(t => t.level === levelInfo.level + 1) || { xpRequired: levelInfo.xpRequired + 10000 };
-  const currentLevelXP = levelInfo.xpRequired;
-  const nextLevelXP = nextLevelInfo.xpRequired;
-  const progressPct = Math.min(100, (((profile.xp || 0) - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
-  
-  const currentPlan = usePlanStore((s) => s.currentPlan);
+  const todayMealLog = meals.find((m: any) => m.date === currentDate);
+  let caloriesConsumed = 0, proteinsConsumed = 0, carbsConsumed = 0, fatsConsumed = 0;
 
-  const { readinessScore: oldReadiness, isSyncing, syncHealthData } = useHealthStore();
-  const [readiness, setReadiness] = React.useState<ReadinessSnapshot | null>(null);
-
-  React.useEffect(() => {
-    calculateReadinessScore().then(setReadiness).catch(console.warn);
-  }, []);
-
-  React.useEffect(() => {
-    syncHealthData(history, false);
-  }, [history, syncHealthData]);
-
-  const recoveryData = calculateRecovery(history, profile.goal);
-
-  // Perfil demográfico
-  const demographicProfile = DemographicEngine.getProfileType(
-    profile.age || 30,
-    profile.gender || 'other',
-    profile.wantsCycleSyncing || false
-  );
-  const demoFeatures = DemographicEngine.getFeatures(demographicProfile);
-
-  const [isGenerating, setIsGenerating] = React.useState(false);
-  const [forgivenessAlert, setForgivenessAlert] = React.useState<{forgiven: boolean, remainingMinutes: number} | null>(null);
-  const [aiReportModal, setAiReportModal] = React.useState<{reasoning: string, workout: any} | null>(null);
-  const [showWeeklyPlan, setShowWeeklyPlan] = React.useState(false);
-  const [injuryData, setInjuryData] = React.useState<InjuryAssessment | null>(null);
-
-  React.useEffect(() => {
-    const loadRisk = async () => {
-      const userId = profile?.id || 'default';
-      const risk = await analyzeInjuryRisk(userId, demographicProfile);
-      setInjuryData(risk);
-    };
-    loadRisk();
-  }, [demographicProfile, profile]);
-
-  React.useEffect(() => {
-     if (history.length === 0) return;
-     const lastWorkoutDateObj = new Date(history[0].date);
-     const lastWorkout = lastWorkoutDateObj.toISOString().split('T')[0];
-     const today = new Date().toISOString().split('T')[0];
-
-     if (lastWorkout !== today) {
-         const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-         if (lastWorkout !== yesterday && lastWorkoutDateObj.getTime() > Date.now() - 48 * 60 * 60 * 1000) {
-             const now = new Date();
-             const hoursSinceMidnight = now.getHours() + now.getMinutes() / 60;
-             if (hoursSinceMidnight < 6) {
-                 setForgivenessAlert({ forgiven: true, remainingMinutes: Math.floor((6 - hoursSinceMidnight) * 60) });
-             }
-         }
-     }
-
-     const handleOpenWeeklyPlan = () => setShowWeeklyPlan(true);
-     window.addEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
-     return () => window.removeEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
-  }, [history]);
-
-  const recentTopExercises = React.useMemo(() => {
-    const freq = new Map();
-    history.forEach((w: any) => {
-      w.exercises.forEach((ex: any) => freq.set(ex.name, (freq.get(ex.name) || 0) + 1));
-    });
-    return Array.from(freq.entries()).sort((a: any, b: any) => b[1] - a[1]).slice(0, 6).map(([name]) => name);
-  }, [history]);
-
-  const plannedDays = profile?.trainingDays?.map((d: any) => Number(d)) || [];
-  const missedRecent = React.useMemo(() => getMissedDays(history, plannedDays, 3), [history, plannedDays]);
-  const streak = React.useMemo(() => getCurrentStreak(history), [history]);
-
-  const handleAIGeneration = async () => {
-    if (history.length < 3) {
-      alert("🔒 A Inteligência Artificial precisa de conhecer-te! Completa mais " + (3 - history.length) + " treinos para analisarmos a tua fadiga.");
-      return;
-    }
-    
-    setIsGenerating(true);
-    const generatedData = await AnthropicService.generateWorkout(profile, recoveryData, history);
-    setIsGenerating(false);
-    
-    if (generatedData && generatedData.exercises && generatedData.reasoning) {
-        setAiReportModal({ reasoning: generatedData.reasoning, workout: generatedData.exercises });
-    } else if (generatedData) {
-        // Fallback p/ versão antiga
-        onStartWorkout(generatedData.exercises || generatedData);
-    }
-  };
-
-  const acceptAIWorkout = () => {
-     if (aiReportModal) onStartWorkout(aiReportModal.workout);
-     setAiReportModal(null);
-  };
-
-  const handleChallengeComplete = (id: string) => {
-      const updated = challenges.map(c => {
-          if (c.id === id) {
-              setProfile((p: any) => ({ ...p, xp: (p.xp || 0) + c.xpReward }));
-              return { ...c, status: 'completed' as const };
-          }
-          return c;
-      });
-      setChallenges(updated);
-  };
-
-  if (showAssessment) {
-    return <FitnessAssessment onComplete={(data: any) => { setProfile({ ...profile, ...data }); setShowAssessment(false); }} />;
+  if (todayMealLog) {
+    const allMealItems = [...todayMealLog.breakfast, ...todayMealLog.lunch, ...todayMealLog.snack, ...todayMealLog.dinner];
+    caloriesConsumed = allMealItems.reduce((sum: number, item: any) => sum + item.calories, 0);
+    proteinsConsumed = allMealItems.reduce((sum: number, item: any) => sum + item.protein, 0);
+    carbsConsumed = allMealItems.reduce((sum: number, item: any) => sum + item.carb, 0);
+    fatsConsumed = allMealItems.reduce((sum: number, item: any) => sum + item.fat, 0);
   }
 
+  const targetCal = profile.targetCalories || 2300;
+  const remainingCalories = Math.max(0, targetCal - caloriesConsumed + caloriesBurned);
+  const calorieProgressPercent = Math.min(100, Math.round((caloriesConsumed / targetCal) * 100));
+
+  const todayWater = hydration.find((h: any) => h.date === currentDate)?.mlConsumed || 0;
+  const waterTarget = 2500;
+  const waterProgressPercent = Math.min(100, Math.round((todayWater / waterTarget) * 100));
+
+  const handleWeightSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = parseFloat(quickWeight);
+    if (!isNaN(parsed) && parsed > 0) setWeight(parsed);
+  };
+
+  // Detetar se o sistema está vazio (primeiro uso / após factory reset)
+  const isSystemEmpty = !todayMealLog && weightHistory.length === 0 && history.length === 0;
+
+  // Gráfico de calorias: dados reais dos últimos 7 dias (sem mock random)
+  const chartDataCal = React.useMemo(() => {
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+      const dateString = d.toISOString().split("T")[0];
+      const label = dateString.split("-").slice(1).reverse().join("/");
+      const dayLog = meals.find((m: any) => m.date === dateString);
+      let dayCal = 0, dayBurned = 0;
+      if (dayLog) {
+        const items = [...dayLog.breakfast, ...dayLog.lunch, ...dayLog.snack, ...dayLog.dinner];
+        dayCal = items.reduce((s: number, it: any) => s + it.calories, 0);
+      }
+      // Calorias queimadas: usar histórico de treinos se disponível
+      const dayWorkouts = history.filter((w: any) => w.date === dateString || w.startTime?.startsWith(dateString));
+      if (dayWorkouts.length > 0) {
+        dayBurned = dayWorkouts.reduce((s: number, w: any) => s + (w.totalCalories || w.caloriesBurned || 0), 0);
+      }
+      return { name: label, Consumidas: dayCal, Gastas: dayBurned };
+    });
+  }, [meals, history]);
+
+  const chartDataWeight = weightHistory.length === 0 
+    ? [{ name: "Hoje", peso: profile.weight }] 
+    : [...weightHistory].sort((a: any, b: any) => a.date.localeCompare(b.date)).slice(-7).map((w: any) => ({ name: w.date.split("-").slice(1).reverse().join("/"), peso: w.weight }));
+
+  // --- STYLES INLINE (V7 Dark Neon Pattern) ---
+  const glassCardStyle = {
+    background: 'rgba(255, 255, 255, 0.03)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '16px',
+    padding: '24px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'space-between'
+  };
+
+  const textMuted = { color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase' as const };
+  const accentNeon = '#ccff00';
+  const successNeon = '#00ff88';
+  const blueNeon = '#00d4ff';
+
   return (
-    <GlobalBackground>
-    <div style={{ padding: "18px", maxWidth: 480, margin: "0 auto", position: 'relative', zIndex: 10 }}>
+    <div style={{ paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {showP2P && <P2PSyncModal onClose={() => setShowP2P(false)} />}
       
-      {forgivenessAlert && (
-         <GlassCard glow style={{ padding: 12, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10, borderLeft: `4px solid ${C.accent}` }}>
-            <span style={{ fontSize: 24 }}>🚑</span>
-            <div>
-               <p style={{ fontFamily: "'Bebas Neue'", color: C.accent, fontSize: 16, margin: 0 }}>STREAK EM PERIGO!</p>
-               <p style={{ fontSize: 11, color: '#fff', margin: 0 }}>Ontem não treinaste, mas tens {forgivenessAlert.remainingMinutes} min para salvar o Streak antes das 6 AM!</p>
-            </div>
-         </GlassCard>
+      {/* EMPTY STATE: Quando não há dados */}
+      {isSystemEmpty && (
+        <EmptyState
+          icon="🎯"
+          title="CENTRAL DE COMANDO"
+          description="O teu painel analítico ativa-se ao registares o primeiro treino ou refeição. Começa agora e vê a tua evolução ganhar forma."
+          actionLabel="REGISTAR TREINO"
+          onAction={() => onStartWorkout?.('OPEN_FREE_BUILDER')}
+          secondaryLabel="REGISTAR REFEIÇÃO"
+          onSecondary={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'nutrition' }))}
+        />
       )}
-
-      {aiReportModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(8,11,15,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 24, backdropFilter: 'blur(10px)' }}>
-          <GlassCard glow style={{ padding: 26, maxWidth: 360, width: "100%" }}>
-            <p style={{ fontFamily: "'Bebas Neue'", fontSize: 24, letterSpacing: 2, marginBottom: 8, color: C.accent }}>✨ ANÁLISE CLAUDE 3.5</p>
-            <p style={{ color: '#fff', fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>{aiReportModal.reasoning}</p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <GradientButton variant="secondary" onClick={() => setAiReportModal(null)} style={{ flex: 1 }}>CANCELAR</GradientButton>
-              <GradientButton variant="primary" onClick={acceptAIWorkout} style={{ flex: 1 }}>ACEITAR TREINO</GradientButton>
-            </div>
-          </GlassCard>
-        </div>
-      )}
-
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      
+      {/* HEADER TÁTICO */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <p className="mono small" style={{ marginBottom: 2, color: C.muted }}>OLÁ, ATLETA</p>
-          <p style={{ fontFamily: "'Bebas Neue'", fontSize: 36, letterSpacing: 2, lineHeight: 1, color: C.accent }}>{profile.name.toUpperCase()}</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-            <span style={{ fontSize: 12, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 12 }}>{goal?.icon} {goal?.label}</span>
-          </div>
+          <h1 style={{ fontFamily: '"Bebas Neue", sans-serif', fontSize: '2.5rem', color: accentNeon, margin: 0, letterSpacing: '2px' }}>CENTRAL DE COMANDO</h1>
+          <p style={{ color: 'rgba(255,255,255,0.5)', margin: 0, fontSize: '0.85rem' }}>Visão Biológica e Mecânica Integrada</p>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ background: C.accentLow, color: C.accent, borderRadius: 12, padding: "6px 12px", fontSize: 14, fontWeight: "bold", display: "inline-block", border: `1px solid ${C.accent}44` }}>
-            Nível {levelInfo.level}
-          </div>
-          <p style={{ fontSize: 10, color: C.muted, marginTop: 4, fontFamily: "'DM Mono'" }}>{levelInfo.title.toUpperCase()}</p>
-        </div>
-      </motion.div>
-
-      <PhaseCard history={history} profile={profile} />
-
-      <VTaperWidget profile={profile} />
-
-      <GymVibeWidget onOpenVibe={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'gymvibe' }))} />
-      
-      <WatchSyncIndicator />
-
-      <WeekCalendar history={history} />
-      
-      <ActivityHeatmap history={history} />
-      
-      <TrendWidget history={history} />
-
-      <TrendDashboardSection 
-        recentExercises={recentTopExercises} 
-        maxItems={4} 
-      />
-
-      {injuryData && injuryData.overallRisk !== 'LOW' && (
-        <GlassCard style={{ padding: 16, marginBottom: 20, borderLeft: '4px solid #ff3366' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 24 }}>⚠️</span>
-            <div>
-              <p style={{ fontFamily: "'Bebas Neue'", color: '#ff3366', fontSize: 16, margin: 0 }}>Alerta de Risco de Lesão</p>
-              <p style={{ fontSize: 13, color: '#eceae4', margin: '4px 0' }}>{injuryData.warnings[0]}</p>
-              {(injuryData.restrictedExercises?.length ?? 0) > 0 && (
-                <p style={{ fontSize: 11, color: '#55626e', margin: 0, fontFamily: 'monospace' }}>
-                  Evitar: {injuryData.restrictedExercises!.join(', ')}
-                </p>
-              )}
-            </div>
-          </div>
-        </GlassCard>
-      )}
-
-      <NutritionDashboardSection profile={profile} />
-
-      {/* Cycle Tracker - só para perfil female_cycle_synced */}
-      {demoFeatures.showCycleTracker && <CycleTracker />}
-
-      {/* Virtual Pet - só para crianças (youth_gamified) */}
-      {demographicProfile === 'youth_gamified' && <VirtualPet xp={profile.xp || 0} />}
-      
-      {history.length >= 3 ? (
-        <RecoveryRoulette />
-      ) : (
-        <div style={{ background: `${C.surface}88`, borderRadius: 12, padding: 24, border: '1px dashed #333', textAlign: 'center', marginBottom: 20 }}>
-           <span style={{ fontSize: 24, opacity: 0.5 }}>🎰</span>
-           <p style={{ fontSize: 13, color: '#666', marginTop: 8, fontWeight: 'bold' }}>A Roleta de Recuperação Mágica desbloqueia ao 3º Treino!</p>
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-        <GlassCard style={{ padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 8, fontWeight: 600 }}>
-            <span>XP PARA LEVEL UP</span>
-            <span className="mono" style={{ color: C.accent }}>{(profile.xp || 0) - currentLevelXP} / {nextLevelXP - currentLevelXP}</span>
-            </div>
-            <div style={{ width: "100%", height: 6, background: 'rgba(0,0,0,0.5)', borderRadius: 3, overflow: "hidden", border: '1px solid rgba(255,255,255,0.05)' }}>
-            <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPct}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                style={{ height: "100%", background: 'linear-gradient(90deg, #e8c84a, #fceb9c)', borderRadius: 3 }}
-            />
-            </div>
-        </GlassCard>
-
-        <GlassCard glow style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-             <div style={{ position: 'relative', width: 44, height: 44 }}>
-               <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
-                 <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                 <circle cx="50" cy="50" r="42" fill="none" stroke={readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent} strokeWidth="8"
-                   strokeDasharray={`${((readiness?.score ?? oldReadiness ?? 100) / 100) * 264} 264`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s ease-out' }} />
-               </svg>
-               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 'bold', color: readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent }}>
-                 {readiness?.score ?? oldReadiness ?? 100}
-               </div>
-             </div>
-             <div>
-                 <span style={{ fontSize: 10, color: C.muted, fontWeight: 'bold', display: 'block', letterSpacing: 1 }}>READINESS SCORE</span>
-                 <span style={{ fontSize: 11, color: readiness?.status === 'critical' ? '#ef4444' : readiness?.status === 'poor' ? '#f97316' : readiness?.status === 'excellent' ? '#3dd68c' : C.accent, lineHeight: 1.2 }}>
-                   {readiness ? (readiness.status.charAt(0).toUpperCase() + readiness.status.slice(1)) : 'A Analisar...'}
-                 </span>
-             </div>
-        </GlassCard>
-      </div>
-
-      {missedRecent.length > 0 && (
-        <div style={{ marginBottom: 20, padding: 12, background: 'rgba(232, 74, 74, 0.1)', borderLeft: '4px solid #e84a4a', borderRadius: 8 }}>
-          <p style={{ fontSize: 13, color: '#e84a4a', fontWeight: 'bold', marginBottom: 4 }}>⚠️ Dias sem treino</p>
-          <p style={{ fontSize: 12, color: C.text, margin: 0, lineHeight: 1.4 }}>
-            Faltaste {missedRecent.map(d => d.dayOfWeek).join(', ')}. Vamos retomar hoje com carga ajustada?
-          </p>
-        </div>
-      )}
-      
-      {streak > 0 && (
-        <div style={{ textAlign: 'right', fontSize: 12, color: C.accent, fontWeight: 'bold', marginBottom: 16 }}>
-          🔥 Sequência atual: {streak} dia(s)
-        </div>
-      )}
-
-      <div style={{ marginBottom: 20 }}>
-          <RecoveryRing recoveryData={recoveryData} />
-      </div>
-
-      <ActiveChallenges challenges={challenges} onChallengeComplete={handleChallengeComplete} />
-
-      <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-          <GradientButton variant="primary" onClick={() => setShowWeeklyPlan(true)} style={{ flex: 1, padding: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, fontSize: 16 }}>
-              📅 PLANO IA
-          </GradientButton>
-          <GradientButton variant="secondary" onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'cyclereview' }))} style={{ flex: 1, padding: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, fontSize: 16 }}>
-              📊 REVISÃO
-          </GradientButton>
-      </div>
-
-      <div style={{ marginBottom: 20 }}>
-          <GradientButton variant="secondary" onClick={() => onStartWorkout('OPEN_FREE_BUILDER')} style={{ width: "100%", padding: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, fontSize: 16, border: `1px solid rgba(232, 200, 74, 0.3)` }}>
-              ⚡ TREINO LIVRE (CONSTRUTOR)
-          </GradientButton>
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-        <p style={{ fontFamily: "'Bebas Neue'", fontSize: 18, letterSpacing: 2, color: C.muted }}>TREINO DE HOJE</p>
-        <button onClick={handleAIGeneration} disabled={isGenerating} style={{ background: "linear-gradient(135deg, #e8c84a, #d4b83a)", color: "#000", border: "none", borderRadius: 8, padding: "6px 12px", fontFamily: "'Bebas Neue'", fontSize: 14, cursor: isGenerating ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6, opacity: isGenerating ? 0.7 : 1, boxShadow: '0 0 10px rgba(232,200,74,0.3)' }}>
-            {isGenerating ? "AGUARDA..." : "✨ GERAR AI"}
+        <button onClick={() => setShowP2P(true)} style={{ background: 'transparent', border: `1px solid ${accentNeon}`, color: accentNeon, padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontFamily: '"Bebas Neue", sans-serif', fontSize: '1rem', letterSpacing: '1px' }}>
+          Sync P2P
         </button>
       </div>
 
-      {currentPlan && (
-        <div style={{ marginBottom: 12, padding: "8px 12px", background: `${C.accent}11`, borderLeft: `4px solid ${C.accent}`, borderRadius: 4 }}>
-          <p style={{ fontSize: 11, color: C.accent, fontWeight: "bold", margin: 0 }}>PLANO ATIVO: {currentPlan.name}</p>
-        </div>
-      )}
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-        {currentPlan ? (
-          currentPlan.workouts.map((dayPlan, i) => {
-            const isRest = dayPlan.focus.toLowerCase().includes("descanso") || dayPlan.focus.toLowerCase().includes("recupera");
-            return (
-              <GlassCard key={i} style={{ padding: "16px", opacity: isRest ? 0.6 : 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <h3 style={{ fontSize: 18, color: C.text, fontFamily: "'Bebas Neue'", letterSpacing: 1 }}>{dayPlan.day} <span style={{ fontSize: 14, color: C.accent, fontFamily: 'Outfit', letterSpacing: 0 }}>({dayPlan.focus})</span></h3>
-                </div>
-                <p style={{ color: C.muted, fontSize: 13, marginBottom: isRest ? 0 : 16 }}>{dayPlan.exercises.join(" · ")}</p>
-                {!isRest && (
-                  <GradientButton 
-                    variant="secondary"
-                    onClick={() => onStartWorkout({ id: `ai_day_${Date.now()}`, label: `${dayPlan.day} - ${dayPlan.focus}`, exercises: dayPlan.exercises })} 
-                    style={{ width: "100%", border: `1px solid rgba(232,200,74,0.3)` }}
-                  >
-                    <span style={{ color: C.accent }}>INICIAR ESTE TREINO</span>
-                  </GradientButton>
-                )}
-              </GlassCard>
-            )
-          })
-        ) : (
-          WORKOUT_PLANS.map((plan, i) => (
-            <GlassCard key={plan.id} style={{ padding: "16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <h3 style={{ fontSize: 18, color: C.text, fontFamily: "'Bebas Neue'", letterSpacing: 1 }}>{plan.label}</h3>
+      {/* ROW 1: RESUMO DIÁRIO */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        
+        {/* Calorie Card */}
+        <div style={glassCardStyle}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={textMuted}>Balanço do Dia</span>
+              <Flame size={20} color={accentNeon} />
+            </div>
+            <div style={{ textAlign: 'center', margin: '24px 0' }}>
+              <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{remainingCalories}</div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginTop: '8px', letterSpacing: '1px' }}>Kcal Restantes</div>
+            </div>
+            <div style={{ marginTop: '16px' }}>
+              <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${calorieProgressPercent}%`, background: accentNeon, boxShadow: `0 0 10px ${accentNeon}`, transition: 'width 0.5s ease' }} />
               </div>
-              <p style={{ color: C.muted, fontSize: 13, marginBottom: 16 }}>{plan.exercises.join(" · ")}</p>
-              <GradientButton variant="secondary" onClick={() => onStartWorkout(plan)} style={{ width: "100%", border: `1px solid rgba(232,200,74,0.3)` }}>
-                <span style={{ color: C.accent }}>INICIAR ESTE TREINO</span>
-              </GradientButton>
-            </GlassCard>
-          ))
-        )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>
+                <span>Consumo: {caloriesConsumed} kcal</span>
+                <span>Meta: {targetCal} kcal</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px', marginTop: '24px', textAlign: 'center' }}>
+            <div style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: successNeon, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <UtensilsCrossed size={16} /> {caloriesConsumed}
+              </div>
+              <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Refeições</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: accentNeon, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <Activity size={16} /> {caloriesBurned}
+              </div>
+              <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Treino</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Macros Card */}
+        <div style={glassCardStyle}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <span style={textMuted}>Macronutrientes</span>
+              <Sparkles size={20} color={successNeon} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <MacroBar label="Proteínas" current={proteinsConsumed} target={profile.targetProtein || 140} color={successNeon} />
+              <MacroBar label="Carboidratos" current={carbsConsumed} target={profile.targetCarb || 270} color={blueNeon} />
+              <MacroBar label="Gorduras" current={fatsConsumed} target={profile.targetFat || 68} color="#ffaa00" />
+            </div>
+          </div>
+        </div>
+
+        {/* Hydration Card */}
+        <div style={glassCardStyle}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={textMuted}>Hidratação</span>
+              <Droplet size={20} color={blueNeon} />
+            </div>
+            <div style={{ textAlign: 'center', margin: '24px 0' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 900, color: blueNeon }}>{todayWater} ml</div>
+              <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginTop: '4px' }}>Meta: {waterTarget} ml</div>
+            </div>
+            <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '24px' }}>
+              <div style={{ height: '100%', width: `${waterProgressPercent}%`, background: blueNeon, boxShadow: `0 0 10px ${blueNeon}`, transition: 'width 0.5s ease' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              {[250, 500, 1000].map(amt => (
+                <button 
+                  key={amt} 
+                  onClick={() => addWater(amt)} 
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '12px 0', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem' }}
+                >
+                  +{amt >= 1000 ? '1L' : amt + 'ml'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-      <NextWorkoutSuggestion
-        history={history}
-        profile={profile}
-        onStartWorkout={onStartWorkout}
+
+      {/* ROW 2: GRÁFICOS (RECHARTS DARK NEON) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+        <div style={{ ...glassCardStyle, gridColumn: 'span 2' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+            <TrendingUp size={20} color={accentNeon} />
+            <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: 0 }}>Balanço Calórico (7 Dias)</h3>
+          </div>
+          <div style={{ height: '300px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+                <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
+                <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: "#080b0f", borderRadius: "12px", borderColor: accentNeon, color: "#fff" }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: "12px", color: '#fff' }} />
+                <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div style={glassCardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <TrendingDown size={20} color={blueNeon} />
+            <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: 0 }}>Evolução do Peso</h3>
+          </div>
+          <form onSubmit={handleWeightSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <input 
+                type="number" step="0.1" placeholder="Novo peso" 
+                value={quickWeight} onChange={(e) => setQuickWeight(e.target.value)} 
+                style={{ width: '100%', padding: '12px 40px 12px 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', boxSizing: 'border-box' }} 
+              />
+              <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', fontWeight: 'bold' }}>KG</span>
+            </div>
+            <button type="submit" style={{ padding: '0 16px', background: blueNeon, color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase', fontSize: '0.8rem' }}>Salvar</button>
+          </form>
+          <div style={{ height: '200px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartDataWeight} margin={{ top: 5, right: 15, left: -25, bottom: 5 }}>
+                <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
+                <YAxis stroke="#55626e" fontSize={10} domain={['dataMin - 2', 'dataMax + 2']} tickLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: "#080b0f", borderRadius: "10px", borderColor: blueNeon, color: "#fff" }} />
+                <Line type="monotone" dataKey="peso" stroke={blueNeon} strokeWidth={3} dot={{ fill: blueNeon, r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 3: MOTOR DE LESÕES & ACWR */}
+      <TrendDashboardSection 
+        recentExercises={history?.flatMap(w => w.exercises?.map((e: any) => e.name)).filter(Boolean) || []} 
       />
-      {showWeeklyPlan && (
-          <WeeklyPlanGenerator profile={profile} setProfile={setProfile} onStartWorkout={onStartWorkout} onClose={() => setShowWeeklyPlan(false)} />
+
+      {/* FLOATING ACTION BUTTON (FAB) PARA INICIAR TREINO LIVRE */}
+      {!isSystemEmpty && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => onStartWorkout?.('OPEN_FREE_BUILDER')}
+          style={{
+            position: 'fixed',
+            bottom: '100px',
+            right: '24px',
+            background: `linear-gradient(135deg, ${accentNeon}, #d4a017)`,
+            color: '#000',
+            border: 'none',
+            borderRadius: '50px',
+            padding: '16px 24px',
+            fontFamily: '"Bebas Neue", sans-serif',
+            fontSize: '1.2rem',
+            letterSpacing: '1px',
+            cursor: 'pointer',
+            boxShadow: `0 4px 20px rgba(232,200,74,0.4)`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            zIndex: 50,
+          }}
+        >
+          <Flame size={20} color="#000" />
+          TREINAR AGORA
+        </motion.button>
       )}
     </div>
-    </GlobalBackground>
   );
 }
+
+// Componente Auxiliar Privado
+const MacroBar = ({ label, current, target, color }: { label: string, current: number, target: number, color: string }) => {
+  const percent = Math.min(100, Math.round((current / target) * 100));
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 'bold' }}>
+        <span style={{ color: 'rgba(255,255,255,0.7)' }}>{label}</span>
+        <span style={{ color: 'rgba(255,255,255,0.4)' }}>{current}g / <span style={{ color }}>{target}g</span></span>
+      </div>
+      <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${percent}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}`, transition: 'width 0.5s ease' }} />
+      </div>
+    </div>
+  );
+};

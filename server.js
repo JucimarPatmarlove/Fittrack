@@ -149,7 +149,11 @@ const ALLOWED_ORIGINS = new Set([
 
 // Adicionar origens de rede local (192.168.x.x) dinamicamente
 function isAllowedOrigin(origin) {
-  if (!origin) return true; // same-origin
+  // Em produção, rejeitar requests sem Origin header (anti-bot)
+  if (!origin) {
+    if (process.env.NODE_ENV === 'production') return false;
+    return true; // same-origin (dev mode)
+  }
   if (ALLOWED_ORIGINS.has(origin)) return true;
   // Permitir qualquer IP local (192.168.x.x, 10.x.x.x) para testes no iPhone
   if (/^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin)) {
@@ -165,16 +169,16 @@ function isAllowedOrigin(origin) {
 // ─── UTILIDADES HTTP ─────────────────────────────────────────────────────────
 
 /** Lê o body completo de um IncomingMessage */
-function readBody(req) {
+function readBody(req, maxSizeMB = 10) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
-    const MAX_SIZE = 10 * 1024 * 1024; // 10MB limite
+    const MAX_SIZE = maxSizeMB * 1024 * 1024;
     
     req.on('data', chunk => {
       size += chunk.length;
       if (size > MAX_SIZE) {
-        reject(new Error('Payload demasiado grande (máx 10MB)'));
+        reject(new Error(`Payload demasiado grande (máx ${maxSizeMB}MB)`));
         req.destroy();
         return;
       }
@@ -185,7 +189,7 @@ function readBody(req) {
   });
 }
 
-/** Retorna headers CORS */
+/** Retorna headers CORS + Security */
 function getCorsHeaders(origin) {
   const allowed = isAllowedOrigin(origin) ? (origin || '*') : ALLOWED_ORIGINS.values().next().value;
   return {
@@ -193,6 +197,12 @@ function getCorsHeaders(origin) {
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
+    // Security Headers (equivalente ao helmet)
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '0',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
   };
 }
 
@@ -351,7 +361,7 @@ const server = createServer(async (req, res) => {
   // ══════════════════════════════════════════════════════════════════
   if (method === 'POST' && url === '/api/claude') {
     try {
-      const body = await readBody(req);
+      const body = await readBody(req, 1); // 1MB limit para prompts de AI
       const payload = JSON.parse(body);
 
       // Sanitização: remover campos que o cliente não deveria enviar
@@ -383,7 +393,7 @@ const server = createServer(async (req, res) => {
   // ══════════════════════════════════════════════════════════════════
   if (method === 'POST' && url === '/api/generate-workout') {
     try {
-      const body = await readBody(req);
+      const body = await readBody(req, 1); // 1MB limit para prompts de AI
       const { systemPrompt, userPrompt, maxTokens = 1500, profile, recoveryTokens, history } = JSON.parse(body);
 
       // Suporta dois modos:

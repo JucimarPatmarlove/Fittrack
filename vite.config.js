@@ -131,6 +131,7 @@ export default defineConfig({
   },
 
   server: {
+    https: true,
     allowedHosts: true,
     host: true,
     proxy: {
