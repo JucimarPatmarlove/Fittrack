@@ -3,15 +3,26 @@ import { Flame, Droplet, Sparkles, TrendingUp, UtensilsCrossed, Activity, Trendi
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from "recharts";
 import { useNutritionStore } from "../stores/useNutritionStore";
 import { TrendDashboardSection } from "../components/dashboard/TrendDashboardSection"; // Componente ACWR
+import { ReadinessGauge } from "../components/dashboard/ReadinessGauge";
 import { P2PSyncModal } from "../components/social/P2PSyncModal";
+import { DailyBriefing } from "../components/dashboard/DailyBriefing";
+import { BiometricInsight } from "../components/dashboard/BiometricInsight";
+import { useHealthStore } from "../stores/useHealthStore";
+import { useDualWorkoutStore } from "../stores/useDualWorkoutStore";
+import { usePlanStore } from "../stores/usePlanStore";
 import { getTodayDateString } from "../services/nutritionEngine";
 import { EmptyState } from "../components/ui/EmptyState";
 import { motion } from "framer-motion";
 
-export default function Dashboard({ history = [], onStartWorkout }: { history?: any[], onStartWorkout?: any }) {
+export default function Dashboard({ history = [], onStartWorkout, onNavigateToPlanner }: { history?: any[], onStartWorkout?: any, onNavigateToPlanner?: () => void }) {
   const { profile, meals, hydration, weightHistory, currentDate, addWater, setWeight, loadNutritionData, loadAllWeightLogs, setCurrentDate } = useNutritionStore();
+  const { getWorkoutsForDate } = useDualWorkoutStore();
+  const { currentPlan } = usePlanStore();
   const [quickWeight, setQuickWeight] = useState(profile.weight?.toString() || "75");
   const [showP2P, setShowP2P] = useState(false);
+
+  // ── HealthKit Sync (Telemetria Biológica) ──
+  const { healthKitData, dailyAdjustment, isSyncing: isHealthSyncing, syncHealthKit } = useHealthStore();
 
   // Carregar dados no mount
   useEffect(() => {
@@ -21,7 +32,17 @@ export default function Dashboard({ history = [], onStartWorkout }: { history?: 
     loadAllWeightLogs();
   }, [loadNutritionData, loadAllWeightLogs, setCurrentDate]);
 
-  const caloriesBurned = 350; // Mock: Aqui podes ligar ao teu useWorkoutStore
+  // ── HealthKit: Sincronizar dados biométricos ao carregar o Dashboard ──
+  useEffect(() => {
+    syncHealthKit(history, meals, profile);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Calorias gastas: usar dados reais do dia (treinos registados) ou fallback
+  const todayWorkoutsList = history.filter((w: any) => w.date === currentDate || w.startTime?.startsWith(currentDate));
+  const caloriesBurned = todayWorkoutsList.length > 0
+    ? todayWorkoutsList.reduce((sum: number, w: any) => sum + (w.totalCalories || w.caloriesBurned || 0), 0)
+    : 0;
   
   const todayMealLog = meals.find((m: any) => m.date === currentDate);
   let caloriesConsumed = 0, proteinsConsumed = 0, carbsConsumed = 0, fatsConsumed = 0;
@@ -51,6 +72,18 @@ export default function Dashboard({ history = [], onStartWorkout }: { history?: 
   // Detetar se o sistema está vazio (primeiro uso / após factory reset)
   const isSystemEmpty = !todayMealLog && weightHistory.length === 0 && history.length === 0;
 
+  // Extrair o treino planeado para hoje
+  const todayWorkouts = getWorkoutsForDate(currentDate);
+  const plannedWorkoutToday = React.useMemo(() => {
+    if (todayWorkouts?.morning && !todayWorkouts.morning.completed) {
+      return { title: todayWorkouts.morning.workoutName, period: 'Manhã' as const, slot: 'morning' as const };
+    }
+    if (todayWorkouts?.afternoon && !todayWorkouts.afternoon.completed) {
+      return { title: todayWorkouts.afternoon.workoutName, period: 'Tarde' as const, slot: 'afternoon' as const };
+    }
+    return null;
+  }, [todayWorkouts]);
+
   // Gráfico de calorias: dados reais dos últimos 7 dias (sem mock random)
   const chartDataCal = React.useMemo(() => {
     return Array.from({ length: 7 }).map((_, i) => {
@@ -75,6 +108,31 @@ export default function Dashboard({ history = [], onStartWorkout }: { history?: 
   const chartDataWeight = weightHistory.length === 0 
     ? [{ name: "Hoje", peso: profile.weight }] 
     : [...weightHistory].sort((a: any, b: any) => a.date.localeCompare(b.date)).slice(-7).map((w: any) => ({ name: w.date.split("-").slice(1).reverse().join("/"), peso: w.weight }));
+
+  // Calcular ACWR (Acute: 7 dias / Chronic: 28 dias)
+  const acwr = React.useMemo(() => {
+    if (!history || history.length === 0) return 1.0;
+    
+    const now = Date.now();
+    const msInDay = 24 * 60 * 60 * 1000;
+    
+    let acuteLoad = 0;
+    let chronicLoad = 0;
+    
+    history.forEach(w => {
+      const daysAgo = (now - new Date(w.date).getTime()) / msInDay;
+      // Carga = Calorias (ou tempo). Usando calorias ou fallback para 300
+      const load = w.totalCalories || w.caloriesBurned || 300;
+      
+      if (daysAgo <= 7) acuteLoad += load;
+      if (daysAgo <= 28) chronicLoad += load;
+    });
+    
+    const chronicWeekly = chronicLoad / 4;
+    if (chronicWeekly === 0) return acuteLoad > 0 ? 1.5 : 1.0;
+    
+    return acuteLoad / chronicWeekly;
+  }, [history]);
 
   // --- STYLES INLINE (V7 Dark Neon Pattern) ---
   const glassCardStyle = {
@@ -120,6 +178,41 @@ export default function Dashboard({ history = [], onStartWorkout }: { history?: 
           Sync P2P
         </button>
       </div>
+
+      {/* 🚀 WIDGET DAILY BRIEFING 🚀 */}
+      {/* 🚀 WIDGET DAILY BRIEFING 🚀 */}
+      {!isSystemEmpty && (
+        <DailyBriefing 
+          history={history}
+          plannedWorkoutToday={plannedWorkoutToday}
+          onStartPlannedWorkout={() => {
+            if (plannedWorkoutToday) {
+              const todayWorkouts = getWorkoutsForDate(currentDate);
+              const slotData = todayWorkouts?.[plannedWorkoutToday.slot];
+              if (slotData) {
+                let exercisesList: string[] = [];
+                if (currentPlan && typeof currentPlan !== 'string') {
+                   const rawDayPlan = currentPlan.workouts.find((w: any) => slotData.workoutName.includes(w.focus));
+                   if (rawDayPlan) exercisesList = rawDayPlan.exercises;
+                }
+                onStartWorkout({
+                  id: `day_${slotData.id}`,
+                  label: slotData.workoutName,
+                  exercises: exercisesList
+                });
+              }
+            }
+          }}
+          onStartFreeWorkout={() => onStartWorkout?.('OPEN_FREE_BUILDER')}
+          onNavigateToPlanner={onNavigateToPlanner || (() => window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')))}
+        />
+      )}
+      {/* 📡 TELEMETRIA BIOLÓGICA — HealthKit (RENPHO + Apple Watch) 📡 */}
+      <BiometricInsight
+        healthData={healthKitData}
+        adjustment={dailyAdjustment}
+        isSyncing={isHealthSyncing}
+      />
 
       {/* ROW 1: RESUMO DIÁRIO */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
@@ -256,9 +349,20 @@ export default function Dashboard({ history = [], onStartWorkout }: { history?: 
       </div>
 
       {/* ROW 3: MOTOR DE LESÕES & ACWR */}
-      <TrendDashboardSection 
-        recentExercises={history?.flatMap(w => w.exercises?.map((e: any) => e.name)).filter(Boolean) || []} 
-      />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        <div style={{ ...glassCardStyle, alignItems: 'center', justifyContent: 'center' }}>
+          <h3 style={{ color: '#fff', fontSize: '1.2rem', margin: '0 0 16px 0', alignSelf: 'flex-start' }}>RADAR DE PRONTIDÃO (ACWR)</h3>
+          <ReadinessGauge acwr={acwr} />
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 16 }}>
+            Rácio entre a carga dos últimos 7 dias (Aguda) e a média das últimas 4 semanas (Crónica).
+          </p>
+        </div>
+        <div>
+          <TrendDashboardSection 
+            recentExercises={history?.flatMap(w => w.exercises?.map((e: any) => e.name)).filter(Boolean) || []} 
+          />
+        </div>
+      </div>
 
       {/* FLOATING ACTION BUTTON (FAB) PARA INICIAR TREINO LIVRE */}
       {!isSystemEmpty && (

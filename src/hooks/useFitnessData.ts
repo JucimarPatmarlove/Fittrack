@@ -5,8 +5,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLS } from './index';
 import { ProfileSchema, HistorySchema } from '../utils/schemas';
-import { UserProfile, WorkoutSession, WorkoutPlan } from '../types';
-import { setMasterKey } from '../utils/cryptoEngine';
+import { UserProfile, WorkoutPlan } from "../types";
+import { WorkoutSession } from "../db/schema";;
+import { setMasterKey, getMasterKey } from '../utils/cryptoEngine';
 import { checkForNewerBackup, importEncryptedBackup } from '../services/backupService';
 import { downloadBackup } from '../services/googleDrive';
 import { syncUserStats } from '../services/gamificationEngine';
@@ -25,10 +26,11 @@ interface PendingBackup {
 }
 
 export function useFitnessData() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(() => getMasterKey() !== null);
   const isFirstTime = !localStorage.getItem('fittrack_initialized');
 
   const [view, setView] = useState<ViewName>('dashboard');
+
   const [profile, setProfile] = useLS<UserProfile>(
     'fit_profile',
     { name: 'Atleta', goal: 'hipertrofia', level: 'beginner', weight: 70, xp: 0 } as UserProfile,
@@ -40,6 +42,7 @@ export function useFitnessData() {
   const [workoutData, setWorkoutData] = useState<WorkoutSession | null>(null);
   const [showClubModal, setShowClubModal] = useState(false);
   const [showFreeBuilder, setShowFreeBuilder] = useState(false);
+  const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
   const [pendingRestoreBackup, setPendingRestoreBackup] = useState<PendingBackup | null>(null);
 
   // ── Auto-login e backup check ──
@@ -49,17 +52,13 @@ export function useFitnessData() {
         if (backup) setPendingRestoreBackup(backup);
       });
     } else {
-      const sessionPin = sessionStorage.getItem('fittrack_session_pin');
-      if (sessionPin) {
-        import('../utils/cryptoEngine').then(async ({ deriveKey, setMasterKey }) => {
-          try {
-            const key = await deriveKey(sessionPin);
-            setMasterKey(key);
-            setIsUnlocked(true);
-          } catch (e) {
-            console.error('Falha no auto-login:', e);
-          }
-        });
+      const sessionUnlocked = sessionStorage.getItem('fittrack_session_unlocked') === 'true';
+      if (sessionUnlocked && getMasterKey() !== null) {
+        setIsUnlocked(true);
+      } else if (sessionUnlocked && getMasterKey() === null) {
+        // A sessão indica que estava desbloqueada, mas a key em memória perdeu-se (ex: F5 / Reload).
+        // A UI apresentará o ecrã de LockScreen para re-derivar a chave de forma segura.
+        setIsUnlocked(false);
       }
     }
 
@@ -68,7 +67,7 @@ export function useFitnessData() {
         const { getDB } = await import('../db/schema');
         const db = await getDB();
         const count = await db.count('personalRecords');
-        if (count === 0 && sessionStorage.getItem('fittrack_session_pin')) {
+        if (count === 0 && sessionStorage.getItem('fittrack_session_unlocked') === 'true') {
           console.warn('[App] IndexedDB vazia. O navegador limpou a base de dados.');
         }
       } catch (e) {}
@@ -102,8 +101,15 @@ export function useFitnessData() {
     silentBackup();
 
     const handleNavigate = (e: CustomEvent | Event) => setView((e as CustomEvent).detail);
+    const handleOpenWeeklyPlan = () => setShowWeeklyPlan(true);
+    
     window.addEventListener('NAVIGATE_TO', handleNavigate);
-    return () => window.removeEventListener('NAVIGATE_TO', handleNavigate);
+    window.addEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
+    
+    return () => {
+      window.removeEventListener('NAVIGATE_TO', handleNavigate);
+      window.removeEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
+    };
   }, []);
 
   // ── Handlers ──
@@ -194,6 +200,7 @@ export function useFitnessData() {
     workoutData,
     showClubModal,
     showFreeBuilder,
+    showWeeklyPlan,
     pendingRestoreBackup,
 
     // Setters
@@ -201,6 +208,7 @@ export function useFitnessData() {
     setProfile,
     setShowClubModal,
     setShowFreeBuilder,
+    setShowWeeklyPlan,
     setPendingRestoreBackup,
 
     // Handlers

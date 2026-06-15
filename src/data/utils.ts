@@ -1,4 +1,5 @@
-import { WorkoutSession, UserProfile } from "../types";
+import { UserProfile } from "../types";
+import { WorkoutSession } from "../db/schema";;
 import { ME } from "./constants";
 
 export function calculate1RM(weight: number, reps: number): number {

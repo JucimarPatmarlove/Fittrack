@@ -1,5 +1,6 @@
 import { StateStorage } from 'zustand/middleware';
 import { encryptData, decryptData, getMasterKey } from '../utils/cryptoEngine';
+import { idbStorage } from '../lib/persistence';
 
 // ─── NOMES DAS STORES IDB ────────────────────────────────────────────────────
 // Cada store Zustand cifrada é guardada no IDB sob uma chave com este prefixo.
@@ -77,8 +78,8 @@ export function createEncryptedStorage(): StateStorage {
       const key = getMasterKey();
 
       if (!key) {
-        // Fallback: localStorage em claro
-        return localStorage.getItem(name);
+        // Fallback: idb-keyval em claro
+        return await idbStorage.getItem(name);
       }
 
       try {
@@ -96,14 +97,15 @@ export function createEncryptedStorage(): StateStorage {
       const key = getMasterKey();
 
       if (!key) {
-        localStorage.setItem(name, value);
+        await idbStorage.setItem(name, value);
         return;
       }
 
       try {
         const encrypted = await encryptData(key, value);
         await idbSet(name, encrypted);
-        // Limpar localStorage se havia entrada em claro (migração)
+        // Limpar idb se havia entrada em claro (migração)
+        await idbStorage.removeItem(name);
         localStorage.removeItem(name);
       } catch (err) {
         console.error(`[EncryptedPersist] Falha ao cifrar "${name}":`, err);
@@ -114,7 +116,8 @@ export function createEncryptedStorage(): StateStorage {
 
     async removeItem(name: string): Promise<void> {
       await idbRemove(name);
-      localStorage.removeItem(name); // limpar ambos os backends
+      await idbStorage.removeItem(name);
+      localStorage.removeItem(name); // limpar todos os backends
     },
   };
 }

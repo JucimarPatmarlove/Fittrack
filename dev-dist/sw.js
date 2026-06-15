@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-25613826'], (function (workbox) { 'use strict';
+define(['./workbox-b1bafff1'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -81,23 +81,34 @@ define(['./workbox-25613826'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.rhvmllven5g"
+    "revision": "0.bcomb28cmeo"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/\.(mp4|webm|mov)$/, new workbox.CacheFirst({
-    "cacheName": "video-cache",
+  workbox.registerRoute(/^https:\/\/fonts\.googleapis\.com\/.*/i, new workbox.CacheFirst({
+    "cacheName": "google-fonts-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 30,
-      maxAgeSeconds: 2592000
+      maxEntries: 10,
+      maxAgeSeconds: 31536000
+    }), new workbox.CacheableResponsePlugin({
+      statuses: [0, 200]
     })]
   }), 'GET');
-  workbox.registerRoute(/^https:\/\/.*\.(mp4|webm)$/, new workbox.CacheFirst({
-    "cacheName": "external-video-cache",
+  workbox.registerRoute(/^https:\/\/fonts\.gstatic\.com\/.*/i, new workbox.CacheFirst({
+    "cacheName": "gstatic-fonts-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 20,
+      maxEntries: 10,
+      maxAgeSeconds: 31536000
+    }), new workbox.CacheableResponsePlugin({
+      statuses: [0, 200]
+    })]
+  }), 'GET');
+  workbox.registerRoute(/\.(?:png|jpg|jpeg|svg|gif)$/i, new workbox.StaleWhileRevalidate({
+    "cacheName": "visual-assets-cache",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
       maxAgeSeconds: 2592000
     })]
   }), 'GET');

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { C } from '../../data/constants';
 import { AnthropicService } from '../../services/anthropicService';
 import { usePlanStore } from '../../stores/usePlanStore';
+import { useDualWorkoutStore } from '../../stores/useDualWorkoutStore';
 
 interface WeeklyPlanGeneratorProps {
     profile: any;
@@ -27,6 +28,7 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
     const [philosophy, setPhilosophy] = useState(profile.philosophy || 'classic');
     const [classicStyle, setClassicStyle] = useState(profile.classicStyle || 'upper_lower');
     const [dayPreferences, setDayPreferences] = useState<Record<string, string>>(profile.dayPreferences || {});
+    const [preferredSlot, setPreferredSlot] = useState<'morning' | 'afternoon'>('morning');
     const [customDays, setCustomDays] = useState<string[]>(
         Object.entries(profile.dayPreferences || {}).filter(([day, val]) => {
             return val && !["Padrão", "Pernas", "Peito", "Costas", "Ombros", "Braços", "Core", "Cardio/HIIT"].includes(val);
@@ -34,6 +36,7 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
     );
     
     const { setCurrentPlan } = usePlanStore();
+    const { scheduleWorkout } = useDualWorkoutStore();
     
     const [isGenerating, setIsGenerating] = useState(false);
     const [plan, setPlan] = useState<any>(null);
@@ -100,6 +103,31 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
             };
             setPlan(newPlan);
             setCurrentPlan(newPlan);
+
+            // Injetar treinos gerados no Calendário Global (Agenda)
+            const daysMap: Record<string, number> = {
+                "Domingo": 0, "Segunda": 1, "Terça": 2, "Quarta": 3, "Quinta": 4, "Sexta": 5, "Sábado": 6
+            };
+            const today = new Date();
+            const currentDay = today.getDay();
+
+            generated.plan.forEach((dayPlan: any) => {
+                const targetDay = daysMap[dayPlan.day];
+                if (targetDay !== undefined) {
+                    let daysUntil = targetDay - currentDay;
+                    if (daysUntil < 0) daysUntil += 7; // Empurra para a próxima semana se o dia já passou
+                    
+                    const targetDate = new Date(today);
+                    targetDate.setDate(today.getDate() + daysUntil);
+                    const dateString = targetDate.toISOString().split('T')[0];
+                    
+                    const isRest = dayPlan.focus.toLowerCase().includes("descanso") || dayPlan.focus.toLowerCase().includes("recupera");
+                    if (!isRest) {
+                        scheduleWorkout(dateString, preferredSlot, newPlan.id, `${dayPlan.focus}`);
+                    }
+                }
+            });
+
         } else if (generated && generated.error) {
             alert("Erro detalhado da IA: " + generated.error);
         } else {
@@ -162,6 +190,12 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
                             <option value="Hipertrofia">Hipertrofia (Ganhar Músculo)</option>
                             <option value="Recomposição Corporal">Recomposição Corporal</option>
                             <option value="Força Pura">Força Pura</option>
+                        </select>
+
+                        <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>PERÍODO PREFERENCIAL DO TREINO</label>
+                        <select value={preferredSlot} onChange={e => setPreferredSlot(e.target.value as 'morning' | 'afternoon')} style={{ width: "100%", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, color: C.text, marginBottom: 12 }}>
+                            <option value="morning">Manhã (🌅)</option>
+                            <option value="afternoon">Tarde/Noite (🌙)</option>
                         </select>
 
                         <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>FILOSOFIA / METODOLOGIA DE TREINO</label>

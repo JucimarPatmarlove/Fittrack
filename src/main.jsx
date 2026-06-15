@@ -40,17 +40,15 @@ if (root) {
   }
 }
 
-// Service Worker regista-se DEPOIS, sem bloquear a UI
-// Desativado temporariamente para resolver problemas de cache no Firefox
-// Para reativar: descomentar as linhas abaixo
-/*
-try {
-  import('virtual:pwa-register').then(({ registerSW }) => {
-    registerSW({ immediate: true })
-  }).catch((err) => {
-    console.warn('[PWA] Service Worker não registado:', err.message)
-  })
-} catch (e) {
-  console.warn('[PWA] SW indisponível:', e)
+// 2. Registo Silencioso do Service Worker (Resiliência Offline)
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then((registration) => {
+        console.log('[Service Worker] Blindagem Offline ativada com sucesso.', registration.scope);
+      })
+      .catch((error) => {
+        console.error('[Service Worker] Falha no registo do motor offline:', error);
+      });
+  });
 }
-*/

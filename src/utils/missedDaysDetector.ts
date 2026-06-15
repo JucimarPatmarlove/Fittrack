@@ -1,4 +1,4 @@
-import { WorkoutSession } from '../types';
+import { WorkoutSession } from "../db/schema";;
 
 export interface MissedDayInfo {
   date: string;

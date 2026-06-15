@@ -54,7 +54,7 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
       // Marca persistente — sobrevive à migração de encriptação (nunca mais pede "primeiro uso")
       localStorage.setItem('fittrack_initialized', Date.now().toString());
       
-      sessionStorage.setItem('fittrack_session_pin', pin);
+      sessionStorage.setItem('fittrack_session_unlocked', 'true');
 
       onUnlock(key);
     } catch {

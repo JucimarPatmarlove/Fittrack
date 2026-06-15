@@ -14,57 +14,57 @@ export const RewardsStore: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
   return (
     <GlobalBackground>
-      <div className="min-h-screen p-6 pb-24 relative z-10">
-        <div className="flex justify-between items-center mb-8">
+      <div style={{ minHeight: '100vh', padding: '24px', paddingBottom: '96px', position: 'relative', zIndex: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-2 bg-gray-800 rounded-full"
+            style={{ color: 'rgba(255,255,255,0.5)', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '24px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
           >
             ← Voltar
           </button>
-          <h2 className="text-2xl font-bold font-['Bebas_Neue'] tracking-widest text-white">LOJA $FIT</h2>
-          <div className="w-10"></div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: '"Bebas Neue", sans-serif', letterSpacing: '2px', color: '#fff', margin: 0 }}>LOJA $FIT</h2>
+          <div style={{ width: '40px' }}></div>
         </div>
 
-        <div className="bg-gray-800/60 backdrop-blur-md rounded-2xl p-6 border border-gray-700 shadow-xl mb-8 flex items-center justify-between">
+        <div style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', marginBottom: '32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <p className="text-sm text-gray-400">Saldo Atual</p>
-            <div className="flex items-center gap-2">
-              <Coins className="w-8 h-8 text-green-400" />
-              <span className="text-4xl font-bold text-white">{fitTokens} <span className="text-xl text-green-400">$FIT</span></span>
+            <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 8px 0' }}>Saldo Atual</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Coins size={32} color="#00ff88" />
+              <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#fff' }}>{fitTokens} <span style={{ fontSize: '1.25rem', color: '#00ff88' }}>$FIT</span></span>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500">Pontos de Esforço</p>
-            <p className="text-lg font-bold text-cyan-400">{totalEffortPoints} / 1000</p>
-            <p className="text-[10px] text-gray-500">para o próximo token</p>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 4px 0' }}>Pontos de Esforço</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#00d4ff', margin: '0 0 4px 0' }}>{totalEffortPoints} / 1000</p>
+            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>para o próximo token</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-gray-400 mb-4 tracking-wider">RECOMPENSAS DISPONÍVEIS</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 'bold', color: 'rgba(255,255,255,0.5)', marginBottom: '16px', letterSpacing: '2px', textTransform: 'uppercase' }}>RECOMPENSAS DISPONÍVEIS</h3>
           
           {rewards.map(reward => {
             const canAfford = fitTokens >= reward.cost;
             return (
               <div 
                 key={reward.id} 
-                className={`bg-gray-800/40 border ${canAfford ? 'border-gray-600' : 'border-gray-800 opacity-60'} rounded-xl p-4 flex items-center gap-4`}
+                style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${canAfford ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`, opacity: canAfford ? 1 : 0.6, borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}
               >
-                <div className="bg-gray-900 rounded-lg p-3">
+                <div style={{ background: 'rgba(0,0,0,0.5)', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {reward.icon}
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-white font-bold">{reward.name}</h4>
-                  <p className="text-xs text-gray-400 uppercase">{reward.type}</p>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ color: '#fff', fontWeight: 'bold', margin: '0 0 4px 0', fontSize: '1rem' }}>{reward.name}</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', margin: 0 }}>{reward.type}</p>
                 </div>
-                <div className="text-right">
-                  <span className={`font-bold ${canAfford ? 'text-green-400' : 'text-gray-500'} flex items-center gap-1`}>
-                    {reward.cost} <Coins className="w-3 h-3" />
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontWeight: 'bold', color: canAfford ? '#00ff88' : 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end', fontSize: '1rem' }}>
+                    {reward.cost} <Coins size={14} />
                   </span>
                   <button 
                     disabled={!canAfford}
-                    className={`mt-2 text-xs px-3 py-1 rounded-full font-bold ${canAfford ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-gray-800 text-gray-600 cursor-not-allowed'}`}
+                    style={{ marginTop: '8px', fontSize: '0.75rem', padding: '4px 12px', borderRadius: '50px', fontWeight: 'bold', border: 'none', background: canAfford ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.05)', color: canAfford ? '#00ff88' : 'rgba(255,255,255,0.3)', cursor: canAfford ? 'pointer' : 'not-allowed' }}
                   >
                     {canAfford ? 'COMPRAR' : 'BLOQUEADO'}
                   </button>

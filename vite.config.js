@@ -33,99 +33,73 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2,mp4,webm}'],
-        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB limit para vídeos curtos
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf}'],
         runtimeCaching: [
           {
-            urlPattern: /\.(mp4|webm|mov)$/,
+            // Cache de Fontes do Google (Descarrega uma vez e guarda no cofre)
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'video-cache',
+              cacheName: 'google-fonts-cache',
               expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 dias
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 ano de retenção
               },
-            },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           },
           {
-            urlPattern: /^https:\/\/.*\.(mp4|webm)$/,
+            // Cache de Fontes Estáticas (gstatic)
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'external-video-cache',
+              cacheName: 'gstatic-fonts-cache',
               expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365
               },
-            },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           },
-        ],
-        skipWaiting: false,
-        clientsClaim: true,
+          {
+            // Estratégia de sobrevivência para eventuais APIs estáticas de imagens ou dados
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'visual-assets-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 dias
+              }
+            }
+          }
+        ]
       },
       devOptions: { enabled: true },
     }),
   ],
 
+  optimizeDeps: {
+    exclude: ['@capacitor-community/health-kit']
+  },
+
   build: {
     chunkSizeWarningLimit: 500,
 
     rollupOptions: {
+      // Plugins nativos Capacitor: só existem no runtime iOS/Android, não no bundle web
+      external: ['@capacitor-community/health-kit'],
       output: {
         manualChunks(id) {
-          if (
-            id.includes('node_modules/@mediapipe') ||
-            id.includes('node_modules/@tensorflow')
-          ) {
-            return 'vendor-ml';
-          }
-          if (
-            id.includes('node_modules/three') ||
-            id.includes('node_modules/@react-three') ||
-            id.includes('node_modules/@threlte')
-          ) {
-            return 'vendor-3d';
-          }
-          if (
-            id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/react-is/') ||
-            id.includes('node_modules/scheduler/')
-          ) {
-            return 'vendor-react';
-          }
-          if (id.includes('node_modules/framer-motion')) {
-            return 'vendor-motion';
-          }
-          if (
-            id.includes('node_modules/recharts') ||
-            id.includes('node_modules/d3-') ||
-            id.includes('node_modules/victory-') ||
-            id.includes('node_modules/lodash')
-          ) {
-            return 'vendor-charts';
-          }
-          if (id.includes('node_modules/zod')) {
-            return 'vendor-zod';
-          }
-          if (id.includes('node_modules/zustand')) {
-            return 'vendor-zustand';
-          }
-          if (id.includes('node_modules/idb')) {
-            return 'vendor-idb';
-          }
-          if (id.includes('node_modules/dompurify')) {
-            return 'vendor-security';
-          }
-          if (
-            id.includes('node_modules/@anthropic-ai') ||
-            id.includes('node_modules/anthropic')
-          ) {
-            return 'vendor-anthropic';
-          }
-          if (id.includes('node_modules')) {
-            return 'vendor-misc';
-          }
-        },
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) return 'vendor-react';
+          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) return 'vendor-3d';
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/framer-motion')) return 'vendor-charts';
+          if (id.includes('node_modules/idb-keyval') || id.includes('node_modules/zod')) return 'vendor-crypto';
+        }
       },
     },
   },

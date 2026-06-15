@@ -19,9 +19,11 @@ export const useWorkerPoseDetection = () => {
       }
       
       const onMessage = (event: MessageEvent) => {
+        workerRef.current?.removeEventListener('message', onMessage);
         if (event.data.type === 'result') {
-          workerRef.current?.removeEventListener('message', onMessage);
           resolve(event.data.data);
+        } else {
+          resolve(null);
         }
       };
       workerRef.current.addEventListener('message', onMessage);

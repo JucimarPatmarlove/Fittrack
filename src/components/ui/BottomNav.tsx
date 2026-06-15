@@ -1,7 +1,7 @@
 // src/components/ui/BottomNav.tsx
 // Barra de navegação inferior extraída do App.tsx para componente reutilizável.
 
-import React from 'react';
+import React, { useState } from 'react';
 import { C } from '../../data/constants';
 import type { ViewName } from '../../hooks/useFitnessData';
 
@@ -31,6 +31,13 @@ const HIDDEN_VIEWS = new Set<ViewName>([
 ]);
 
 export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCount, onOpenClub }) => {
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+      setToastMessage(msg);
+      setTimeout(() => setToastMessage(null), 3000);
+  };
+
   if (HIDDEN_VIEWS.has(view)) return null;
 
   return (
@@ -43,7 +50,26 @@ export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCoun
       justifyContent: 'center',
       zIndex: 100,
       pointerEvents: 'none',
+      flexDirection: 'column',
+      alignItems: 'center',
     }}>
+      {toastMessage && (
+        <div style={{
+          background: 'rgba(232, 74, 74, 0.9)',
+          color: '#fff',
+          padding: '12px 24px',
+          borderRadius: 20,
+          marginBottom: 16,
+          fontSize: 13,
+          fontWeight: 'bold',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          pointerEvents: 'auto',
+          animation: 'fadeInOut 3s ease-in-out'
+        }}>
+          {toastMessage}
+        </div>
+      )}
       <div
         className="glass"
         style={{
@@ -79,7 +105,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCoun
             label=""
             isActive={false}
             disabled
-            onClick={() => alert('🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!')}
+            onClick={() => showToast('🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!')}
           />
         )}
 

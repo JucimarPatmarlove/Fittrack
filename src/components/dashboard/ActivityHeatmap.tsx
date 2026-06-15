@@ -1,6 +1,6 @@
 import React from 'react';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
-import { WorkoutSession } from '../../types';
+import { WorkoutSession } from "../../db/schema";;
 
 interface HeatmapProps {
   history: WorkoutSession[];

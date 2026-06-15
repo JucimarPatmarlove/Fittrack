@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEffortStore } from '../../stores/useEffortStore';
 import { Activity, Coins, Zap } from 'lucide-react';
+import { C } from '../../data/constants';
 
 interface EffortTrackerProps {
   onEffortLogged?: () => void;
@@ -24,37 +25,40 @@ export const EffortTracker: React.FC<EffortTrackerProps> = ({
   };
 
   const getRpeColor = (val: number) => {
-    if (val <= 3) return 'text-green-400';
-    if (val <= 6) return 'text-yellow-400';
-    if (val <= 8) return 'text-orange-500';
-    return 'text-red-500';
+    if (val <= 3) return '#10b981'; // Green
+    if (val <= 6) return '#fbbf24'; // Yellow
+    if (val <= 8) return '#f97316'; // Orange
+    return '#ef4444'; // Red
   };
 
   return (
-    <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 border border-gray-700 shadow-xl w-full max-w-md mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-          <Activity className="w-6 h-6 text-cyan-400" />
-          Effort Tracking
+    <div style={{ background: C.card, borderRadius: 16, padding: 24, border: `1px solid ${C.border}`, width: '100%', maxWidth: 400, margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', display: 'flex', alignItems: 'center', gap: 8, margin: 0, fontFamily: "'Bebas Neue'", letterSpacing: 1 }}>
+          <Activity size={20} color={C.accent} />
+          EFFORT TRACKING
         </h3>
-        <div className="flex gap-4">
-          <div className="flex items-center gap-1 bg-gray-900 px-3 py-1 rounded-full">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-bold text-white">{totalEffortPoints}</span>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: C.bg, padding: '4px 10px', borderRadius: 20 }}>
+            <Zap size={14} color="#fbbf24" />
+            <span style={{ fontSize: 13, fontWeight: 'bold', color: '#fff' }}>{totalEffortPoints}</span>
           </div>
-          <div className="flex items-center gap-1 bg-gray-900 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-800 transition" onClick={convertEffortToTokens} title="Convert to $FIT Tokens">
-            <Coins className="w-4 h-4 text-green-400" />
-            <span className="text-sm font-bold text-white">{fitTokens} $FIT</span>
+          <div 
+            style={{ display: 'flex', alignItems: 'center', gap: 4, background: C.bg, padding: '4px 10px', borderRadius: 20, cursor: 'pointer' }}
+            onClick={convertEffortToTokens} title="Convert to $FIT Tokens"
+          >
+            <Coins size={14} color="#10b981" />
+            <span style={{ fontSize: 13, fontWeight: 'bold', color: '#fff' }}>{fitTokens} $FIT</span>
           </div>
         </div>
       </div>
 
       {!isLogged ? (
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           <div>
-            <div className="flex justify-between mb-2">
-              <label className="text-sm font-medium text-gray-300">Rate of Perceived Exertion (RPE)</label>
-              <span className={`text-lg font-bold ${getRpeColor(rpe)}`}>{rpe}/10</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <label style={{ fontSize: 14, color: C.text }}>Rate of Perceived Exertion (RPE)</label>
+              <span style={{ fontSize: 16, fontWeight: 'bold', color: getRpeColor(rpe) }}>{rpe}/10</span>
             </div>
             <input 
               type="range" 
@@ -62,35 +66,35 @@ export const EffortTracker: React.FC<EffortTrackerProps> = ({
               max="10" 
               value={rpe} 
               onChange={(e) => setRpe(Number(e.target.value))}
-              className="w-full accent-cyan-500"
+              style={{ width: '100%', accentColor: C.accent }}
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: C.muted, marginTop: 8 }}>
               <span>Very Light</span>
               <span>Moderate</span>
               <span>Maximum</span>
             </div>
           </div>
 
-          <div className="bg-gray-900/50 rounded-lg p-4 flex justify-between items-center">
+          <div style={{ background: C.bg, borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <p className="text-sm text-gray-400">Est. Points Earned</p>
-              <p className="text-2xl font-bold text-cyan-400">+{rpe * workoutDurationMinutes}</p>
+              <p style={{ fontSize: 12, color: C.muted, margin: '0 0 4px 0' }}>Est. Points Earned</p>
+              <p style={{ fontSize: 22, fontWeight: 'bold', color: C.accent, margin: 0 }}>+{rpe * workoutDurationMinutes}</p>
             </div>
             <button 
               onClick={handleLogEffort}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-2 px-6 rounded-xl transition transform hover:scale-105"
+              style={{ background: `linear-gradient(90deg, ${C.accent}, #00d4ff)`, color: '#000', fontWeight: 'bold', padding: '10px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14 }}
             >
               Log Effort
             </button>
           </div>
         </div>
       ) : (
-        <div className="text-center py-6">
-          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Zap className="w-8 h-8 text-green-400" />
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <div style={{ width: 64, height: 64, background: 'rgba(16, 185, 129, 0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+            <Zap size={32} color="#10b981" />
           </div>
-          <h4 className="text-lg font-bold text-white mb-2">Effort Logged!</h4>
-          <p className="text-gray-400 text-sm">You earned {rpe * workoutDurationMinutes} points. Keep pushing!</p>
+          <h4 style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', margin: '0 0 8px 0' }}>Effort Logged!</h4>
+          <p style={{ color: C.muted, fontSize: 14, margin: 0 }}>You earned {rpe * workoutDurationMinutes} points. Keep pushing!</p>
         </div>
       )}
     </div>

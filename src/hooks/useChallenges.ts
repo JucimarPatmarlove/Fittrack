@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLS } from './index';
 import { PredictiveChallenges, Challenge } from '../services/predictiveChallenges';
-import { WorkoutSession } from '../types';
+import { WorkoutSession } from "../db/schema";;
 
 export function useChallenges(history: WorkoutSession[]) {
     const [challenges, setChallenges] = useLS<Challenge[]>('fit_challenges', []);

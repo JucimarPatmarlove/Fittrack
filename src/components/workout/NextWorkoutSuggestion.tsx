@@ -1,6 +1,7 @@
 // src/components/workout/NextWorkoutSuggestion.tsx
 import React, { useMemo } from 'react';
-import { WorkoutSession, UserProfile } from '../../types';
+import { UserProfile } from "../../types";
+import { WorkoutSession } from "../../db/schema";;
 import { calculateRecovery } from '../../services/fitnessMechanics';
 import { AIWorkoutGenerator } from '../../services/aiGenerator';
 

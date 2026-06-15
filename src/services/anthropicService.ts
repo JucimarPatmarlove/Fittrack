@@ -10,7 +10,7 @@
 // O SDK @anthropic-ai/sdk NÃO é importado no cliente.
 // ════════════════════════════════════════════════════════════════
 
-import { WorkoutSession } from "../types";
+import { WorkoutSession } from "../db/schema";;
 import { getCachedWorkout, cacheWorkout } from "../ai/cacheLayer";
 import { OfflineWorkoutEngine } from "./offlineWorkoutEngine";
 import { useEffortStore } from "../stores/useEffortStore";
@@ -106,12 +106,7 @@ ${JSON.stringify(recentHistory)}
    * Tenta primeiro o cache local, depois o proxy BFF, e por fim o motor offline.
    */
   async generateWorkout(profile: any, recoveryTokens: any[], history: WorkoutSession[]): Promise<any> {
-    const fallbackWorkout = {
-      id: "ai_gen_fallback",
-      label: "Treino Inteligente (Offline)",
-      reasoning: "A tua rede falhou, mas criei rotina focada em estabilidade.",
-      exercises: ["Agachamento", "Supino Plano", "Remada Curvada", "Plank"]
-    };
+    const fallbackWorkout = OfflineWorkoutEngine.generateSingleWorkout(profile, history);
 
     const contextHash = `workout_${profile.goal}_${profile.level}_${new Date().toISOString().split('T')[0]}_${history.length}`;
     const cachedStr = await getCachedWorkout(contextHash);

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Moon, Calendar as CalendarIcon, CheckCircle } from 'lucide-react';
+import { Sun, Moon, Calendar as CalendarIcon, CheckCircle, Play } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useDualWorkoutStore } from '../../stores/useDualWorkoutStore';
+import { usePlanStore } from '../../stores/usePlanStore';
 import { C } from '../../data/constants';
 
 const NextWorkoutWidget = () => {
@@ -23,9 +24,10 @@ const NextWorkoutWidget = () => {
     );
   };
 
-export const DualWorkoutCalendar = () => {
+export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { getWorkoutsForDate, completeWorkout } = useDualWorkoutStore();
+  const { currentPlan } = usePlanStore();
   const dateStr = selectedDate.toISOString().split('T')[0];
   const workouts = getWorkoutsForDate(dateStr);
 
@@ -51,6 +53,16 @@ export const DualWorkoutCalendar = () => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {workoutsList.map(({ slot, icon: Icon, label, color }) => {
           const workout = workouts[slot];
+          let exercisesList: string[] = [];
+          let rawDayPlan: any = null;
+          
+          if (workout && currentPlan && workout.workoutId === currentPlan.id) {
+            rawDayPlan = currentPlan.workouts.find(w => workout.workoutName.includes(w.focus));
+            if (rawDayPlan) {
+              exercisesList = rawDayPlan.exercises || [];
+            }
+          }
+
           return (
             <motion.div
               key={slot}
@@ -58,29 +70,46 @@ export const DualWorkoutCalendar = () => {
               animate={{ opacity: 1, x: 0 }}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, background: C.bg, borderRadius: 8 }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                 <Icon size={20} style={{ color }} />
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 'bold', margin: 0, color: '#fff' }}>{label}</p>
                   {workout ? (
-                    <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>
-                      {workout.workoutName} • {workout.completed ? '✔️ Concluído' : '⏳ Pendente'}
-                    </p>
+                    <div>
+                      <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>
+                        {workout.workoutName} • {workout.completed ? '✔️ Concluído' : '⏳ Pendente'}
+                      </p>
+                      {exercisesList.length > 0 && (
+                        <p style={{ fontSize: 10, color: '#888', marginTop: 4, maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {exercisesList.join(', ')}
+                        </p>
+                      )}
+                    </div>
                   ) : (
                     <p style={{ fontSize: 11, color: '#555', margin: 0 }}>Nenhum treino agendado</p>
                   )}
                 </div>
               </div>
               
-              {workout && !workout.completed && (
-                <button
-                  onClick={() => completeWorkout(workout.date, workout.slot)}
-                  style={{ padding: '4px 12px', background: `${C.accent}22`, color: C.accent, borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  Concluir
-                </button>
-              )}
-              {workout?.completed && <CheckCircle size={20} style={{ color: '#10b981' }} />}
+              <div style={{ display: 'flex', gap: 6 }}>
+                {workout && !workout.completed && onStartWorkout && rawDayPlan && (
+                  <button
+                    onClick={() => onStartWorkout({ id: `day_${workout.id}`, label: `${rawDayPlan.day}: ${rawDayPlan.focus}`, exercises: rawDayPlan.exercises })}
+                    style={{ padding: '4px 8px', background: C.accent, color: '#000', borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    <Play size={12} /> Iniciar
+                  </button>
+                )}
+                {workout && !workout.completed && (
+                  <button
+                    onClick={() => completeWorkout(workout.date, workout.slot)}
+                    style={{ padding: '4px 12px', background: `${C.accent}22`, color: C.accent, borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                  >
+                    Concluir
+                  </button>
+                )}
+                {workout?.completed && <CheckCircle size={20} style={{ color: '#10b981' }} />}
+              </div>
             </motion.div>
           );
         })}

@@ -67,15 +67,27 @@ export class WorkoutGenerator {
     }
 
     private filterByEquipment(exercises: Exercise[], equipment: string[]): Exercise[] {
+        if (equipment.length === 0 || equipment.includes('any')) return exercises;
+        
+        const normalizedEquip = equipment.map(e => e.toLowerCase().trim());
+        
         return exercises.filter(ex => {
-            if (equipment.includes('bodyweight')) return ex.bodyweight;
-            if (equipment.includes('dumbbells')) return ex.dumbbell;
-            if (equipment.includes('barbell')) return ex.barbell;
-            return true;
+            if (normalizedEquip.includes('bodyweight') && ex.bodyweight) return true;
+            if (normalizedEquip.includes('dumbbells') && ex.dumbbell) return true;
+            if (normalizedEquip.includes('barbell') && ex.barbell) return true;
+            // Strict enforcement: if the exercise requires equipment we don't have, drop it.
+            // Currently our base exercises have barbell/dumbbell/bodyweight.
+            // If the exercise doesn't match the required equipment flags, return false.
+            if (!ex.bodyweight && !ex.dumbbell && !ex.barbell) return true; // Keep if it has no specific flags (fallback)
+            return false;
         });
     }
 
     private adaptForInjuries(exercises: Exercise[], injuries: string[]): Exercise[] {
+        if (injuries.length === 0) return exercises;
+
+        const normalizedInjuries = injuries.map(i => i.toLowerCase().trim());
+
         const adaptations: Record<string, string> = {
             'ombro': 'Elevação Lateral com elástico',
             'joelho': 'Leg Press',
@@ -83,7 +95,7 @@ export class WorkoutGenerator {
         };
 
         return exercises.map(ex => {
-            const injury = injuries.find(i => adaptations[i.toLowerCase()]);
+            const injury = normalizedInjuries.find(i => adaptations[i]);
             if (injury && adaptations[injury]) {
                 return { ...ex, alternative: adaptations[injury] };
             }

@@ -14,7 +14,7 @@ import { GlassCard } from '../ui/GlassCard';
 import { C } from '../../data/constants';
 import { analyzeMultipleExercises, TrendAnalysis } from '../../services/trendAnalyzer';
 import { useEffortStore } from '../../stores/useEffortStore';
-import { WorkoutSession } from '../../types';
+import { WorkoutSession } from "../../db/schema";;
 
 // ─── CONSTANTES CLÍNICAS ──────────────────────────────────────────────────────
 

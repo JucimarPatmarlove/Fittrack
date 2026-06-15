@@ -4,7 +4,7 @@ import { getExerciseCategory } from '../data/exerciseClassifier';
 import { calculateSuggestedWeight } from './loadCalculator';
 import { MacrocycleEngine } from '../services/macrocycleEngine';
 import { getMissedDays } from './missedDaysDetector';
-import { WorkoutSession } from '../types';
+import { WorkoutSession } from "../db/schema";;
 
 export interface UserProfile {
   sex?: 'male' | 'female' | string;

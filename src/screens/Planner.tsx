@@ -3,7 +3,7 @@ import { DualWorkoutCalendar } from '../components/planner/DualWorkoutCalendar';
 import { Challenge90Days } from '../components/planner/Challenge90Days';
 import { C } from "../data/constants";
 
-export const Planner = () => {
+export const Planner = ({ onStartWorkout }: { onStartWorkout?: any }) => {
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} style={{ padding: "18px", maxWidth: 480, margin: "0 auto", paddingBottom: 100 }}>
             <div style={{ marginBottom: 18 }}>
@@ -11,7 +11,7 @@ export const Planner = () => {
                 <p style={{ color: C.muted, fontSize: 12 }}>Agenda a tua disciplina brutal e os teus 90 dias.</p>
             </div>
 
-            <DualWorkoutCalendar />
+            <DualWorkoutCalendar onStartWorkout={onStartWorkout} />
 
             <div style={{ marginTop: 20 }}>
                 <Challenge90Days />

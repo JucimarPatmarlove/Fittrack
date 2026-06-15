@@ -14,12 +14,14 @@ import { useNutritionStore } from './stores/useNutritionStore';
 import { getTodayDateString } from './services/nutritionEngine';
 
 // ── COMPONENTES MENORES & MODULOS LAZY LOAD ─────────────────────────────────
+import { WelcomeWizard } from "./components/onboarding/WelcomeWizard";
 import { FitnessAssessment } from "./components/onboarding/FitnessAssessment";
 import { BeginnerGuide } from "./components/onboarding/BeginnerGuide";
 import { DetailedHistory } from "./components/history/DetailedHistory";
 import { PostWorkoutFeedback } from "./components/workout/PostWorkoutFeedback";
 import { RewardsStore } from "./screens/RewardsStore";
 import { FreeWorkoutBuilder } from "./components/workout/FreeWorkoutBuilder";
+import { WeeklyPlanGenerator } from "./components/workout/WeeklyPlanGenerator";
 import NutritionPlanner from './screens/NutritionPlanner';
 import { UserProfile } from './types';
 
@@ -54,11 +56,13 @@ export default function App() {
     workoutData,
     showClubModal,
     showFreeBuilder,
+    showWeeklyPlan,
     pendingRestoreBackup,
     setView,
     setProfile,
     setShowClubModal,
     setShowFreeBuilder,
+    setShowWeeklyPlan,
     setPendingRestoreBackup,
     handleStartWorkout,
     handleFinishWorkout,
@@ -69,7 +73,15 @@ export default function App() {
   } = useFitnessData();
 
   if (!isUnlocked) {
-    return <LockScreen onUnlock={handleUnlock} isFirstTime={isFirstTime} />;
+    if (isFirstTime) {
+      return <WelcomeWizard 
+                onComplete={handleUnlock} 
+                profile={profile} 
+                setProfile={setProfile} 
+                onClearMocks={handleReset} 
+             />;
+    }
+    return <LockScreen onUnlock={handleUnlock} isFirstTime={false} />;
   }
 
   return (
@@ -89,7 +101,7 @@ export default function App() {
         <Suspense fallback={<LoadingFallback />}>
           <AnimatePresence mode="wait">
             {view === "dashboard" && <motion.div key="dash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}><Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} /></motion.div>}
-            {view === "workout" && currentPlan && <motion.div key="work" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}><ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => { setView("dashboard"); }} /></motion.div>}
+            {view === "workout" && workoutData && <motion.div key="work" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}><ActiveWorkout todayPlan={workoutData} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => { setView("dashboard"); }} /></motion.div>}
             {view === "settings" && <motion.div key="set" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><Settings profile={profile} setProfile={setProfile} onReset={handleReset} /></motion.div>}
             {view === "assessment" && <motion.div key="asses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><FitnessAssessment onComplete={(data: Partial<UserProfile>) => { setProfile({ ...profile, ...data } as UserProfile); setView("dashboard"); }} /></motion.div>}
             {view === "guide" && <motion.div key="gui" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><BeginnerGuide onComplete={() => setView("dashboard")} /></motion.div>}
@@ -97,7 +109,7 @@ export default function App() {
             {view === "feedback" && <motion.div key="feed" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}><PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} /></motion.div>}
             {view === "aicoach" && <motion.div key="aicoach" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AICoach history={history} profile={profile} /></motion.div>}
             {view === "trends" && <motion.div key="trends" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Trends history={history} /></motion.div>}
-            {view === "planner" && <motion.div key="planner" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Planner /></motion.div>}
+            {view === "planner" && <motion.div key="planner" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Planner onStartWorkout={handleStartWorkout} /></motion.div>}
             {view === "gymvibe" && <motion.div key="gymvibe" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><GymVibe profile={profile} /></motion.div>}
             {view === "milestones" && <motion.div key="milestones" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><Milestones history={history} /></motion.div>}
             {view === "cyclereview" && <motion.div key="cyclereview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}><CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} /></motion.div>}
@@ -132,6 +144,17 @@ export default function App() {
           onClose={() => setShowFreeBuilder(false)}
           onStart={(plan) => {
             setShowFreeBuilder(false);
+            handleStartWorkout(plan);
+          }}
+        />
+      )}
+      {showWeeklyPlan && (
+        <WeeklyPlanGenerator 
+          profile={profile}
+          setProfile={setProfile}
+          onClose={() => setShowWeeklyPlan(false)}
+          onStartWorkout={(plan) => {
+            setShowWeeklyPlan(false);
             handleStartWorkout(plan);
           }}
         />

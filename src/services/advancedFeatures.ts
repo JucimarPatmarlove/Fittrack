@@ -1,5 +1,6 @@
 // src/services/advancedFeatures.ts
-import { WorkoutSession, UserProfile } from '../types';
+import { UserProfile } from "../types";
+import { WorkoutSession } from "../db/schema";;
 
 export interface NutritionIntegration {
     logMeal(calories: number, macros: { protein: number; carbs: number; fats: number }): void;

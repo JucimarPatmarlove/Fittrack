@@ -1,5 +1,5 @@
 import React, { useMemo, Suspense } from 'react';
-import { WorkoutSession } from '../../types';
+import { WorkoutSession } from "../../db/schema";;
 const MuscleViewer = React.lazy(() => import('../3d/MuscleViewer').then(module => ({ default: module.MuscleViewer })));
 
 export const MuscleHeatmap = ({ workouts }: { workouts: WorkoutSession[] }) => {
@@ -42,7 +42,17 @@ export const MuscleHeatmap = ({ workouts }: { workouts: WorkoutSession[] }) => {
 
             {/* Muscle 3D Holographic Viewer */}
             <div style={{ marginBottom: 20 }}>
-                <Suspense fallback={<div style={{height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#55626e'}}>A carregar mapa muscular...</div>}>
+                <Suspense fallback={
+                    <div style={{
+                        height: 200, width: '100%',
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%)',
+                        border: '1px dashed rgba(255,255,255,0.1)',
+                        borderRadius: 12,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                        <span style={{ color: '#55626e', fontFamily: "'Bebas Neue'", letterSpacing: 2 }}>MODELO BIOMÉTRICO OFFLINE</span>
+                    </div>
+                }>
                     <MuscleViewer fatigueStats={fatigueStats} />
                 </Suspense>
             </div>

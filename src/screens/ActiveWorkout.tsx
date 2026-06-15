@@ -533,8 +533,8 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
               <p style={{ fontFamily: "'Bebas Neue'", fontSize: 22, letterSpacing: 2, marginBottom: 8 }}>ABANDONAR?</p>
               <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>O progresso não será guardado.</p>
               <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => setConfirmCancel(false)} style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 11, color: C.text, cursor: "pointer", fontWeight: 600 }}>Voltar</button>
-                <button onClick={onCancel} style={{ flex: 1, background: C.red, border: "none", borderRadius: 8, padding: 11, color: "#fff", cursor: "pointer", fontWeight: 700 }}>Sair</button>
+                <button onClick={() => setConfirmCancel(false)} style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, color: C.text, cursor: "pointer", fontWeight: 600, fontSize: 16 }}>Voltar</button>
+                <button onClick={onCancel} style={{ flex: 1, background: C.red, border: "none", borderRadius: 12, padding: 20, color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 16 }}>Sair</button>
               </div>
             </div>
           </div>
@@ -569,11 +569,11 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
 
               <div style={{ display: "flex", flexDirection: 'column', gap: 10 }}>
                 {injuryRisk.overallRisk !== 'critical' && (
-                  <button onClick={() => setInjuryRisk(null)} style={{ background: 'transparent', border: `1px solid #475569`, borderRadius: 8, padding: 14, color: '#94a3b8', cursor: "pointer", fontWeight: 600, fontSize: 14 }}>
+                  <button onClick={() => setInjuryRisk(null)} style={{ background: 'transparent', border: `1px solid #475569`, borderRadius: 12, padding: 20, color: '#94a3b8', cursor: "pointer", fontWeight: 600, fontSize: 16 }}>
                     Estou ciente, assumir risco e treinar
                   </button>
                 )}
-                <button onClick={onCancel} style={{ background: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316', border: "none", borderRadius: 8, padding: 14, color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 16 }}>
+                <button onClick={onCancel} style={{ background: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316', border: "none", borderRadius: 12, padding: 20, color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 18 }}>
                   {injuryRisk.overallRisk === 'critical' ? 'Aceitar Recomendação e Descansar' : 'Cancelar Treino'}
                 </button>
               </div>
@@ -649,13 +649,13 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
                   <button
                     onClick={() => setAmrapRunning(r => !r)}
                     disabled={amrapTimeLeft <= 0}
-                    style={{ flex: 2, background: amrapRunning ? 'rgba(239,68,68,0.2)' : 'rgba(249,115,22,0.2)', border: `1px solid ${amrapRunning ? '#ef4444' : '#f97316'}`, borderRadius: 10, padding: 10, color: amrapRunning ? '#fca5a5' : '#f97316', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
+                    style={{ flex: 2, background: amrapRunning ? 'rgba(239,68,68,0.2)' : 'rgba(249,115,22,0.2)', border: `1px solid ${amrapRunning ? '#ef4444' : '#f97316'}`, borderRadius: 10, padding: 20, color: amrapRunning ? '#fca5a5' : '#f97316', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
                   >
                     {amrapRunning ? '⏸ PAUSAR' : amrapTimeLeft <= 0 ? '✓ FIM' : '▶ INICIAR'}
                   </button>
                   <button
                     onClick={() => setRoundsCompleted(r => r + 1)}
-                    style={{ flex: 1, background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 10, padding: 10, color: '#f97316', fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, cursor: 'pointer' }}
+                    style={{ flex: 1, background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: 10, padding: 20, color: '#f97316', fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, cursor: 'pointer' }}
                   >
                     + RONDA
                   </button>
@@ -691,7 +691,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     onClick={() => setEmomRunning(r => !r)}
-                    style={{ flex: 2, background: emomRunning ? 'rgba(239,68,68,0.2)' : 'rgba(56,189,248,0.2)', border: `1px solid ${emomRunning ? '#ef4444' : '#38bdf8'}`, borderRadius: 10, padding: 10, color: emomRunning ? '#fca5a5' : '#38bdf8', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
+                    style={{ flex: 2, background: emomRunning ? 'rgba(239,68,68,0.2)' : 'rgba(56,189,248,0.2)', border: `1px solid ${emomRunning ? '#ef4444' : '#38bdf8'}`, borderRadius: 10, padding: 20, color: emomRunning ? '#fca5a5' : '#38bdf8', fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}
                   >
                     {emomRunning ? '⏸ PAUSAR' : '▶ INICIAR'}
                   </button>

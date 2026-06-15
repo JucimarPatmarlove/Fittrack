@@ -1,4 +1,5 @@
-import { WorkoutSession, UserProfile } from '../types';
+import { UserProfile } from "../types";
+import { WorkoutSession } from "../db/schema";;
 
 // 1. Cálculo de 1RM (Fórmula de Brzycki)
 export function calculate1RM(weight: number, reps: number): number {

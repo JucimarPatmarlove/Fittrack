@@ -22,8 +22,7 @@ const theme = {
 
 const NutritionPlanner: React.FC = () => {
   // Estado Global via Zustand
-  const { currentMealLog: mealsLog, addMeal, removeMeal } = useNutritionStore();
-  const profile = JSON.parse(localStorage.getItem('fittrack_profile') || '{}');
+  const { profile, currentMealLog: mealsLog, addMeal, removeMeal } = useNutritionStore();
   const currentDate = new Date().toISOString().split('T')[0];
 
   // O estado atual das refeições no Zustand não expõe "meals" como array de logs se quisermos aceder ao dia específico,

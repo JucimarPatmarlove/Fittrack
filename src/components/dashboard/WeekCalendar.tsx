@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { C } from '../../data/constants';
-import { WorkoutSession } from '../../types';
+import { WorkoutSession } from "../../db/schema";;
 
 export const WeekCalendar = ({ history }: { history: WorkoutSession[] }) => {
     // Obter data base

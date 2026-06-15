@@ -1,5 +1,5 @@
-import { WorkoutSession } from "../types";
-import { healthBridge, HealthMetrics } from './healthBridge';
+import { WorkoutSession } from "../db/schema";;
+import { healthBridge, UnifiedHealthMetrics } from './healthBridge';
 
 export const NeuralFatigue = {
     // Retorna um Readiness Score entre 0 e 100
@@ -66,29 +66,16 @@ export async function getEnhancedReadinessScore(history: WorkoutSession[]): Prom
     const clinicalNotes: string[] = [];
 
     try {
-        const sync = await healthBridge.autoSync();
-        if (sync.success) {
-            const metrics = sync.metrics;
+        const metrics = await healthBridge.autoSync();
+        if (metrics) {
             let penalty = 0;
             
-            if (metrics.steps < 5000) {
-                penalty += 10;
-                clinicalNotes.push('NEAT baixo hoje (< 5000 passos). Fluxo sanguíneo reduzido para recuperação ativa.');
-            }
             if (metrics.sleepHours && metrics.sleepHours < 6) {
                 penalty += 15;
                 clinicalNotes.push(`Privação de sono (${metrics.sleepHours.toFixed(1)}h). Risco de lesão elevado e síntese proteica comprometida.`);
             } else if (metrics.sleepHours && metrics.sleepHours >= 8) {
                 penalty -= 5;
                 clinicalNotes.push('Recuperação anabólica otimizada (>8h de sono).');
-            }
-            if (metrics.heartRateResting && metrics.heartRateResting > 80) {
-                penalty += 10;
-                clinicalNotes.push(`FC de repouso elevada (${Math.round(metrics.heartRateResting)}bpm). Possível fadiga do SNC.`);
-            }
-            if (metrics.heartRateVariability && metrics.heartRateVariability < 40) {
-                penalty += 10;
-                clinicalNotes.push(`HRV muito baixo (${Math.round(metrics.heartRateVariability)}ms). Sistema Simpático sobrecarregado.`);
             }
 
             healthScore -= penalty;

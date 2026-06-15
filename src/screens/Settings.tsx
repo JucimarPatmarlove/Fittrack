@@ -38,12 +38,12 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
           try {
               const data = JSON.parse(event.target?.result as string);
               if (data.profile) {
-                  localStorage.setItem('fit_profile', JSON.stringify(data.profile));
+                  setProfile(data.profile); // Atualiza a store global e grava seguro via hook
                   const { set } = await import('idb-keyval');
                   await set('fit_profile', data.profile);
               }
               if (data.history) {
-                  localStorage.setItem('fit_history', JSON.stringify(data.history));
+                  // Evitar gravar plain text no localStorage
                   const { set } = await import('idb-keyval');
                   await set('fit_history', data.history);
               }

@@ -84,18 +84,6 @@ export interface ExerciseSession {
     sets: ExerciseSet[];
 }
 
-export interface WorkoutSession {
-    date: string;
-    dayLabel: string;
-    duration: number;
-    exercises: ExerciseSession[];
-    totalVolume: number;
-    avgRPE?: number;
-    intensity?: string | number;
-    notes?: string;
-    calories?: number;
-}
-
 export interface WorkoutPlan {
     id: string;
     label: string;

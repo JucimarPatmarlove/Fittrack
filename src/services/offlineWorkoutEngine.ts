@@ -1,4 +1,4 @@
-import { UserProfile } from '../types';
+import { UserProfile, WorkoutSession } from '../db/schema';
 
 // 1. Base de Dados Categorizada Interna
 const EXERCISE_POOL = {
@@ -27,7 +27,30 @@ const getRandom = (arr: string[], n: number): string[] => {
 
 export class OfflineWorkoutEngine {
   
-  static generateWeeklyPlan(profile: any, planType: string = 'hipertrofia') {
+  static generateSingleWorkout(profile: Partial<UserProfile>, history: WorkoutSession[] = []): any {
+    const isHomeGym = profile.availableEquipment?.[0] === 'Apenas Halteres' || profile.availableEquipment?.[0] === 'Peso Corporal';
+    const pool = isHomeGym ? HOME_GYM_POOL : EXERCISE_POOL;
+    
+    // Simplistic predictive logic based on goal
+    let exercises: string[] = [];
+    const goal = profile.goal || 'Hipertrofia';
+    
+    if (goal.toLowerCase().includes('força')) {
+        exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.pernas, 2), ...getRandom(pool.core, 1)];
+    } else {
+        exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)];
+    }
+
+    return {
+      id: `ai_gen_fallback_${Date.now()}`,
+      label: "Motor Preditivo Local (Offline)",
+      reasoning: "Sem ligação à API neural. A usar o motor de fallback local baseado nos teus objetivos principais.",
+      exercises,
+      exercisesDetails: []
+    };
+  }
+
+  static generateWeeklyPlan(profile: Partial<UserProfile>, planType: string = 'hipertrofia') {
     const isHomeGym = profile.availableEquipment?.[0] === 'Apenas Halteres' || profile.availableEquipment?.[0] === 'Peso Corporal';
     const pool = isHomeGym ? HOME_GYM_POOL : EXERCISE_POOL;
 

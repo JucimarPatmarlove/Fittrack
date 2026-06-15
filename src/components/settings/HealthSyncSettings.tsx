@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { healthBridge, HealthMetrics } from '../../services/healthBridge';
+import { healthBridge, UnifiedHealthMetrics } from '../../services/healthBridge';
 import { useHealthStore } from '../../stores/useHealthStore';
 import { GlassCard } from '../ui/GlassCard';
 
 export const HealthSyncSettings: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const [lastSync, setLastSync] = useState<HealthMetrics | null>(null);
+  const [lastSync, setLastSync] = useState<UnifiedHealthMetrics | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { syncHealthData } = useHealthStore();
 
   useEffect(() => {
-    healthBridge.init().then(() => {
-      const token = localStorage.getItem('google_fit_token');
-      setIsConnected(!!token);
-    });
+    const token = localStorage.getItem('google_fit_token');
+    setIsConnected(!!token);
   }, []);
 
   const handleConnectGoogle = async () => {
@@ -31,7 +29,7 @@ export const HealthSyncSettings: React.FC = () => {
   const handleSync = async () => {
     setLoading(true);
     await syncHealthData([], true); // Force Refresh (needs history, pass empty or fetch it)
-    const storeData = useHealthStore.getState().biometrics;
+    const storeData = useHealthStore.getState().healthKitData;
     if (storeData) {
       setLastSync(storeData);
     }
@@ -84,11 +82,8 @@ export const HealthSyncSettings: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, background: '#0f1419', padding: 12, borderRadius: 8 }}
               >
-                <div style={{ fontSize: 12, color: '#55626e' }}>👣 Passos</div>
-                <div style={{ fontSize: 14, color: '#eceae4', textAlign: 'right', fontFamily: 'monospace' }}>{lastSync.steps.toLocaleString()}</div>
-                
-                <div style={{ fontSize: 12, color: '#55626e' }}>🔥 Calorias</div>
-                <div style={{ fontSize: 14, color: '#eceae4', textAlign: 'right', fontFamily: 'monospace' }}>{lastSync.activeEnergyBurned} kcal</div>
+                <div style={{ fontSize: 12, color: '#55626e' }}>⚖️ Peso</div>
+                <div style={{ fontSize: 14, color: '#eceae4', textAlign: 'right', fontFamily: 'monospace' }}>{lastSync.weight?.toFixed(1) || 'N/A'} kg</div>
                 
                 {lastSync.sleepHours && (
                   <>
@@ -96,14 +91,9 @@ export const HealthSyncSettings: React.FC = () => {
                     <div style={{ fontSize: 14, color: '#eceae4', textAlign: 'right', fontFamily: 'monospace' }}>{lastSync.sleepHours.toFixed(1)}h</div>
                   </>
                 )}
-                {lastSync.heartRateResting && (
-                  <>
-                    <div style={{ fontSize: 12, color: '#55626e' }}>❤️ FC Repouso</div>
-                    <div style={{ fontSize: 14, color: '#eceae4', textAlign: 'right', fontFamily: 'monospace' }}>{Math.round(lastSync.heartRateResting)} bpm</div>
-                  </>
-                )}
-                <div style={{ fontSize: 12, color: '#55626e' }}>📅 Data</div>
-                <div style={{ fontSize: 12, color: '#55626e', textAlign: 'right' }}>{new Date(lastSync.date).toLocaleDateString()}</div>
+                
+                <div style={{ fontSize: 12, color: '#55626e' }}>📅 Último Sync</div>
+                <div style={{ fontSize: 12, color: '#55626e', textAlign: 'right' }}>{new Date(lastSync.lastSync).toLocaleString()}</div>
               </motion.div>
             )}
           </AnimatePresence>

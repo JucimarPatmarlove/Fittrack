@@ -1,7 +1,8 @@
-export type WebRTCMessage = {
-  type: 'SYNC_WORKOUT' | 'SYNC_PARTY' | 'PING';
-  payload: any;
-};
+import { WorkoutSession } from '../db/schema';
+
+export type WebRTCMessage = 
+  | { type: 'PING'; payload: { time: number } }
+  | { type: 'SYNC_WORKOUT'; payload: WorkoutSession };
 
 export class WebRTCEngine {
   private peerConnection: RTCPeerConnection;
@@ -50,8 +51,10 @@ export class WebRTCEngine {
   }
 
   // ─── MÁQUINA B: RECEBE OFERTA E GERA RESPOSTA ───────────────────────────
-  public async acceptOfferAndCreateAnswer(base64Offer: string): Promise<string> {
-    const offer = JSON.parse(atob(base64Offer));
+  public async acceptOfferAndCreateAnswer(compressedOffer: string): Promise<string> {
+    const decoded = atob(compressedOffer);
+    if (!decoded) throw new Error("Falha na descompressão do Token P2P (Offer)");
+    const offer = JSON.parse(decoded);
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
     const answer = await this.peerConnection.createAnswer();
@@ -71,8 +74,10 @@ export class WebRTCEngine {
   }
 
   // ─── MÁQUINA A: ACEITA A RESPOSTA PARA ABRIR TÚNEL ──────────────────────
-  public async acceptAnswer(base64Answer: string): Promise<void> {
-    const answer = JSON.parse(atob(base64Answer));
+  public async acceptAnswer(compressedAnswer: string): Promise<void> {
+    const decoded = atob(compressedAnswer);
+    if (!decoded) throw new Error("Falha na descompressão do Token P2P (Answer)");
+    const answer = JSON.parse(decoded);
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
   }
 
