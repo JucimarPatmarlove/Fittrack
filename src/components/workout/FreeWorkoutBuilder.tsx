@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { C, EXERCISE_DB } from '../../data/constants';
+import { C } from '../../data/constants';
+import { useExerciseStore } from '../../stores/useExerciseStore';
 import { ExerciseLibrary } from './ExerciseLibrary';
 import { analyzeInjuryRisk, InjuryAssessment } from '../../services/injuryPredictor';
 import { DemographicEngine } from '../../services/demographicEngine';
@@ -55,6 +56,12 @@ const EQUIPMENT_EMOJIS: Record<string, string> = {
 };
 
 export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBuilderProps) {
+  const { exercises: EXERCISE_DB, isLoading: isDbLoading, fetchExercises } = useExerciseStore();
+  
+  useEffect(() => {
+    fetchExercises();
+  }, [fetchExercises]);
+
   const [step, setStep] = useState(1);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
@@ -148,6 +155,14 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
   }, [selectedMuscles, selectedEquipment]);
 
   const toggleSelection = (item: string, list: string[], setList: any) => {
+
+  if (isDbLoading || Object.keys(EXERCISE_DB).length === 0) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: theme.bg, color: theme.text, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        A carregar base de dados biomecânica...
+      </div>
+    );
+  }
     if (injuryData?.restrictedExercises?.includes(item.toLowerCase()) && !list.includes(item)) {
       alert(`⚠️ Exercício de alto risco (${item}) não recomendado. Escolha uma alternativa de baixo impacto.`);
       return;

@@ -1,6 +1,7 @@
 import React from "react";
 import { DynamicRPESlider } from "./DynamicRPESlider";
 import { PaceTracker } from "./PaceTracker";
+import { initAudio } from "../../utils/audio";
 
 export const WorkoutSetRow = React.memo(({
   s, ei, si, theme, C, upd, toggle, setCurrentExerciseIdx, setCurrentSetIdx, setShowPlateCalc, profile, setStartTimes, tr
@@ -37,7 +38,7 @@ export const WorkoutSetRow = React.memo(({
         <div style={{ background: s.isWarmup ? 'rgba(0,0,0,0.2)' : 'transparent', border: `1px solid ${s.done ? theme.success + "66" : s.isWarmup ? theme.accent + "66" : theme.glassBorder}`, borderRadius: 6, padding: "8px 5px" }}>
           <DynamicRPESlider value={s.rpe || 8} onChange={val => upd(ei, si, "rpe", String(val))} theme={theme} />
         </div>
-        <button onClick={() => toggle(ei, si)}
+        <button onClick={() => { initAudio(); toggle(ei, si); }}
           style={{
             background: s.done ? theme.success : '#1e2832', border: "none", borderRadius: 6, width: 38, height: 36, cursor: "pointer", fontSize: s.done ? 14 : 11, display: "flex", alignItems: "center", justifyContent: "center",
             color: s.done ? "#000" : theme.muted, transition: "all 0.2s ease",

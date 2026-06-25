@@ -107,11 +107,28 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
           <h1 style={{ fontFamily: "'Bebas Neue'", fontSize: 32, letterSpacing: 2, color: C.accent, marginBottom: 8 }}>
             {isFirstTime ? 'CONFIGURAR PIN' : 'DESBLOQUEAR'}
           </h1>
-          <p style={{ color: C.muted, fontSize: 13, marginBottom: 24 }}>
+          <p style={{ color: C.muted, fontSize: 13, marginBottom: 24, lineHeight: 1.5 }}>
             {isFirstTime
               ? 'Cria um PIN para encriptar os teus dados de treino e API Keys localmente.'
               : 'Insere o teu PIN para aceder aos teus dados encriptados.'}
           </p>
+
+          {isFirstTime && (
+            <div style={{
+              background: 'rgba(232,74,74,0.1)',
+              border: '1px solid rgba(232,74,74,0.3)',
+              borderRadius: 10,
+              padding: 12,
+              marginBottom: 20,
+              textAlign: 'left'
+            }}>
+              <p style={{ color: '#fca5a5', fontSize: 11, lineHeight: 1.5, margin: 0 }}>
+                ⚠️ <strong style={{ color: '#fca5a5' }}>Atenção:</strong> Não existe forma de recuperar o PIN.
+                Se o perderes, todos os teus dados ficarão inacessíveis permanentemente.
+                Recomendamos guardar o PIN num gestor de passwords.
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleUnlock}>
             <input

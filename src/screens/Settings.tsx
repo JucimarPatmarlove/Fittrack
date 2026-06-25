@@ -204,6 +204,19 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
         <p style={{ fontSize: 12, color: C.green }}>Ligação Segura Cloudflare ativa (Zero-Trust).</p>
       </div>
 
+      <div style={{
+        background: 'rgba(100,116,139,0.08)',
+        border: '1px solid rgba(100,116,139,0.2)',
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 20,
+      }}>
+        <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, margin: 0 }}>
+          🔒 <strong style={{ color: '#94a3b8' }}>Armazenamento Local:</strong> Todos os teus dados (treinos, progresso, definições) são guardados apenas neste navegador.
+          Não sincronizam entre dispositivos. Para transferir dados, usa a função de exportação/importação abaixo.
+        </p>
+      </div>
+
       <div className="glass" style={{ padding: 14, marginBottom: 20 }}>
         <p style={{ fontFamily: "'Bebas Neue'", fontSize: 14, letterSpacing: 1, color: C.text, marginBottom: 8 }}>BACKUP DE DADOS</p>
         

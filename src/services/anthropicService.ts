@@ -40,7 +40,19 @@ async function callProxy(endpoint: string, payload: any): Promise<any> {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ error: { message: response.statusText } }));
-    throw new Error(errorData.error?.message || `Proxy error: ${response.status}`);
+    let errorMessage = errorData.error?.message || `Proxy error: ${response.status}`;
+    
+      // Interceptar problemas de timestamp específicos do server.ts
+      if (errorMessage.includes('expirado') || errorMessage.includes('dessincronizado') || errorMessage.includes('clock')) {
+        errorMessage = '⚠️ O relógio do teu dispositivo está desfasado da hora global.\n\n' +
+          '🔧 Como resolver:\n' +
+          '  • Android: Definições → Sistema → Data e Hora → "Automático"\n' +
+          '  • iOS:   Definições → Geral → Data e Hora → "Definir Automaticamente"\n' +
+          '  • PC:    Ativar sincronização de hora nas definições do sistema operativo\n\n' +
+          'Após corrigir, reinicia a aplicação para o AI Coach voltar a funcionar.';
+      }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();

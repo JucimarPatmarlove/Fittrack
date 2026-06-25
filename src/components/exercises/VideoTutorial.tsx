@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getExerciseMedia } from '../../data/exerciseMedia';
-import { EXERCISE_DB } from '../../data/constants';
+import { useExerciseStore } from '../../stores/useExerciseStore';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useAudioCoach } from '../../hooks/useAudioCoach';
 
@@ -103,6 +103,7 @@ function getSteps(exerciseName: string, muscle: string): string[] {
 type Tab = 'media' | 'steps' | 'muscles';
 
 export const VideoTutorial = ({ exerciseName, muscle }: { exerciseName: string; muscle: string }) => {
+  const EXERCISE_DB = useExerciseStore(s => s.exercises);
   const dbEntry = (EXERCISE_DB as any)[exerciseName];
   const videoSrc = dbEntry?.media?.video;
 

@@ -1,4 +1,5 @@
-import { UserProfile, WorkoutSession } from '../db/schema';
+import { WorkoutSession } from '../db/schema';
+import { UserProfile } from '../types';
 
 // 1. Base de Dados Categorizada Interna
 const EXERCISE_POOL = {
@@ -20,26 +21,158 @@ const HOME_GYM_POOL = {
   core: EXERCISE_POOL.core
 };
 
+const CARDIO_EXERCISES = ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'Squat Jumps'];
+
+// Preference -> exercise selector config
+interface PreferenceConfig {
+  keywords: string[];
+  getExercises: (pool: any) => string[];
+  titleSuffix?: string;
+}
+
+const PREFERENCE_CONFIGS: Record<string, PreferenceConfig> = {
+  pernas: {
+    keywords: ['perna', 'leg', 'coxa', 'glúteo'],
+    getExercises: (pool) => [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)],
+    titleSuffix: 'Pernas',
+  },
+  peito: {
+    keywords: ['peito', 'chest'],
+    getExercises: (pool) => [...getRandom(pool.peito, 3), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)],
+    titleSuffix: 'Peito',
+  },
+  costas: {
+    keywords: ['costa', 'back', 'lats'],
+    getExercises: (pool) => [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 2)],
+    titleSuffix: 'Costas',
+  },
+  ombros: {
+    keywords: ['ombro', 'shoulder'],
+    getExercises: (pool) => [...getRandom(pool.ombros, 3), ...getRandom(pool.core, 2)],
+    titleSuffix: 'Ombros',
+  },
+  bracos: {
+    keywords: ['braço', 'braco', 'arm', 'bícep', 'trícep'],
+    getExercises: (pool) => [...getRandom(pool.bracos, 4), ...getRandom(pool.core, 1)],
+    titleSuffix: 'Braços',
+  },
+  core: {
+    keywords: ['core', 'abdo', 'plank'],
+    getExercises: (pool) => [...getRandom(pool.core, 4)],
+    titleSuffix: 'Core',
+  },
+  cardio: {
+    keywords: ['cardio', 'hiit', 'respir'],
+    getExercises: () => CARDIO_EXERCISES,
+    titleSuffix: 'Cardio / HIIT',
+  },
+};
+
+const FALLBACK_EXERCISES = (pool: any) => [
+  ...getRandom(pool.peito, 1),
+  ...getRandom(pool.costas, 1),
+  ...getRandom(pool.pernas, 1),
+  ...getRandom(pool.core, 1),
+];
+
+const DAYS_OF_WEEK = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+
 const getRandom = (arr: string[], n: number): string[] => {
   const shuffled = [...arr].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, Math.min(n, arr.length));
 };
 
+/** Extracts preference type from a day preference string */
+const classifyPreference = (prefLower: string): string | null => {
+  for (const [key, config] of Object.entries(PREFERENCE_CONFIGS)) {
+    if (config.keywords.some(kw => prefLower.includes(kw))) return key;
+  }
+  return null;
+};
+
+/** Builds a workout for a given day preference */
+const buildPreferenceDay = (pool: any, prefVal: string) => {
+  const prefLower = prefVal.toLowerCase();
+  const prefType = classifyPreference(prefLower);
+
+  if (prefType) {
+    const config = PREFERENCE_CONFIGS[prefType];
+    return {
+      exercises: config.getExercises(pool),
+      focusTitle: prefVal.includes('(') ? prefVal : `${config.titleSuffix} (${prefVal})`,
+    };
+  }
+
+  return {
+    exercises: FALLBACK_EXERCISES(pool),
+    focusTitle: prefVal,
+  };
+};
+
+/** Build a rest day entry */
+function buildRestDay(day: string) {
+  return { day, focus: 'Descanso', exercises: ['Recuperação Ativa', 'Alongamentos'] };
+}
+
+/** Build a day based on user preference */
+function buildPreferredDay(day: string, pool: any, prefVal: string) {
+  const { exercises, focusTitle } = buildPreferenceDay(pool, prefVal);
+  return { day, focus: focusTitle, exercises };
+}
+
+/** Build a day from the split plan */
+function buildSplitDay(day: string, rawSplit: any[], splitIndex: number) {
+  const workoutDay = rawSplit[splitIndex];
+  return { day, focus: workoutDay.title, exercises: workoutDay.exercises };
+}
+
+/** Build a fallback general training day */
+function buildFallbackDay(day: string, pool: any) {
+  return { day, focus: 'Treino Geral', exercises: FALLBACK_EXERCISES(pool) };
+}
+
+/** Determine which exercise pool to use based on equipment */
+function selectExercisePool(profile: Partial<UserProfile>) {
+  const isHomeGym = profile.availableEquipment?.[0] === 'Apenas Halteres' || profile.availableEquipment?.[0] === 'Peso Corporal';
+  return isHomeGym ? HOME_GYM_POOL : EXERCISE_POOL;
+}
+
+/** Build a single day workout entry based on all conditions */
+function buildWorkoutDay(
+  day: string,
+  activeDays: string[],
+  dayPreferences: Record<string, string>,
+  pool: any,
+  rawSplit: any[],
+  splitIndexRef: { current: number }
+) {
+  if (!activeDays.includes(day)) {
+    return buildRestDay(day);
+  }
+
+  const prefVal = dayPreferences[day];
+  if (prefVal && prefVal !== 'Padrão') {
+    return buildPreferredDay(day, pool, prefVal);
+  }
+
+  if (splitIndexRef.current < rawSplit.length) {
+    const result = buildSplitDay(day, rawSplit, splitIndexRef.current);
+    splitIndexRef.current++;
+    return result;
+  }
+
+  return buildFallbackDay(day, pool);
+}
+
 export class OfflineWorkoutEngine {
   
   static generateSingleWorkout(profile: Partial<UserProfile>, history: WorkoutSession[] = []): any {
-    const isHomeGym = profile.availableEquipment?.[0] === 'Apenas Halteres' || profile.availableEquipment?.[0] === 'Peso Corporal';
-    const pool = isHomeGym ? HOME_GYM_POOL : EXERCISE_POOL;
-    
-    // Simplistic predictive logic based on goal
-    let exercises: string[] = [];
+    const pool = selectExercisePool(profile);
     const goal = profile.goal || 'Hipertrofia';
     
-    if (goal.toLowerCase().includes('força')) {
-        exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.pernas, 2), ...getRandom(pool.core, 1)];
-    } else {
-        exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)];
-    }
+    const exercises = goal.toLowerCase().includes('força')
+      ? [...getRandom(pool.peito, 1), ...getRandom(pool.pernas, 2), ...getRandom(pool.core, 1)]
+      : [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)];
 
     return {
       id: `ai_gen_fallback_${Date.now()}`,
@@ -51,304 +184,127 @@ export class OfflineWorkoutEngine {
   }
 
   static generateWeeklyPlan(profile: Partial<UserProfile>, planType: string = 'hipertrofia') {
-    const isHomeGym = profile.availableEquipment?.[0] === 'Apenas Halteres' || profile.availableEquipment?.[0] === 'Peso Corporal';
-    const pool = isHomeGym ? HOME_GYM_POOL : EXERCISE_POOL;
-
+    const pool = selectExercisePool(profile);
     const goal = profile.goal || 'Hipertrofia';
     const activeDays = profile.trainingDays || ["Segunda", "Quarta", "Sexta"];
-
-    let rawSplit: any[] = [];
-
-    // Decide the split logic based on the requested planType or Goal
-    if (planType === 'forca' || planType === 'powerbuilding' || goal.toLowerCase().includes('força')) {
-        rawSplit = this.generateUpperLowerSplit(pool);
-    } else if (planType === 'anatoly') {
-        rawSplit = this.generateAnatolySplit(pool);
-    } else if (planType === 'hiit') {
-        rawSplit = this.generateHIITSplit(pool);
-    } else if (planType === 'functional') {
-        rawSplit = this.generateFunctionalSplit(pool);
-    } else if (planType === 'hipertrofia' || planType === 'classic' || goal.toLowerCase().includes('hipertrofia')) {
-        rawSplit = this.generatePushPullLegsSplit(pool);
-    } else {
-        rawSplit = this.generateFullBodySplit(pool);
-    }
-
-    // Assign the raw split days to the user's selected days, filling the rest with rest days
+    const rawSplit = this.getSplitForPlanType(planType, goal, pool);
     const dayPreferences = profile.dayPreferences || {};
-    const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
-    let splitIndex = 0;
+    const splitIndexRef = { current: 0 };
 
-    const finalPlan = daysOfWeek.map(day => {
-        if (activeDays.includes(day)) {
-            const prefVal = dayPreferences[day];
-            if (prefVal && prefVal !== 'Padrão') {
-                const prefLower = prefVal.toLowerCase();
-                let exercises: string[] = [];
-                let focusTitle = prefVal;
-                
-                if (prefLower.includes('perna') || prefLower.includes('leg') || prefLower.includes('coxa') || prefLower.includes('glúteo')) {
-                    exercises = [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Pernas (${prefVal})`;
-                } else if (prefLower.includes('peito') || prefLower.includes('chest')) {
-                    exercises = [...getRandom(pool.peito, 3), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Peito (${prefVal})`;
-                } else if (prefLower.includes('costa') || prefLower.includes('back') || prefLower.includes('lats')) {
-                    exercises = [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 2)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Costas (${prefVal})`;
-                } else if (prefLower.includes('ombro') || prefLower.includes('shoulder')) {
-                    exercises = [...getRandom(pool.ombros, 3), ...getRandom(pool.core, 2)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Ombros (${prefVal})`;
-                } else if (prefLower.includes('braço') || prefLower.includes('braco') || prefLower.includes('arm') || prefLower.includes('bícep') || prefLower.includes('trícep')) {
-                    exercises = [...getRandom(pool.bracos, 4), ...getRandom(pool.core, 1)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Braços (${prefVal})`;
-                } else if (prefLower.includes('core') || prefLower.includes('abdo') || prefLower.includes('plank')) {
-                    exercises = [...getRandom(pool.core, 4)];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Core (${prefVal})`;
-                } else if (prefLower.includes('cardio') || prefLower.includes('hiit') || prefLower.includes('respir')) {
-                    exercises = ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'Squat Jumps'];
-                    focusTitle = prefVal.includes('(') ? prefVal : `Cardio / HIIT (${prefVal})`;
-                } else {
-                    exercises = [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 1)];
-                    focusTitle = prefVal;
-                }
-                
-                return {
-                    day: day,
-                    focus: focusTitle,
-                    exercises: exercises
-                };
-            }
-
-            if (splitIndex < rawSplit.length) {
-                const workoutDay = rawSplit[splitIndex];
-                splitIndex++;
-                return {
-                    day: day,
-                    focus: workoutDay.title,
-                    exercises: workoutDay.exercises
-                };
-            } else {
-                return {
-                    day: day,
-                    focus: 'Treino Geral',
-                    exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 1)]
-                };
-            }
-        } else {
-            return {
-                day: day,
-                focus: 'Descanso',
-                exercises: ['Recuperação Ativa', 'Alongamentos']
-            };
-        }
-    });
+    const finalPlan = DAYS_OF_WEEK.map(day => 
+      buildWorkoutDay(day, activeDays, dayPreferences, pool, rawSplit, splitIndexRef)
+    );
 
     return {
-        id: `offline_${Date.now()}`,
-        name: `Plano Offline: ${planType.toUpperCase()}`,
-        description: `Motor Local V7 gerou um plano perfeitamente categorizado para ${planType}, porque estás sem ligação ao servidor.`,
-        workouts: finalPlan,
-        createdAt: Date.now(),
-        type: planType
+      id: `offline_${Date.now()}`,
+      name: `Plano Offline: ${planType.toUpperCase()}`,
+      description: `Motor Local V7 gerou um plano perfeitamente categorizado para ${planType}, porque estás sem ligação ao servidor.`,
+      workouts: finalPlan,
+      createdAt: Date.now(),
+      type: planType,
     };
   }
 
-  private static generateUpperLowerSplit(pool: any) {
+  private static getSplitForPlanType(planType: string, goal: string, pool: any): any[] {
+    const normalizedType = planType.toLowerCase();
+    const planTypeMap = this.getPlanTypeMap();
+    
+    if (planTypeMap[normalizedType]) {
+      return planTypeMap[normalizedType](pool);
+    }
+
+    if (goal.toLowerCase().includes('força')) {
+      return this.generateUpperLowerSplit(pool);
+    }
+    if (goal.toLowerCase().includes('hipertrofia')) {
+      return this.generatePushPullLegsSplit(pool);
+    }
+
+    return this.generateFullBodySplit(pool);
+  }
+
+  // Plan type lookup table (inside class to access private methods)
+  private static getPlanTypeMap(): Record<string, (pool: any) => any[]> {
+    return {
+      'forca': (pool) => this.generateUpperLowerSplit(pool),
+      'powerbuilding': (pool) => this.generateUpperLowerSplit(pool),
+      'anatoly': (pool) => this.generateAnatolySplit(pool),
+      'hiit': (pool) => this.generateHIITSplit(pool),
+      'functional': (pool) => this.generateFunctionalSplit(pool),
+      'hipertrofia': (pool) => this.generatePushPullLegsSplit(pool),
+      'classic': (pool) => this.generatePushPullLegsSplit(pool),
+    };
+  }
+
+  static generateUpperLowerSplit(pool: any) {
     return [
-      {
-        title: 'Força Superior (Upper A)',
-        exercises: [...getRandom(pool.peito, 2), ...getRandom(pool.costas, 2), ...getRandom(pool.ombros, 1)]
-      },
-      {
-        title: 'Força Inferior (Lower A)',
-        exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)]
-      },
-      {
-        title: 'Hipertrofia Superior (Upper B)',
-        exercises: [...getRandom(pool.costas, 2), ...getRandom(pool.peito, 2), ...getRandom(pool.bracos, 2)]
-      },
-      {
-        title: 'Hipertrofia Inferior (Lower B)',
-        exercises: [...getRandom(pool.pernas, 3), ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'Força Full Body', // Caso o utilizador escolha 5 dias
-        exercises: [...getRandom(pool.pernas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1)]
-      },
-      {
-        title: 'Core & Braços', // Caso escolha 6 dias
-        exercises: [...getRandom(pool.bracos, 3), ...getRandom(pool.core, 3)]
-      },
-      {
-        title: 'Cardio Pesar', // Caso escolha 7 dias
-        exercises: ['HIIT', 'Mobilidade Total']
-      }
+      { title: 'Força Superior (Upper A)', exercises: [...getRandom(pool.peito, 2), ...getRandom(pool.costas, 2), ...getRandom(pool.ombros, 1)] },
+      { title: 'Força Inferior (Lower A)', exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)] },
+      { title: 'Hipertrofia Superior (Upper B)', exercises: [...getRandom(pool.costas, 2), ...getRandom(pool.peito, 2), ...getRandom(pool.bracos, 2)] },
+      { title: 'Hipertrofia Inferior (Lower B)', exercises: [...getRandom(pool.pernas, 3), ...getRandom(pool.core, 2)] },
+      { title: 'Força Full Body', exercises: [...getRandom(pool.pernas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1)] },
+      { title: 'Core & Braços', exercises: [...getRandom(pool.bracos, 3), ...getRandom(pool.core, 3)] },
+      { title: 'Cardio Pesar', exercises: ['HIIT', 'Mobilidade Total'] },
     ];
   }
 
-  private static generatePushPullLegsSplit(pool: any) {
+  static generatePushPullLegsSplit(pool: any) {
     return [
-      {
-        title: 'Treino Push (Empurrar)',
-        exercises: [...getRandom(pool.peito, 3), ...getRandom(pool.ombros, 2), ...getRandom(pool.bracos, 1)] 
-      },
-      {
-        title: 'Treino Pull (Puxar)',
-        exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 2)]
-      },
-      {
-        title: 'Treino de Pernas (Legs)',
-        exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'Treino Push Foco Ombros',
-        exercises: [...getRandom(pool.ombros, 3), ...getRandom(pool.peito, 1), ...getRandom(pool.bracos, 2)]
-      },
-      {
-        title: 'Treino Pull Foco Lats',
-        exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'Treino de Pernas (Posteriores)',
-        exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)]
-      },
-      {
-        title: 'Treino de Braços',
-        exercises: [...getRandom(pool.bracos, 4), ...getRandom(pool.core, 2)]
-      }
+      { title: 'Treino Push (Empurrar)', exercises: [...getRandom(pool.peito, 3), ...getRandom(pool.ombros, 2), ...getRandom(pool.bracos, 1)] },
+      { title: 'Treino Pull (Puxar)', exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 2)] },
+      { title: 'Treino de Pernas (Legs)', exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 2)] },
+      { title: 'Treino Push Foco Ombros', exercises: [...getRandom(pool.ombros, 3), ...getRandom(pool.peito, 1), ...getRandom(pool.bracos, 2)] },
+      { title: 'Treino Pull Foco Lats', exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.core, 2)] },
+      { title: 'Treino de Pernas (Posteriores)', exercises: [...getRandom(pool.pernas, 4), ...getRandom(pool.core, 1)] },
+      { title: 'Treino de Braços', exercises: [...getRandom(pool.bracos, 4), ...getRandom(pool.core, 2)] },
     ];
   }
 
-  private static generateFullBodySplit(pool: any) {
+  static generateFullBodySplit(pool: any) {
     return [
-      {
-        title: 'Full Body A (Foco Metabólico)',
-        exercises: [...getRandom(pool.pernas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'HIIT & Core',
-        exercises: ['Jumping Jacks', 'Burpees', 'Mountain Climbers', ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'Full Body B (Força Resistência)',
-        exercises: [...getRandom(pool.pernas, 2), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 2)]
-      },
-      {
-        title: 'Cardio LISS',
-        exercises: ['Corrida Leve 30min', 'Ciclismo', 'Alongamentos']
-      },
-      {
-        title: 'Full Body C (Circuito Funcional)',
-        exercises: [...getRandom(pool.costas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 2)]
-      },
-      {
-        title: 'Core & Estabilidade',
-        exercises: [...getRandom(pool.core, 4)]
-      },
-      {
-        title: 'Mobilidade',
-        exercises: ['Yoga', 'Alongamento Dinâmico']
-      }
+      { title: 'Full Body A (Foco Metabólico)', exercises: [...getRandom(pool.pernas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.core, 2)] },
+      { title: 'HIIT & Core', exercises: ['Jumping Jacks', 'Burpees', 'Mountain Climbers', ...getRandom(pool.core, 2)] },
+      { title: 'Full Body B (Força Resistência)', exercises: [...getRandom(pool.pernas, 2), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 2)] },
+      { title: 'Cardio LISS', exercises: ['Corrida Leve 30min', 'Ciclismo', 'Alongamentos'] },
+      { title: 'Full Body C (Circuito Funcional)', exercises: [...getRandom(pool.costas, 1), ...getRandom(pool.peito, 1), ...getRandom(pool.pernas, 1), ...getRandom(pool.core, 2)] },
+      { title: 'Core & Estabilidade', exercises: [...getRandom(pool.core, 4)] },
+      { title: 'Mobilidade', exercises: ['Yoga', 'Alongamento Dinâmico'] },
     ];
   }
 
-  private static generateAnatolySplit(pool: any) {
+  static generateAnatolySplit(pool: any) {
     return [
-      {
-        title: 'Pressão Máxima (Força)',
-        exercises: [...getRandom(pool.peito, 2), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)]
-      },
-      {
-        title: 'Puxada Explosiva',
-        exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 1)]
-      },
-      {
-        title: 'Quadriceps Selvagem',
-        exercises: [...getRandom(pool.pernas, 3), ...getRandom(pool.core, 1)]
-      },
-      {
-        title: 'Full Body Acessórios',
-        exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1)]
-      },
-      {
-        title: 'Pressão Isolada (Ondulação)',
-        exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.ombros, 2), ...getRandom(pool.bracos, 2)]
-      },
-      {
-        title: 'Posteriores & Core',
-        exercises: [...getRandom(pool.pernas, 2), ...getRandom(pool.core, 3)]
-      },
-      {
-        title: 'Força de Pegada',
-        exercises: [...getRandom(pool.costas, 2), ...getRandom(pool.bracos, 2)]
-      }
+      { title: 'Pressão Máxima (Força)', exercises: [...getRandom(pool.peito, 2), ...getRandom(pool.ombros, 1), ...getRandom(pool.bracos, 1)] },
+      { title: 'Puxada Explosiva', exercises: [...getRandom(pool.costas, 3), ...getRandom(pool.bracos, 1)] },
+      { title: 'Quadriceps Selvagem', exercises: [...getRandom(pool.pernas, 3), ...getRandom(pool.core, 1)] },
+      { title: 'Full Body Acessórios', exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.costas, 1), ...getRandom(pool.pernas, 1)] },
+      { title: 'Pressão Isolada (Ondulação)', exercises: [...getRandom(pool.peito, 1), ...getRandom(pool.ombros, 2), ...getRandom(pool.bracos, 2)] },
+      { title: 'Posteriores & Core', exercises: [...getRandom(pool.pernas, 2), ...getRandom(pool.core, 3)] },
+      { title: 'Força de Pegada', exercises: [...getRandom(pool.costas, 2), ...getRandom(pool.bracos, 2)] },
     ];
   }
 
-  private static generateHIITSplit(pool: any) {
+  static generateHIITSplit(pool: any) {
     return [
-      {
-        title: 'HIIT Full Body (Tabata 20/10)',
-        exercises: ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'High Knees']
-      },
-      {
-        title: 'HIIT Core & Legs (30/15)',
-        exercises: ['Agachamento Livre', 'Lunges Alternados', 'Plank', 'Crunch', 'Russian Twist']
-      },
-      {
-        title: 'HIIT Upper & Cardio',
-        exercises: ['Push-Up', 'Dips', 'Burpees', 'Shadow Boxing']
-      },
-      {
-        title: 'HIIT Endurance Pura',
-        exercises: ['High Knees', 'Mountain Climbers', 'Squat Jumps', 'Plank Jacks']
-      },
-      {
-        title: 'HIIT Express 15min',
-        exercises: ['Burpees', 'Push-Up', 'Agachamento Livre']
-      },
-      {
-        title: 'Recuperação Ativa',
-        exercises: ['Caminhada', 'Mobilidade Total']
-      },
-      {
-        title: 'Desafio Tabata Final',
-        exercises: ['Burpees', 'Lunges Alternados', 'Push-Up', 'Plank']
-      }
+      { title: 'HIIT Full Body (Tabata 20/10)', exercises: ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'High Knees'] },
+      { title: 'HIIT Core & Legs (30/15)', exercises: ['Agachamento Livre', 'Lunges Alternados', 'Plank', 'Crunch', 'Russian Twist'] },
+      { title: 'HIIT Upper & Cardio', exercises: ['Push-Up', 'Dips', 'Burpees', 'Shadow Boxing'] },
+      { title: 'HIIT Endurance Pura', exercises: ['High Knees', 'Mountain Climbers', 'Squat Jumps', 'Plank Jacks'] },
+      { title: 'HIIT Express 15min', exercises: ['Burpees', 'Push-Up', 'Agachamento Livre'] },
+      { title: 'Recuperação Ativa', exercises: ['Caminhada', 'Mobilidade Total'] },
+      { title: 'Desafio Tabata Final', exercises: ['Burpees', 'Lunges Alternados', 'Push-Up', 'Plank'] },
     ];
   }
 
-  private static generateFunctionalSplit(pool: any) {
+  static generateFunctionalSplit(pool: any) {
     return [
-      {
-        title: 'Cross: Força Base + AMRAP 12',
-        exercises: ['Agachamento Livre', 'Press Militar', 'Burpees', 'Pull-Up', 'Kettlebell Swings']
-      },
-      {
-        title: 'Cross: Endurance (EMOM 15)',
-        exercises: ['Levantamento Terra', 'Push-Up', 'Box Jumps', 'Russian Twist']
-      },
-      {
-        title: 'Cross: Ginástica & Core',
-        exercises: ['Pull-Up', 'Dips', 'Plank', 'Hanging Leg Raise']
-      },
-      {
-        title: 'Cross: Condicionamento',
-        exercises: ['Remada Curvada', 'Lunges Alternados', 'Mountain Climbers', 'Burpees']
-      },
-      {
-        title: 'Cross: Oly Lifts (Adaptado)',
-        exercises: ['Romanian Deadlift', 'Dumbbell Shoulder Press', 'Squat Jumps']
-      },
-      {
-        title: 'Cross: Team WOD / Longo',
-        exercises: ['Push-Up', 'Pull-Up', 'Agachamento Livre', 'Burpees']
-      },
-      {
-        title: 'Recuperação',
-        exercises: ['Yoga', 'Mobilidade Lombar']
-      }
+      { title: 'Cross: Força Base + AMRAP 12', exercises: ['Agachamento Livre', 'Press Militar', 'Burpees', 'Pull-Up', 'Kettlebell Swings'] },
+      { title: 'Cross: Endurance (EMOM 15)', exercises: ['Levantamento Terra', 'Push-Up', 'Box Jumps', 'Russian Twist'] },
+      { title: 'Cross: Ginástica & Core', exercises: ['Pull-Up', 'Dips', 'Plank', 'Hanging Leg Raise'] },
+      { title: 'Cross: Condicionamento', exercises: ['Remada Curvada', 'Lunges Alternados', 'Mountain Climbers', 'Burpees'] },
+      { title: 'Cross: Oly Lifts (Adaptado)', exercises: ['Romanian Deadlift', 'Dumbbell Shoulder Press', 'Squat Jumps'] },
+      { title: 'Cross: Team WOD / Longo', exercises: ['Push-Up', 'Pull-Up', 'Agachamento Livre', 'Burpees'] },
+      { title: 'Recuperação', exercises: ['Yoga', 'Mobilidade Lombar'] },
     ];
   }
 }

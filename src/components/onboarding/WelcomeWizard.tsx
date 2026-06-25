@@ -154,9 +154,18 @@ export const WelcomeWizard: React.FC<WelcomeWizardProps> = ({ onComplete, profil
           >
             <span style={{ fontSize: 48, display: 'block', marginBottom: 16 }}>🔒</span>
             <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: C.accent, letterSpacing: 2 }}>ZERO TRUST SECURITY</h2>
-            <p style={{ color: C.muted, fontSize: 14, marginBottom: 30, lineHeight: 1.5 }}>
+            <p style={{ color: C.muted, fontSize: 14, marginBottom: 20, lineHeight: 1.5 }}>
               Para garantir a tua privacidade, cria um PIN de acesso. Este PIN será usado para <strong>encriptar localmente</strong> todos os teus treinos e biometria.
             </p>
+
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 12, padding: 16, marginBottom: 24, textAlign: 'left' }}>
+              <h4 style={{ color: '#f87171', fontWeight: 'bold', fontSize: 14, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span>⚠️</span> Aviso Crítico
+              </h4>
+              <p style={{ color: 'rgba(254, 202, 202, 0.8)', fontSize: 12, lineHeight: 1.5, margin: 0 }}>
+                O teu PIN e dados <strong>nunca saem deste dispositivo</strong>. Se esqueceres este PIN ou limpares a cache do navegador, o teu histórico será <strong>perdido para sempre</strong>. Não existe mecanismo de recuperação.
+              </p>
+            </div>
 
             <form onSubmit={handleFinalize}>
               <input

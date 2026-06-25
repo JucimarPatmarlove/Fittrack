@@ -1,4 +1,4 @@
-import { EXERCISE_DB } from './exerciseDB';
+
 
 export type ExerciseCategory = 'compound_multi' | 'compound_uni' | 'isolation_multi' | 'isolation_uni' | 'bodyweight';
 

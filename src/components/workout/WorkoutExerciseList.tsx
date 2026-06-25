@@ -5,6 +5,7 @@ import { ExerciseTutorialExt } from "../exercises/ExerciseTutorialExt";
 import { VideoTutorial } from "../exercises/VideoTutorial";
 import { WorkoutSetRow } from "./WorkoutSetRow";
 import { GhostSetComparison } from "../GhostSetComparison";
+import { Tooltip } from "../ui/Tooltip";
 
 export const WorkoutExerciseList = ({
   localExs, sets, todayPlan, profile, history, theme, C, openIdx, setOpenIdx,
@@ -119,7 +120,13 @@ export const WorkoutExerciseList = ({
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 7 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "26px 1fr 1fr 1fr 38px", gap: 8, flex: 1 }}>
                       {["#", todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "CARGA" : "KG", todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "TEMPO/REP" : "REPS", "INTENS.", ""].map((h, i) => (
-                        <div key={i} style={{ color: theme.muted, fontSize: 9, fontFamily: "'DM Mono'", textAlign: i > 0 && i < 4 ? "center" : "left" }}>{h}</div>
+                        <div key={i} style={{ color: theme.muted, fontSize: 9, fontFamily: "'DM Mono'", textAlign: i > 0 && i < 4 ? "center" : "left", display: 'flex', justifyContent: i > 0 && i < 4 ? 'center' : 'flex-start' }}>
+                          {i === 3 ? (
+                            <Tooltip text="RPE (Taxa de Esforço Percebido). RPE 8 significa que terminaste a série sentindo que conseguirias fazer apenas mais 2 repetições antes da falha.">
+                              <span>{h}</span>
+                            </Tooltip>
+                          ) : h}
+                        </div>
                       ))}
                     </div>
                     <button onClick={() => addWarmups(ei)} style={{ background: C.accentLow, color: C.accent, border: `1px solid ${C.accent}`, borderRadius: 6, fontSize: 10, padding: "4px 8px", cursor: "pointer", whiteSpace: "nowrap", marginLeft: 12 }}>+ AQUECIMENTO</button>

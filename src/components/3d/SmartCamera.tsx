@@ -7,6 +7,7 @@ export const SmartCamera = ({ onLandmarks }: { onLandmarks: (landmarks: any) => 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [cameraActive, setCameraActive] = useState(false);
+    const [cameraStatus, setCameraStatus] = useState<'idle' | 'active' | 'blocked'>('idle');
     const [mode, setMode] = useState<'squat' | 'push'>('squat');
     const stopRef = useRef(false);
     const { detectPose } = useWorkerPoseDetection();
@@ -71,6 +72,7 @@ export const SmartCamera = ({ onLandmarks }: { onLandmarks: (landmarks: any) => 
                         videoRef.current.srcObject = stream;
                         videoRef.current.play();
                         videoRef.current.onloadeddata = () => {
+                            setCameraStatus('active');
                             processFrame();
                         };
                     }
@@ -78,6 +80,7 @@ export const SmartCamera = ({ onLandmarks }: { onLandmarks: (landmarks: any) => 
                 .catch(err => {
                     console.error("Error accessing camera", err);
                     setCameraActive(false);
+                    setCameraStatus('blocked');
                 });
         }
 
@@ -143,6 +146,19 @@ export const SmartCamera = ({ onLandmarks }: { onLandmarks: (landmarks: any) => 
                     </div>
                 )}
             </div>
+
+            {cameraStatus === 'blocked' && (
+                <div style={{ background: '#1e2832', border: `2px dashed ${C.border}`, borderRadius: 12, padding: 24, textAlign: 'center', marginTop: 16 }}>
+                    <div style={{ fontSize: 40, marginBottom: 12 }}>📹🚫</div>
+                    <h3 style={{ color: '#fff', fontSize: 18, marginBottom: 8 }}>Câmara Bloqueada</h3>
+                    <p style={{ color: C.muted, fontSize: 13, marginBottom: 16 }}>
+                        O teu navegador impediu o acesso à câmara ou não há permissão. Podes continuar o teu treino normalmente utilizando o registo manual de repetições nas tabelas.
+                    </p>
+                    <button onClick={() => setCameraStatus('idle')} style={{ background: C.surface, color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: '10px 16px', fontSize: 13, cursor: 'pointer', fontWeight: 'bold' }}>
+                        Mudar para Registo Manual
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

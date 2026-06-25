@@ -14,8 +14,6 @@ export const GOALS = [
     { id: "v_taper_aesthetics", label: "V-Taper Aesthetics", icon: "📐", desc: "Foco em ombros e dorsais", color: "#ccff00" },
 ];
 
-import { EXERCISE_DB } from './exerciseDB';
-export { EXERCISE_DB };
 
 export const WORKOUT_PLANS = [
     { id: "p1", label: "Peito & Tríceps", exercises: ["Barbell Bench Press", "Cable Rope Tricep Pushdown", "Plank"] },
