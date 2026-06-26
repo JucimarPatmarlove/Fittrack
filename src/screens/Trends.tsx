@@ -15,6 +15,7 @@ export default function Trends({ history }: any) {
   const [chartData, setChartData] = useState<any[]>([]);
   const [acwrData, setAcwrData] = useState<any[]>([]);
   const [xpHistory, setXpHistory] = useState<any[]>([]);
+  const [walkingData, setWalkingData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,10 +55,27 @@ export default function Trends({ history }: any) {
         { date: 'Semana 4', xp: 3500 },
       ]);
 
+      const walkingSessions = history.filter((w: any) => w.name && w.name.includes('Caminhada'));
+      const walkingPoints = walkingSessions.map((w: any) => {
+         let distanceKm = 0;
+         if (w.exercises && w.exercises[0] && w.exercises[0].sets && w.exercises[0].sets[0]) {
+             distanceKm = w.exercises[0].sets[0].reps / 1000;
+         }
+         let durationMins = w.duration || 0;
+         let pace = distanceKm > 0 ? (durationMins / distanceKm) : 0;
+         
+         return {
+            date: new Date(w.date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }),
+            distancia: Number(distanceKm.toFixed(2)),
+            ritmo: Number(pace.toFixed(1))
+         };
+      });
+      setWalkingData(walkingPoints);
+
       setLoading(false);
     };
     loadData();
-  }, []);
+  }, [history]);
 
   return (
     <GlobalBackground>
@@ -127,6 +145,27 @@ export default function Trends({ history }: any) {
                 </div>
                 <p style={{ fontSize: 11, color: C.muted, textAlign: 'center', marginTop: 12 }}>Quanto mais consistente, mais rápido sobes de nível!</p>
             </GlassCard>
+
+            {walkingData.length > 0 && (
+                <GlassCard style={{ padding: 20 }}>
+                    <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 20, color: C.text, margin: "0 0 16px 0", letterSpacing: 1 }}>🏃‍♂️ RADAR: DISTÂNCIA E RITMO</h2>
+                    <div style={{ height: 300, width: "100%" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={walkingData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                            <XAxis dataKey="date" stroke={C.muted} fontSize={10} />
+                            <YAxis yAxisId="left" stroke={C.muted} fontSize={10} />
+                            <YAxis yAxisId="right" orientation="right" stroke={C.accent} fontSize={10} />
+                            <Tooltip contentStyle={{ background: '#080b0f', borderColor: C.accent, borderRadius: 8, color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                            <Legend wrapperStyle={{ fontSize: 12 }} />
+                            <Line yAxisId="left" type="monotone" dataKey="distancia" stroke={C.green} name="Distância (km)" strokeWidth={3} dot={{ r: 4 }} />
+                            <Line yAxisId="right" type="monotone" dataKey="ritmo" stroke={C.accent} name="Ritmo (min/km)" strokeWidth={3} dot={{ r: 4 }} strokeDasharray="5 5" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                    </div>
+                    <p style={{ fontSize: 11, color: C.muted, textAlign: 'center', marginTop: 12 }}>Evolução do teu rendimento nas caminhadas com Radar.</p>
+                </GlassCard>
+            )}
             </>
         )}
       </div>
