@@ -179,6 +179,26 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
         </button>
       </div>
 
+      {/* WALKING COACH BANNER */}
+      <button
+          onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO', { detail: 'walkingcoach' }))}
+          style={{
+             width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid rgba(0, 255, 136, 0.3)',
+             background: 'linear-gradient(90deg, rgba(0,255,136,0.15) 0%, rgba(0,0,0,0) 100%)',
+             display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+             boxShadow: '0 4px 15px rgba(0, 255, 136, 0.05)'
+          }}
+        >
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+             <div style={{ fontSize: '24px' }}>🏃‍♂️</div>
+             <div style={{ textAlign: 'left' }}>
+               <div style={{ fontFamily: '"Bebas Neue", sans-serif', fontSize: '1.2rem', color: '#00ff88', letterSpacing: '1px' }}>Radar de Caminhada</div>
+               <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 'bold' }}>Treinador GPS com Voz • Ganha XP</div>
+             </div>
+           </div>
+           <div style={{ color: '#00ff88', fontSize: '20px' }}>{'❯'}</div>
+        </button>
+
       {/* 🚀 WIDGET DAILY BRIEFING 🚀 */}
       {/* 🚀 WIDGET DAILY BRIEFING 🚀 */}
       {!isSystemEmpty && (
