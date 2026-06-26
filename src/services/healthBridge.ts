@@ -5,6 +5,9 @@ import { healthKit, HealthKitData } from './healthKitService';
 
 export interface UnifiedHealthMetrics {
   weight: number | null;
+  bodyFat: number | null;
+  bmi: number | null;
+  leanMass: number | null;
   sleepHours: number | null;
   platform: 'apple' | 'google' | 'mock';
   lastSync: number;
@@ -48,6 +51,9 @@ export class HealthBridge {
       
       return {
         weight: data.weight,
+        bodyFat: data.bodyFat,
+        bmi: data.bmi,
+        leanMass: data.leanMass,
         sleepHours: data.sleepHours,
         platform: 'apple',
         lastSync: Date.now()
@@ -65,6 +71,9 @@ export class HealthBridge {
       
       return {
         weight: 76.5, // googleData.weight
+        bodyFat: 24.5, // googleData.bodyFat
+        bmi: 24.4,     // googleData.bmi
+        leanMass: 57.7, // googleData.leanMass
         sleepHours: 7.2, // googleData.sleepSession
         platform: 'google',
         lastSync: Date.now()
@@ -78,9 +87,14 @@ export class HealthBridge {
   // --- SIMULAÇÃO PARA DEV ---
 
   private static generateMockMetrics(): UnifiedHealthMetrics {
+    const weight = 75.2 + (Math.random() - 0.5) * 1.5;
+    const bodyFat = 25.0 + (Math.random() * 0.6 - 0.3);
     return {
-      weight: 75.2 + (Math.random() - 0.5) * 1.5,
-      sleepHours: 6 + Math.random() * 3,
+      weight: parseFloat(weight.toFixed(1)),
+      bodyFat: parseFloat(bodyFat.toFixed(1)),
+      bmi: parseFloat((weight / (1.77 * 1.77)).toFixed(1)),
+      leanMass: parseFloat((weight - (weight * (bodyFat / 100))).toFixed(1)),
+      sleepHours: parseFloat((6 + Math.random() * 3).toFixed(1)),
       platform: 'mock',
       lastSync: Date.now()
     };

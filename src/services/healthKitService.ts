@@ -4,6 +4,9 @@
 
 export interface HealthKitData {
   weight: number | null;     // kg (RENPHO → HealthKit)
+  bodyFat: number | null;    // %
+  bmi: number | null;
+  leanMass: number | null;   // kg
   sleepHours: number | null; // horas de sono (Apple Watch → HealthKit)
   lastSync: number;          // timestamp do último sync
   isMock: boolean;           // true quando em modo simulação (browser)
@@ -97,7 +100,13 @@ class HealthKitService {
     try {
       await this.CapacitorHealthKit.requestAuthorization({
         all: [],
-        read: [this.SampleNames.WEIGHT, this.SampleNames.SLEEP_ANALYSIS],
+        read: [
+          this.SampleNames.WEIGHT, 
+          this.SampleNames.SLEEP_ANALYSIS,
+          this.SampleNames.BODY_FAT_PERCENTAGE,
+          this.SampleNames.BODY_MASS_INDEX,
+          this.SampleNames.LEAN_BODY_MASS
+        ],
         write: [],
       });
       return true;
@@ -107,28 +116,22 @@ class HealthKitService {
     }
   }
 
-  // ─── LEITURA DE PESO (RENPHO → HealthKit) ─────────────────────────────────
-
-  /**
-   * Obtém o peso mais recente dos últimos 7 dias.
-   * A balança RENPHO escreve automaticamente no HealthKit.
-   */
-  private async getLatestWeight(): Promise<number | null> {
+  private async getLatestSample(sampleName: string, daysWindow = 30): Promise<number | null> {
     if (!this.isNative || !this.CapacitorHealthKit) return null;
 
     try {
       const query = await this.CapacitorHealthKit.queryHKitSampleType({
-        sampleName: this.SampleNames.WEIGHT,
-        startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        sampleName,
+        startDate: new Date(Date.now() - daysWindow * 24 * 60 * 60 * 1000).toISOString(),
         endDate: new Date().toISOString(),
         limit: 1,
       });
 
       if (query.resultData && query.resultData.length > 0) {
-        return query.resultData[0].value; // Peso em kg
+        return query.resultData[0].value;
       }
     } catch (err) {
-      console.error('[HealthKit] Erro ao ler peso:', err);
+      console.error(`[HealthKit] Erro ao ler ${sampleName}:`, err);
     }
     return null;
   }
@@ -170,14 +173,21 @@ class HealthKitService {
 
   // ─── MOCK DATA (BROWSER / DEV) ─────────────────────────────────────────────
 
-  private mockWeight(): number {
-    // Simula peso entre 74.0 e 76.5 kg
-    return 75.2 + (Math.random() - 0.5) * 1.5;
-  }
-
-  private mockSleep(): number {
-    // Simula sono entre 5.5 e 9.0 horas
-    return 5.5 + Math.random() * 3.5;
+  private generateMock(): HealthKitData {
+    const weight = 79.5 + (Math.random() * 1.5 - 0.7);
+    const bodyFat = 25.0 + (Math.random() * 0.6 - 0.3);
+    const bmi = weight / (1.77 * 1.77);
+    const leanMass = weight - (weight * (bodyFat / 100));
+    
+    return {
+      weight: parseFloat(weight.toFixed(1)),
+      bodyFat: parseFloat(bodyFat.toFixed(1)),
+      bmi: parseFloat(bmi.toFixed(1)),
+      leanMass: parseFloat(leanMass.toFixed(1)),
+      sleepHours: parseFloat((6.5 + Math.random() * 2).toFixed(1)),
+      lastSync: Date.now(),
+      isMock: true,
+    };
   }
 
   // ─── SYNC PRINCIPAL ─────────────────────────────────────────────────────────
@@ -191,12 +201,7 @@ class HealthKitService {
   async syncHealthData(): Promise<HealthKitData> {
     // Modo browser → dados mock
     if (!this.isNative) {
-      const mockData: HealthKitData = {
-        weight: parseFloat(this.mockWeight().toFixed(1)),
-        sleepHours: parseFloat(this.mockSleep().toFixed(1)),
-        lastSync: Date.now(),
-        isMock: true,
-      };
+      const mockData = this.generateMock();
       this.saveToCache(mockData);
       return mockData;
     }
@@ -204,17 +209,23 @@ class HealthKitService {
     // Modo nativo → HealthKit real
     const pluginLoaded = await this.loadPlugin();
     if (!pluginLoaded) {
-      return this.cached || { weight: null, sleepHours: null, lastSync: Date.now(), isMock: false };
+      return this.cached || { weight: null, bodyFat: null, bmi: null, leanMass: null, sleepHours: null, lastSync: Date.now(), isMock: false };
     }
 
     try {
-      const [weight, sleepHours] = await Promise.all([
-        this.getLatestWeight(),
+      const [weight, bodyFatRaw, bmi, leanMass, sleepHours] = await Promise.all([
+        this.getLatestSample(this.SampleNames.WEIGHT, 7),
+        this.getLatestSample(this.SampleNames.BODY_FAT_PERCENTAGE),
+        this.getLatestSample(this.SampleNames.BODY_MASS_INDEX),
+        this.getLatestSample(this.SampleNames.LEAN_BODY_MASS),
         this.getLatestSleepDuration(),
       ]);
 
       const result: HealthKitData = {
         weight: weight ?? this.cached?.weight ?? null,
+        bodyFat: bodyFatRaw !== null ? bodyFatRaw * 100 : (this.cached?.bodyFat ?? null), // Apple Health stores 0.25 for 25%
+        bmi: bmi ?? this.cached?.bmi ?? null,
+        leanMass: leanMass ?? this.cached?.leanMass ?? null,
         sleepHours: sleepHours ?? this.cached?.sleepHours ?? null,
         lastSync: Date.now(),
         isMock: false,
@@ -223,7 +234,7 @@ class HealthKitService {
       return result;
     } catch (error) {
       console.error('[HealthKit] Sync error:', error);
-      return this.cached || { weight: null, sleepHours: null, lastSync: Date.now(), isMock: false };
+      return this.cached || { weight: null, bodyFat: null, bmi: null, leanMass: null, sleepHours: null, lastSync: Date.now(), isMock: false };
     }
   }
 

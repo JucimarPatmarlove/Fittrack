@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Flame, Droplet, Sparkles, TrendingUp, UtensilsCrossed, Activity, TrendingDown } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from "recharts";
 import { useNutritionStore } from "../stores/useNutritionStore";
-import { TrendDashboardSection } from "../components/dashboard/TrendDashboardSection"; // Componente ACWR
+import { TrendDashboardSection } from "../components/dashboard/TrendDashboardSection";
 import { ReadinessGauge } from "../components/dashboard/ReadinessGauge";
 import { P2PSyncModal } from "../components/social/P2PSyncModal";
 import { DailyBriefing } from "../components/dashboard/DailyBriefing";
 import { BiometricInsight } from "../components/dashboard/BiometricInsight";
+import { BiometricDeltaCard } from "../components/dashboard/BiometricDeltaCard";
 import { useHealthStore } from "../stores/useHealthStore";
 import { useDualWorkoutStore } from "../stores/useDualWorkoutStore";
 import { usePlanStore } from "../stores/usePlanStore";
@@ -232,6 +233,12 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
         healthData={healthKitData}
         adjustment={dailyAdjustment}
         isSyncing={isHealthSyncing}
+      />
+
+      {/* 🧬 BIOIMPEDÂNCIA (Métricas Expandidas da RENPHO) 🧬 */}
+      <BiometricDeltaCard
+        healthData={healthKitData as any}
+        isLoading={isHealthSyncing}
       />
 
       {/* ROW 1: RESUMO DIÁRIO */}
