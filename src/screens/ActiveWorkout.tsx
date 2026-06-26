@@ -763,7 +763,12 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
             <WorkoutExerciseList
               localExs={isHighImpactPainful ? localExs.map((ex) => ({ ...ex, name: DemographicEngine.replaceHighImpactExercise(ex.name), _originalName: ex.name })) : localExs}
               sets={sets} todayPlan={todayPlan} profile={profile} history={history}
-              openIdx={openIdx} setOpenIdx={setOpenIdx} C={C}
+              openIdx={openIdx} setOpenIdx={setOpenIdx} C={C} theme={{
+                bg: '#080b0f', glass: 'rgba(19, 25, 32, 0.65)',
+                glassBorder: 'rgba(232, 200, 74, 0.15)', accent: '#e8c84a',
+                accentGlow: 'drop-shadow(0 0 8px rgba(232,200,74,0.6))',
+                danger: '#e84a4a', success: '#3dd68c', text: '#eceae4', muted: '#55626e',
+              }}
               getRecommendedReps={getRecommendedReps} getHistoricalPR={findHistoricalPR}
               checkAutoProgression={checkAutoProgression} ME={ME} speak={speak}
               getPrescription={getPrescription}
