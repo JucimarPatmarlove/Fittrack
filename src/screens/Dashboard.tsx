@@ -379,7 +379,7 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
         </div>
         <div>
           <TrendDashboardSection 
-            recentExercises={history?.flatMap(w => w.exercises?.map((e: any) => e.name)).filter(Boolean) || []} 
+            recentExercises={history?.flatMap(w => w.exercises?.map((e: any) => e.name)).filter((name: string) => name && !name.includes('Caminhada')) || []} 
           />
         </div>
       </div>
