@@ -23,6 +23,15 @@ if (root) {
         <App />
       </StrictMode>,
     )
+
+    // Esconder Splash Screen Nativa (com animação)
+    setTimeout(() => {
+      const splash = document.getElementById('fittrack-splash')
+      if (splash) {
+        splash.classList.add('hidden')
+        setTimeout(() => splash.remove(), 600) // Limpar do DOM após fade
+      }
+    }, 150)
   } catch (err) {
     // Fallback absoluto: se o React crashar, mostra o erro
     root.innerHTML = `
