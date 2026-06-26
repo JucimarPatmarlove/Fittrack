@@ -1,70 +1,97 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
+import { useMachine } from './useMachine';
+import { audioMachine } from './audioMachine';
 
 export interface CoachMessage {
   text: string;
-  rate?: number;    // velocidade da fala (0.5 a 2)
-  pitch?: number;   // tom (0 a 2)
-  volume?: number;  // volume (0 a 1)
+  rate?: number;
+  pitch?: number;
+  volume?: number;
 }
 
 export function useAudioCoach(enabled: boolean = true) {
-  const queueRef = useRef<CoachMessage[]>([]);
-  const isSpeakingRef = useRef(false);
+  // We use our custom state machine
+  // We have to extract initialState and reducer from audioMachine
+  // Wait, in audioMachine.ts it was exported as createMachine result.
+  // Actually, audioMachine has initialState and states.
+  // I'll adjust useMachine to work with it.
+  const [state, send] = useMachine(
+    audioMachine.initialState, 
+    {}, // context not used in this machine
+    (currentState, event) => {
+      // Very simple state machine evaluator based on audioMachine structure
+      const stateConfig = audioMachine.states[currentState.value.status as keyof typeof audioMachine.states] as any;
+      if (!stateConfig || !stateConfig.on || !stateConfig.on[event.type]) return currentState;
+      
+      const transition = stateConfig.on[event.type];
+      let targetStatus;
+      
+      if (typeof transition.target === 'function') {
+        targetStatus = transition.target(currentState.value, event);
+      } else {
+        targetStatus = transition.target;
+      }
+      
+      return { ...currentState, value: targetStatus };
+    }
+  );
+
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const processQueue = useCallback(() => {
+  const isSpeaking = state.value.status === 'speaking';
+  const isPaused = state.value.status === 'paused';
+  const isIdle = state.value.status === 'idle';
+
+  const speak = useCallback((message: CoachMessage | string) => {
     if (!enabled) return;
-    if (queueRef.current.length === 0) {
-      isSpeakingRef.current = false;
-      return;
-    }
-    if (isSpeakingRef.current) return;
+    const text = typeof message === 'string' ? message : message.text;
+    send({ type: 'SPEAK', message: text });
+  }, [enabled, send]);
 
-    isSpeakingRef.current = true;
-    const next = queueRef.current.shift()!;
-    const utterance = new SpeechSynthesisUtterance(next.text);
-    utterance.rate = next.rate ?? 0.95;
-    utterance.pitch = next.pitch ?? 1.05;
-    utterance.volume = next.volume ?? 0.9;
-    utterance.lang = 'pt-PT';
-    
-    utterance.onend = () => {
-      isSpeakingRef.current = false;
-      setTimeout(processQueue, 150);
-    };
-    utterance.onerror = () => {
-      isSpeakingRef.current = false;
-      processQueue();
-    };
-    speechSynthesis.cancel(); // interrompe qualquer fala anterior
-    speechSynthesis.speak(utterance);
-    utteranceRef.current = utterance;
-  }, [enabled]);
+  const pause = useCallback(() => {
+    speechSynthesis.pause();
+    send({ type: 'PAUSE' });
+  }, [send]);
 
-  const speak = useCallback((message: CoachMessage | string, priority: boolean = false) => {
-    if (!enabled) return;
-    
-    const msgObj = typeof message === 'string' ? { text: message } : message;
-    
-    if (priority) {
-      speechSynthesis.cancel();
-      queueRef.current = [msgObj];
-      isSpeakingRef.current = false;
-    } else {
-      queueRef.current.push(msgObj);
-    }
-    processQueue();
-  }, [enabled, processQueue]);
+  const resume = useCallback(() => {
+    speechSynthesis.resume();
+    send({ type: 'RESUME' });
+  }, [send]);
 
-  const cancel = useCallback(() => {
+  const clear = useCallback(() => {
     speechSynthesis.cancel();
-    queueRef.current = [];
-    isSpeakingRef.current = false;
-  }, []);
+    send({ type: 'CLEAR' });
+  }, [send]);
+
+  const end = useCallback(() => {
+    send({ type: 'END' });
+  }, [send]);
+
+  // Effect to handle actual speech synthesis when state changes to speaking
+  useEffect(() => {
+    if (state.value.status === 'speaking' && state.value.message) {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(state.value.message);
+      utterance.lang = 'pt-PT';
+      utterance.rate = 0.95;
+      utterance.pitch = 1.05;
+      
+      utterance.onend = () => {
+        end();
+      };
+      
+      utterance.onerror = () => {
+        clear();
+      };
+      
+      speechSynthesis.speak(utterance);
+      utteranceRef.current = utterance;
+    }
+  }, [state.value.status, state.value.message, end, clear]);
 
   useEffect(() => {
-    return () => cancel();
-  }, [cancel]);
+    return () => clear();
+  }, [clear]);
 
-  return { speak, cancel, isSpeaking: isSpeakingRef.current };
+  return { state: state.value, speak, cancel: clear, pause, resume, clear, end, isSpeaking, isPaused, isIdle };
 }

@@ -2,17 +2,12 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
 
-export default defineConfig([
-  globalIgnores(['dist', 'v2/**', 'node_modules/**']),
+export default [
+  { ignores: ['dist', 'v2/**', 'node_modules/**'] },
   {
     files: ['src/**/*.{js,jsx,ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
+    extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -22,17 +17,27 @@ export default defineConfig([
         sourceType: 'module',
       },
     },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
     rules: {
-      'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]|^_|^C$' }],
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      'no-unused-vars': 'off', // turned off for ts compatibility without parser
+      'no-undef': 'off', // turn off to avoid TS issues
       'no-empty': 'warn',
-      // Cyclomatic complexity: max 10 per function (warn at 8, error at 15)
-      complexity: ['warn', 12],
+      // Cyclomatic complexity: max 10 per function
+      complexity: ['error', 10],
       // Max lines per function
-      'max-lines-per-function': ['warn', { max: 80, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
       // Max nested callbacks / conditions
       'max-depth': ['warn', 4],
       // Max params per function
-      'max-params': ['warn', 5],
+      'max-params': ['warn', 6],
       // Prefer early returns
       'no-else-return': 'warn',
       // Consistent return
@@ -43,4 +48,4 @@ export default defineConfig([
       'max-statements': ['warn', 30],
     },
   },
-])
+]

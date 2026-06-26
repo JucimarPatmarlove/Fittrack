@@ -1,5 +1,6 @@
-// src/hooks/useBluetoothHRM.ts
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
+import { useMachine } from './useMachine';
+import { bluetoothReducer, BluetoothContext } from '../machines/bluetoothMachine';
 
 const HRM_SERVICE = '0000180d-0000-1000-8000-00805f9b34fb';
 const HRM_CHARACTERISTIC = '00002a37-0000-1000-8000-00805f9b34fb';
@@ -13,11 +14,8 @@ export interface HeartRateData {
   energy?: number;
 }
 
-type HRMStatus = 'IDLE' | 'CONNECTING' | 'CONNECTED';
+// ---- Pure utility functions ----
 
-// ---- Pure utility functions (extracted for testability and low complexity) ----
-
-/** Parse heart rate data from Bluetooth characteristic value */
 function parseHeartRateData(value: DataView): HeartRateData {
   const flags = value.getUint8(0);
   const rateFormat = flags & 0x01; // 0 = uint8, 1 = uint16
@@ -33,12 +31,10 @@ function parseHeartRateData(value: DataView): HeartRateData {
   return { bpm, timestamp: Date.now(), contact, energy };
 }
 
-/** Calculate exponential backoff delay in ms */
 function getReconnectDelay(attempt: number): number {
-  return Math.pow(2, attempt) * 2000; // 2s, 4s, 8s
+  return Math.pow(2, attempt) * 2000;
 }
 
-/** Get BLE service UUID with fallback */
 async function getHeartRateService(server: any) {
   try {
     return await server.getPrimaryService(HRM_SERVICE);
@@ -47,7 +43,6 @@ async function getHeartRateService(server: any) {
   }
 }
 
-/** Get heart rate measurement characteristic with fallback */
 async function getHeartRateCharacteristic(service: any) {
   try {
     return await service.getCharacteristic(HRM_CHARACTERISTIC);
@@ -56,7 +51,6 @@ async function getHeartRateCharacteristic(service: any) {
   }
 }
 
-/** Create a listener for characteristic value changes with throttling */
 function createHeartRateListener(
   characteristic: any,
   lastUpdateRef: React.MutableRefObject<number>,
@@ -78,61 +72,49 @@ function createHeartRateListener(
   return () => characteristic.removeEventListener('characteristicvaluechanged', handler);
 }
 
-// ---- React Hook ----
+// ---- React Hook with State Machine ----
+
+const initialContext: BluetoothContext = {
+  device: null,
+  heartRate: null,
+  reconnectAttempts: 0,
+  errorMsg: ''
+};
 
 export function useBluetoothHRM() {
-  const [device, setDevice] = useState<any>(null);
-  const [heartRate, setHeartRate] = useState<HeartRateData | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-
+  const [state, send] = useMachine('IDLE', initialContext, bluetoothReducer);
+  
   const characteristicRef = useRef<any>(null);
-  const reconnectAttemptsRef = useRef<number>(0);
   const lastUpdateRef = useRef<number>(0);
   const cleanupRef = useRef<(() => void) | null>(null);
 
-  const setupCharacteristicListener = useCallback(
-    async (characteristic: any) => {
-      // Cleanup previous listener
-      cleanupRef.current?.();
+  const setupCharacteristicListener = useCallback(async (characteristic: any) => {
+    cleanupRef.current?.();
+    await characteristic.startNotifications();
+    characteristicRef.current = characteristic;
 
-      await characteristic.startNotifications();
-      characteristicRef.current = characteristic;
+    const removeListener = createHeartRateListener(characteristic, lastUpdateRef, (data) => {
+      send({ type: 'HEART_RATE_UPDATE', data });
+    });
+    cleanupRef.current = removeListener;
+  }, [send]);
 
-      const removeListener = createHeartRateListener(characteristic, lastUpdateRef, (data) => {
-        setHeartRate(data);
-      });
-      cleanupRef.current = removeListener;
-    },
-    []
-  );
+  const connectDevice = useCallback(async (deviceObj: any) => {
+    try {
+      const server = await deviceObj.gatt?.connect();
+      if (!server) throw new Error("GATT server indisponível");
 
-  const handleReconnect = useCallback(
-    async (deviceObj: any) => {
-      if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) return;
+      const service = await getHeartRateService(server);
+      const characteristic = await getHeartRateCharacteristic(service);
+      if (!characteristic) throw new Error("Característica indisponível");
 
-      const delay = getReconnectDelay(reconnectAttemptsRef.current);
-      reconnectAttemptsRef.current++;
-
-      setTimeout(async () => {
-        try {
-          const server = await deviceObj.gatt?.connect();
-          if (!server) return;
-
-          const service = await getHeartRateService(server);
-          const characteristic = await getHeartRateCharacteristic(service);
-          if (!characteristic) return;
-
-          await setupCharacteristicListener(characteristic);
-          setIsConnected(true);
-          reconnectAttemptsRef.current = 0; // reset on success
-        } catch (e) {
-          console.warn('HRM Reconnection failed', e);
-        }
-      }, delay);
-    },
-    [setupCharacteristicListener]
-  );
+      await setupCharacteristicListener(characteristic);
+      send({ type: 'CONNECTION_SUCCESS' });
+    } catch (e: any) {
+      console.warn('Falha na conexão:', e);
+      send({ type: 'CONNECTION_LOST' });
+    }
+  }, [setupCharacteristicListener, send]);
 
   const connect = useCallback(async () => {
     if (!navigator.bluetooth) {
@@ -140,92 +122,80 @@ export function useBluetoothHRM() {
       return;
     }
 
-    setIsScanning(true);
+    send({ type: 'START_SCAN' });
     try {
       const dev = await (navigator as any).bluetooth.requestDevice({
         filters: [{ services: [HRM_SERVICE, 'heart_rate'] }],
         optionalServices: [HRM_SERVICE, 'heart_rate'],
       });
 
-      setDevice(dev);
+      send({ type: 'DEVICE_FOUND', device: dev });
 
       dev.addEventListener('gattserverdisconnected', () => {
-        setIsConnected(false);
-        setHeartRate(null);
-        handleReconnect(dev);
+        send({ type: 'CONNECTION_LOST' });
       });
 
-      const server = await dev.gatt?.connect();
-      if (!server) return;
-
-      const service = await getHeartRateService(server);
-      const characteristic = await getHeartRateCharacteristic(service);
-      if (!characteristic) return;
-
-      await setupCharacteristicListener(characteristic);
-      setIsConnected(true);
-      reconnectAttemptsRef.current = 0;
-    } catch (error) {
+      await connectDevice(dev);
+    } catch (error: any) {
       console.error('Erro ao conectar HRM:', error);
-    } finally {
-      setIsScanning(false);
+      send({ type: 'ERROR', message: error.message || 'Falha ao parear' });
     }
-  }, [handleReconnect, setupCharacteristicListener]);
+  }, [connectDevice, send]);
 
   const disconnect = useCallback(async () => {
     cleanupRef.current?.();
     cleanupRef.current = null;
 
     if (characteristicRef.current) {
-      try {
-        await characteristicRef.current.stopNotifications();
-      } catch {
-        // Ignore errors on disconnect
-      }
+      try { await characteristicRef.current.stopNotifications(); } catch {}
       characteristicRef.current = null;
     }
 
-    if (device?.gatt?.connected) {
-      try {
-        device.gatt.disconnect();
-      } catch {
-        // Ignore errors
-      }
+    if (state.context.device?.gatt?.connected) {
+      try { state.context.device.gatt.disconnect(); } catch {}
     }
 
-    setDevice(null);
-    setIsConnected(false);
-    setHeartRate(null);
-    reconnectAttemptsRef.current = 0;
-  }, [device]);
+    send({ type: 'DISCONNECT' });
+  }, [state.context.device, send]);
+
+  // Handle reconnect logic outside the reducer
+  useEffect(() => {
+    if (state.value === 'RECONNECTING') {
+      if (state.context.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        send({ type: 'MAX_RECONNECTS_REACHED' });
+        return;
+      }
+
+      const delay = getReconnectDelay(state.context.reconnectAttempts);
+      const timerId = setTimeout(() => {
+        if (state.context.device) {
+          connectDevice(state.context.device);
+        }
+      }, delay);
+
+      return () => clearTimeout(timerId);
+    }
+  }, [state.value, state.context.reconnectAttempts, state.context.device, connectDevice, send]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       cleanupRef.current?.();
-      if (device?.gatt?.connected) {
-        try {
-          device.gatt.disconnect();
-        } catch {
-          // Ignore
-        }
+      if (state.context.device?.gatt?.connected) {
+        try { state.context.device.gatt.disconnect(); } catch {}
       }
     };
-  }, [device]);
-
-  // Derive BPM and status from state
-  const bpm = heartRate?.bpm || 0;
-  const status: HRMStatus = isConnected ? 'CONNECTED' : isScanning ? 'CONNECTING' : 'IDLE';
+  }, [state.context.device]);
 
   return {
-    device,
-    isConnected,
-    heartRate,
+    device: state.context.device,
+    isConnected: state.value === 'CONNECTED',
+    heartRate: state.context.heartRate,
     connect,
     disconnect,
-    isScanning,
-    bpm,
-    status,
-    errorMsg: '',
+    isScanning: state.value === 'SCANNING' || state.value === 'CONNECTING' || state.value === 'RECONNECTING',
+    bpm: state.context.heartRate?.bpm || 0,
+    status: state.value,
+    errorMsg: state.context.errorMsg,
   };
 }
