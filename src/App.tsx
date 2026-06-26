@@ -88,6 +88,7 @@ function createViewConfigs(
   handleStartWorkout: (plan: WorkoutPlan | string) => void,
   handleFinishWorkout: (data: WorkoutSession) => void,
   handleFeedbackSubmit: (feedback: { difficulty: string; notes?: string }) => Promise<void>,
+  handleInstantSave: (data: WorkoutSession) => Promise<void>,
   handleReset: () => void,
   handleUnlock: (key: CryptoKey) => void,
   workoutData: WorkoutSession | null,
@@ -183,7 +184,7 @@ function createViewConfigs(
       <motion.div key="walkingcoach" {...scaleFade}>
         <WalkingCoachScreen 
            onClose={() => setView("dashboard")} 
-           onFinish={handleFinishWorkout} 
+           onFinish={handleInstantSave} 
         />
       </motion.div>
     ),
@@ -212,6 +213,7 @@ export default function App() {
     handleStartWorkout,
     handleFinishWorkout,
     handleFeedbackSubmit,
+    handleInstantSave,
     handleReset,
     handleUnlock,
     handleConfirmRestore,
@@ -232,7 +234,7 @@ export default function App() {
   const viewConfigs = createViewConfigs(
     view, profile, setProfile, history, setView,
     handleStartWorkout, handleFinishWorkout, handleFeedbackSubmit,
-    handleReset, handleUnlock, workoutData, currentPlan
+    handleInstantSave, handleReset, handleUnlock, workoutData, currentPlan
   );
 
   const currentView = viewConfigs[view];

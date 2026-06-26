@@ -208,6 +208,16 @@ export function useFitnessData() {
     setView('dashboard');
   }, [workoutData, history, profile, setHistory, setProfile]);
 
+  const handleInstantSave = useCallback(async (data: WorkoutSession) => {
+    const finalData = { ...data, feedback: { difficulty: 'good', notes: 'Caminhada registada.' } };
+    const newHistory = [...history, finalData as WorkoutSession];
+
+    updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
+    setHistory(newHistory);
+    await syncXPAndCheckLevelUp(profile.xp || 0, data.id, setProfile);
+    setView('dashboard');
+  }, [history, profile, setHistory, setProfile]);
+
   const handleReset = useCallback(() => {
     setHistory([]);
     setProfile({ name: 'Atleta', goal: 'hipertrofia', level: 'beginner', weight: 70, xp: 0 });
@@ -255,6 +265,7 @@ export function useFitnessData() {
     handleStartWorkout,
     handleFinishWorkout,
     handleFeedbackSubmit,
+    handleInstantSave,
     handleReset,
     handleUnlock,
     handleConfirmRestore,
