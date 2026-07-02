@@ -27,9 +27,6 @@ export const useDualWorkoutStore = create<DualWorkoutStore>()(
       scheduledWorkouts: [],
 
       scheduleWorkout: (date, slot, workoutId, workoutName) => {
-        const existing = get().scheduledWorkouts.find(w => w.date === date && w.slot === slot);
-        if (existing) return;
-
         const newWorkout: ScheduledWorkout = {
           id: crypto.randomUUID(),
           date,
@@ -40,7 +37,11 @@ export const useDualWorkoutStore = create<DualWorkoutStore>()(
         };
 
         set(state => ({
-          scheduledWorkouts: [...state.scheduledWorkouts, newWorkout],
+          // Remove treinos anteriores não concluídos para o mesmo dia e bloco, substituindo pelo novo
+          scheduledWorkouts: [
+            ...state.scheduledWorkouts.filter(w => !(w.date === date && w.slot === slot && !w.completed)), 
+            newWorkout
+          ],
         }));
       },
 
