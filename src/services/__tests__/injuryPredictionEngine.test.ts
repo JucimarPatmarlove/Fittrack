@@ -2,10 +2,36 @@ import { describe, it, expect, vi } from 'vitest';
 import { generateInjuryRiskReport, preWorkoutSafetyCheck } from '../injuryPredictionEngine';
 import * as schema from '../../db/schema';
 
-vi.mock('../../db/schema', () => ({
-  getRecentSetLogsDecrypted: vi.fn(),
-  getRecoveryMetricsByDateRange: vi.fn(),
-}));
+vi.mock('../../db/schema', () => {
+  // Minimal IndexedDB mock for injuryPredictionEngine
+  const fakeIndex = {
+    openCursor: () => Promise.resolve(null),
+    getAll: () => Promise.resolve([]),
+    getAllKeys: () => Promise.resolve([]),
+  };
+  const fakeStore = {
+    index: () => fakeIndex,
+    getAll: () => Promise.resolve([]),
+    getAllKeys: () => Promise.resolve([]),
+    get: () => Promise.resolve(undefined),
+  };
+  const fakeTransaction = {
+    store: fakeStore,
+    done: Promise.resolve(),
+  };
+  const fakeDB = {
+    transaction: () => fakeTransaction,
+    getAll: () => Promise.resolve([]),
+    getAllFromIndex: () => Promise.resolve([]),
+    get: () => Promise.resolve(undefined),
+  };
+  return {
+    getDB: vi.fn().mockResolvedValue(fakeDB),
+    getRecentSetLogsDecrypted: vi.fn().mockResolvedValue([]),
+    getRecentSetLogsByExercise: vi.fn().mockResolvedValue([]),
+    getRecoveryMetricsByDateRange: vi.fn().mockResolvedValue([]),
+  };
+});
 
 describe('injuryPredictionEngine', () => {
   it('deve retornar relatório com estrutura correta', async () => {

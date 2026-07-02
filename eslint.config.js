@@ -4,10 +4,11 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist', 'v2/**', 'node_modules/**'] },
+  { ignores: ['dist', 'v2/**', 'node_modules/**', 'fittrackTeste/**', 'server/**', 'functions/**'] },
+  // Spread recommended rules (ESLint 9 flat config does NOT support "extends")
+  js.configs.recommended,
   {
     files: ['src/**/*.{js,jsx,ts,tsx}'],
-    extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -27,9 +28,11 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
-      'no-unused-vars': 'off', // turned off for ts compatibility without parser
-      'no-undef': 'off', // turn off to avoid TS issues
+      // TypeScript compatibility (without TS parser, these cause false positives)
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
       'no-empty': 'warn',
+      'no-redeclare': 'off', // TS enums/interfaces cause false positives
       // Cyclomatic complexity: max 10 per function
       complexity: ['error', 10],
       // Max lines per function

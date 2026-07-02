@@ -24,6 +24,17 @@ if (!globalThis.crypto) {
 // Os testes do trendAnalyzer fazem mock completo de encryptedDb,
 // por isso não precisamos de um mock completo do IDB aqui.
 
+// IDBKeyRange polyfill — needed by injuryPredictionEngine.ts
+if (!globalThis.IDBKeyRange) {
+  (globalThis as any).IDBKeyRange = {
+    bound: (lower: any, upper: any, lowerOpen?: boolean, upperOpen?: boolean) => ({
+      lower, upper, lowerOpen: !!lowerOpen, upperOpen: !!upperOpen,
+    }),
+    only: (value: any) => ({ lower: value, upper: value, lowerOpen: false, upperOpen: false }),
+    lowerBound: (lower: any, open?: boolean) => ({ lower, upper: undefined, lowerOpen: !!open, upperOpen: true }),
+    upperBound: (upper: any, open?: boolean) => ({ lower: undefined, upper, lowerOpen: true, upperOpen: !!open }),
+  };
+}
 // ─── Worker Mock ─────────────────────────────────────────────────────────────
 // O deriveKey() usa Web Worker. Nos testes, mockaremos a função directamente.
 // Não é necessário mockar o Worker globalmente aqui.

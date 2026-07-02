@@ -8,6 +8,16 @@ const JWT_SHARED_SECRET = process.env.API_SHARED_SECRET || process.env.VITE_API_
 
 const ai = new GoogleGenerativeAI(GEMINI_API_KEY as string);
 
+// ─── REPLAY PROTECTION (Nonce Cache) ─────────────────────────────────────────
+const usedNonces = new Map<string, number>();
+const NONCE_TTL_MS = 5 * 60 * 1000;
+setInterval(() => {
+  const now = Date.now();
+  for (const [nonce, ts] of usedNonces) {
+    if (now - ts > NONCE_TTL_MS) usedNonces.delete(nonce);
+  }
+}, NONCE_TTL_MS);
+
 function base64UrlDecode(str: string): Buffer {
   str = str.replace(/-/g, '+').replace(/_/g, '/');
   while (str.length % 4) str += '=';
@@ -114,6 +124,12 @@ app.post('/api/request-token', async (req, res) => {
       res.status(400).json({ error: 'Nonce inválido (mín. 16 caracteres).' });
       return;
     }
+    // Replay protection
+    if (usedNonces.has(nonce)) {
+      res.status(400).json({ error: 'Nonce já utilizado. Gera um novo nonce por pedido.' });
+      return;
+    }
+    usedNonces.set(nonce, Date.now());
     if (!JWT_SHARED_SECRET) {
       res.json({ token: 'dev-no-secret-token' });
       return;

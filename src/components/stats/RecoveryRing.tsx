@@ -25,18 +25,21 @@ function getLabel(pct: number) {
 
 export const RecoveryRing = memo(function RecoveryRingComponent({ recoveryData }: { recoveryData: RecoveryData[] }) {
   const [idx, setIdx] = useState(0);
-  
-  if (!recoveryData || recoveryData.length === 0) return null;
 
-  const current = recoveryData[idx];
-  
+  // Hooks MUST be called before any conditional return (Rules of Hooks)
+  const safeData = recoveryData && recoveryData.length > 0 ? recoveryData : null;
+  const current = safeData ? safeData[idx] : null;
+
   // Memoize os calculos pesados (Dash, circunferência)
   const { dash, color, pct } = useMemo(() => {
+     if (!current) return { dash: CIRC, color: '#555', pct: 0 };
      const pct = current.recoveryPct;
      const color = getColor(pct);
      const dash = CIRC * (1 - pct / 100);
      return { dash, color, pct };
-  }, [current.recoveryPct]);
+  }, [current?.recoveryPct]);
+
+  if (!safeData || !current) return null;
 
 
 

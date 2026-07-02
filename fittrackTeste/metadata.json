@@ -1,6 +1,0 @@
-{
-  "name": "FitTrack",
-  "description": "Uma plataforma inteligente de monitoramento de exercícios físicos e plano nutricional personalizado, integrada com Inteligência Artificial para feedback de treinos e receitas customizadas.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

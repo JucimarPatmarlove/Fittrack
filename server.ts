@@ -14,6 +14,18 @@ const PORT = parseInt(process.env.PORT || '3001', 10);
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const JWT_SHARED_SECRET = process.env.API_SHARED_SECRET || process.env.VITE_API_SHARED_SECRET || '';
 
+// ─── REPLAY PROTECTION (Nonce Cache) ─────────────────────────────────────────
+const usedNonces = new Map<string, number>(); // nonce → timestamp
+const NONCE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// Auto-clean expired nonces every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [nonce, ts] of usedNonces) {
+    if (now - ts > NONCE_TTL_MS) usedNonces.delete(nonce);
+  }
+}, NONCE_TTL_MS);
+
 // Inicializar Inteligência Artificial (Gemini SDK oficial)
 const ai = new GoogleGenerativeAI(GEMINI_API_KEY as string);
 
@@ -157,6 +169,13 @@ async function startServer() {
         res.status(400).json({ error: 'Nonce inválido (mín. 16 caracteres).' });
         return;
       }
+
+      // Replay protection: reject previously used nonces
+      if (usedNonces.has(nonce)) {
+        res.status(400).json({ error: 'Nonce já utilizado. Gera um novo nonce por pedido.' });
+        return;
+      }
+      usedNonces.set(nonce, Date.now());
 
       if (!JWT_SHARED_SECRET) {
         res.json({ token: 'dev-no-secret-token' });
