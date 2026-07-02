@@ -169,10 +169,8 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
         />
       )}
       
-      {/* HEADER TÁTICO E RESTANTES WIDGETS (SÓ VISÍVEIS SE HOUVER DADOS) */}
-      {!isSystemEmpty && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* HEADER TÁTICO */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontFamily: '"Bebas Neue", sans-serif', fontSize: '2.5rem', color: accentNeon, margin: 0, letterSpacing: '2px' }}>CENTRAL DE COMANDO</h1>
           <p style={{ color: 'rgba(255,255,255,0.5)', margin: 0, fontSize: '0.85rem' }}>Visão Biológica e Mecânica Integrada</p>
@@ -422,9 +420,6 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
           <Flame size={20} color="#000" />
           TREINAR AGORA
         </motion.button>
-      )}
-      
-      </>
       )}
     </div>
   );

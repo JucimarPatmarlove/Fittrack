@@ -91,7 +91,7 @@ export const BiometricDeltaCard: React.FC<BiometricDeltaCardProps> = ({
           BIOIMPEDÂNCIA (RENPHO)
         </h3>
         <span style={{ fontSize: '9px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.3)', padding: '4px 8px', borderRadius: '6px', color: '#00ff88', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
-          {healthData.platform === 'mock' ? 'MOCK' : healthData.platform}
+          {healthData.platform === 'mock' ? (healthData.weight !== null ? 'MOCK' : 'SEM DADOS') : healthData.platform}
         </span>
       </div>
 
@@ -130,7 +130,7 @@ export const BiometricDeltaCard: React.FC<BiometricDeltaCardProps> = ({
 
       <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', position: 'relative', zIndex: 10 }}>
         <span>Sync: {new Date(healthData.lastSync).toLocaleTimeString()}</span>
-        <span>Origem: {healthData.platform === 'apple' ? 'Apple Health' : healthData.platform === 'google' ? 'Google Fit' : 'Sensor Simulado'}</span>
+        <span>Origem: {healthData.platform === 'apple' ? 'Apple Health' : healthData.platform === 'google' ? 'Google Fit' : (healthData.weight !== null ? 'Sensor Simulado' : 'A aguardar dados...')}</span>
       </div>
     </motion.div>
   );

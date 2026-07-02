@@ -51,7 +51,7 @@ export const BiometricInsight: React.FC<Props> = ({ healthData, adjustment, isSy
           <Activity size={20} color="#00d4ff" />
           <h3 style={{ fontFamily: '"Bebas Neue", sans-serif', letterSpacing: '2px', fontSize: '1.25rem', color: '#fff', margin: 0 }}>TELEMETRIA BIOMÉTRICA</h3>
         </div>
-        {isMock && (
+        {isMock && healthData.weight !== null && (
           <span style={{ fontSize: '9px', background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.3)', padding: '4px 8px', borderRadius: '6px', color: '#00d4ff', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Simulação
           </span>

@@ -87,14 +87,12 @@ export class HealthBridge {
   // --- SIMULAÇÃO PARA DEV ---
 
   private static generateMockMetrics(): UnifiedHealthMetrics {
-    const weight = 75.2 + (Math.random() - 0.5) * 1.5;
-    const bodyFat = 25.0 + (Math.random() * 0.6 - 0.3);
     return {
-      weight: parseFloat(weight.toFixed(1)),
-      bodyFat: parseFloat(bodyFat.toFixed(1)),
-      bmi: parseFloat((weight / (1.77 * 1.77)).toFixed(1)),
-      leanMass: parseFloat((weight - (weight * (bodyFat / 100))).toFixed(1)),
-      sleepHours: parseFloat((6 + Math.random() * 3).toFixed(1)),
+      weight: null,
+      bodyFat: null,
+      bmi: null,
+      leanMass: null,
+      sleepHours: null,
       platform: 'mock',
       lastSync: Date.now()
     };
