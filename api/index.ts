@@ -35,7 +35,7 @@ async function verifyJWT(token: string) {
       { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
     );
     const signingInput = `${headerB64}.${payloadB64}`;
-    const signature = base64UrlDecode(signatureB64);
+    const signature = new Uint8Array(base64UrlDecode(signatureB64));
     const isValid = await webcrypto.subtle.verify('HMAC', key, signature, new TextEncoder().encode(signingInput));
     if (!isValid) return { valid: false, error: 'Assinatura JWT inválida' };
     const payload = JSON.parse(base64UrlDecode(payloadB64).toString('utf-8'));
