@@ -5,10 +5,35 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { webcrypto, createHmac } from 'crypto';
+import { readFileSync, existsSync } from 'fs';
 
 // ─── CARREGAR VARIÁVEIS DE AMBIENTE ──────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load .env and .env.local (Node.js doesn't do this automatically)
+function loadEnvFile(filePath: string) {
+  if (!existsSync(filePath)) return;
+  const content = readFileSync(filePath, 'utf-8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx === -1) continue;
+    const key = trimmed.substring(0, eqIdx).trim();
+    let value = trimmed.substring(eqIdx + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+}
+
+loadEnvFile(path.join(__dirname, '.env'));
+loadEnvFile(path.join(__dirname, '.env.local'));
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -246,7 +271,7 @@ async function startServer() {
       console.log(`[BFF] ⚡ Encaminhando ao Gemini: "${userText.slice(0, 50)}..."`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.5-flash',
         systemInstruction: system || 'És o treinador IA do FitTrack, especialista em periodização e biomecânica.',
       });
 
@@ -299,7 +324,7 @@ async function startServer() {
       console.log(`[BFF] 🏋️ Gerando treino preditivo com Gemini...`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.5-flash',
         systemInstruction: finalSystem,
       });
 

@@ -176,7 +176,7 @@ app.post('/api/claude', async (req, res) => {
     const lastMessage = messages[messages.length - 1];
     const userText = lastMessage.content || lastMessage.text || '';
     const model = ai.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3.5-flash',
       systemInstruction: system || 'És o treinador IA do FitTrack.',
     });
     const response = await model.generateContent({
@@ -202,7 +202,7 @@ app.post('/api/generate-workout', async (req, res) => {
       res.status(400).json({ error: { message: 'Falta o prompt do treino.' } });
       return;
     }
-    const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash', systemInstruction: finalSystem });
+    const model = ai.getGenerativeModel({ model: 'gemini-3.5-flash', systemInstruction: finalSystem });
     const response = await model.generateContent({
       contents: [{ role: 'user', parts: [{ text: finalUser }] }],
       generationConfig: { temperature: 0.3, responseMimeType: 'application/json' }
