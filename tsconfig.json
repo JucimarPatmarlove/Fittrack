@@ -14,11 +14,15 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting (relaxed to start — tighten gradually) */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    /* Strict Mode (ativado) */
+    "strict": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "ignoreDeprecations": "6.0",
     "allowJs": true,
 
     /* Path aliases */

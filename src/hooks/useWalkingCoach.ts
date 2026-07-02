@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { WorkoutSession } from '../db/schema';
+import { startSilentAudio, stopSilentAudio } from '../utils/silentAudio';
 
 interface CoachState {
   isActive: boolean;
@@ -162,6 +163,10 @@ export function useWalkingCoach(targetPace: number = 8.0) {
 
     await requestWakeLock();
 
+    startSilentAudio(() => {
+      console.warn('[WalkingCoach] Utilizador negou permissão de áudio, continuando sem background audio.');
+    });
+
     // Reset counters
     totalDistance.current = 0;
     activeDuration.current = 0;
@@ -255,6 +260,8 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
     if (challengeInterval.current) clearInterval(challengeInterval.current);
     if (durationInterval.current) clearInterval(durationInterval.current);
+    
+    stopSilentAudio();
     releaseWakeLock();
 
     const finalState = { ...state };
