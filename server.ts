@@ -249,7 +249,7 @@ async function startServer() {
     next();
   });
 
-  // ── ROTA CLAUDE (Mapeada para Gemini 3.5 Flash) ────────────────────────────
+  // ── ROTA CLAUDE (Mapeada para Gemini 1.5 Flash) ────────────────────────────
   app.post('/api/claude', async (req, res) => {
     if (!GEMINI_API_KEY) {
       res.status(500).json({ error: { message: 'A chave de API do Gemini não está configurada.' } });
@@ -271,7 +271,7 @@ async function startServer() {
       console.log(`[BFF] ⚡ Encaminhando ao Gemini: "${userText.slice(0, 50)}..."`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-3.5-flash',
+        model: 'gemini-1.5-flash',
         systemInstruction: system || 'És o treinador IA do FitTrack, especialista em periodização e biomecânica.',
       });
 
@@ -324,7 +324,7 @@ async function startServer() {
       console.log(`[BFF] 🏋️ Gerando treino preditivo com Gemini...`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-3.5-flash',
+        model: 'gemini-1.5-flash',
         systemInstruction: finalSystem,
       });
 

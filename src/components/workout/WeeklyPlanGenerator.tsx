@@ -75,23 +75,30 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
 
     const handleGenerate = async () => {
         setIsGenerating(true);
-        const generated = await AnthropicService.generateWeeklyPlan({ 
-            ...profile, 
-            weight: Number(weight), 
-            height: Number(height),
-            age: Number(age),
-            gender,
-            goal,
-            philosophy,
-            classicStyle,
-            availableEquipment: [equipment],
-            trainingDays: trainingDays,
-            preferredWorkoutDuration: Number(duration),
-            injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s),
-            dayPreferences: dayPreferences
-        }, philosophy);
+        let generated: any = null;
+        try {
+            generated = await AnthropicService.generateWeeklyPlan({ 
+                ...profile, 
+                weight: Number(weight), 
+                height: Number(height),
+                age: Number(age),
+                gender,
+                goal,
+                philosophy,
+                classicStyle,
+                availableEquipment: [equipment],
+                trainingDays: trainingDays,
+                preferredWorkoutDuration: Number(duration),
+                injuries: injuries.split(',').map((s: string) => s.trim()).filter((s: string) => s),
+                dayPreferences: dayPreferences
+            }, philosophy);
+        } catch (error: any) {
+            console.error("Erro crítico na geração do plano:", error);
+            alert("Erro crítico: Não foi possível processar o plano. Ocorreu uma falha no motor offline ou na IA.");
+        } finally {
+            setIsGenerating(false);
+        }
         
-        setIsGenerating(false);
         if (generated && generated.plan) {
             const newPlan = {
                 id: crypto.randomUUID(),
