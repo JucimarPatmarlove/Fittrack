@@ -51,17 +51,24 @@ export function useWalkingCoach(targetPace: number = 8.0) {
   const lastAcceleration = useRef<number>(0);
 
   // --- WAKE LOCK ---
-  const requestWakeLock = async () => {
-    if ('wakeLock' in navigator) {
+  const requestWakeLock = useCallback(async () => {
+    if ('wakeLock' in navigator && state.isActive && !state.isPaused) {
       try {
+        if (wakeLock.current) return;
         wakeLock.current = await (navigator as any).wakeLock.request('screen');
+        
+        wakeLock.current.addEventListener('release', () => {
+          console.log('Wake Lock released (ecrã pode desligar-se)');
+          wakeLock.current = null;
+        });
+        console.log('Wake Lock adquirido com sucesso!');
       } catch (err) {
-        console.warn('Wake Lock falhou:', err);
+        console.warn('Wake Lock falhou (pode estar em modo poupança de bateria):', err);
       }
     }
-  };
+  }, [state.isActive, state.isPaused]);
 
-  const releaseWakeLock = async () => {
+  const releaseWakeLock = useCallback(async () => {
     if (wakeLock.current) {
       try {
         await wakeLock.current.release();
@@ -70,7 +77,18 @@ export function useWalkingCoach(targetPace: number = 8.0) {
         console.warn('Wake Lock release falhou:', err);
       }
     }
-  };
+  }, []);
+
+  // Re-adquirir Wake Lock se a app voltar a ficar visível
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && state.isActive && !state.isPaused) {
+        requestWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [requestWakeLock, state.isActive, state.isPaused]);
 
   // --- MOTOR TTS ---
   const speak = useCallback((text: string) => {
