@@ -108,7 +108,19 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
                     Concluir
                   </button>
                 )}
-                {workout?.completed && <CheckCircle size={20} style={{ color: '#10b981' }} />}
+                {workout?.completed && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {onStartWorkout && rawDayPlan && (
+                      <button
+                        onClick={() => onStartWorkout({ id: `day_${workout.id}_redo`, label: `${rawDayPlan.day}: ${rawDayPlan.focus} (Refazer)`, exercises: rawDayPlan.exercises })}
+                        style={{ padding: '4px 8px', background: 'transparent', border: `1px solid ${C.accent}`, color: C.accent, borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }}
+                      >
+                        Ver / Refazer
+                      </button>
+                    )}
+                    <CheckCircle size={20} style={{ color: '#10b981' }} />
+                  </div>
+                )}
               </div>
             </motion.div>
           );
