@@ -36,3 +36,13 @@ docs/walkthrough.md
 test-output.log
 api/*.js
 api/index.ts
+
+# Legacy Files
+server.js
+server.ts
+dump_db.*
+test-browser.*
+package_temp.json
+*.log
+*_err.txt
+cyclomatic_complexity_report.md
