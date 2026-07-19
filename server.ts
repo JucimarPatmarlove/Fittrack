@@ -6,6 +6,7 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { webcrypto, createHmac } from 'crypto';
 import { readFileSync, existsSync } from 'fs';
+import { VectorMemory } from './src/services/vectorMemory';
 
 // ─── CARREGAR VARIÁVEIS DE AMBIENTE ──────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -398,6 +399,56 @@ async function startServer() {
     } catch (e: any) {
       console.error('[BFF] Erro no /api/generate-workout:', e);
       res.status(500).json({ error: { message: e.message || 'Falha ao construir treino.' } });
+    }
+  });
+
+  // ── ROTA COACH (Memória Vetorial RAG) ──────────────────────────────────────
+  app.post('/api/coach', async (req, res) => {
+    const { userId, prompt } = req.body;
+  
+    if (!userId || !prompt) {
+      res.status(400).json({ error: 'Faltam dados críticos (userId ou prompt).' });
+      return;
+    }
+  
+    try {
+      // 1. Extrai as memórias vetoriais relevantes do Pinecone (RAG)
+      const pastMemories = await VectorMemory.recallMemories(userId, prompt);
+      
+      // 2. Constrói o contexto injetando as memórias no prompt do sistema
+      const systemPrompt = `
+        És o FitTrack AI Coach. Responde de forma curta, direta e tática.
+        Aqui está o histórico relevante de treinos do utilizador para contexto:
+        ${pastMemories.length > 0 ? pastMemories.join('\n') : 'Nenhum histórico relevante encontrado para este tópico.'}
+      `;
+  
+      // 3. Chama o modelo de texto generativo (Gemini Flash)
+      const model = ai.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: systemPrompt 
+      });
+  
+      const result = await model.generateContent(prompt);
+      const responseText = result.response.text();
+  
+      res.json({ reply: responseText });
+      
+    } catch (error) {
+      console.error('[AI Coach] Erro de processamento:', error);
+      res.status(500).json({ error: 'Falha na comunicação com os servidores táticos.' });
+    }
+  });
+  
+  // ── ROTA GUARDAR MEMÓRIA (Pinecone) ────────────────────────────────────────
+  app.post('/api/workout/complete', async (req, res) => {
+    const { userId, workoutId, summary } = req.body;
+    
+    // Responde imediatamente ao frontend para não bloquear a UI
+    res.status(200).json({ message: 'Treino recebido. Sincronização vetorial em background.' });
+  
+    // Processa a gravação no Pinecone em background
+    if (userId && workoutId && summary) {
+      await VectorMemory.memorizeWorkout(userId, workoutId, summary);
     }
   });
 
