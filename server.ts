@@ -316,7 +316,7 @@ async function startServer() {
       console.log(`[BFF] ⚡ Encaminhando ao Gemini: "${userText.slice(0, 50)}..."`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-1.5-flash-latest',
         systemInstruction: system || 'És o treinador IA do FitTrack, especialista em periodização e biomecânica.',
       });
 
@@ -369,7 +369,7 @@ async function startServer() {
       console.log(`[BFF] 🏋️ Gerando treino preditivo com Gemini...`);
 
       const model = ai.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-1.5-flash-latest',
         systemInstruction: finalSystem,
       });
 
@@ -425,7 +425,7 @@ async function startServer() {
   
       // 3. Chama o modelo de texto generativo (Gemini Flash)
       const model = ai.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-1.5-flash-latest",
         systemInstruction: systemPrompt 
       });
   

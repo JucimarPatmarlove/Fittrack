@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "analyze": "ANALYZE=true npm run build",
-    "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
-    "start": "node dist/server.cjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "postbuild": "npm run security-check",
     "security-check": "if grep -qr 'sk-ant' dist/ 2>/dev/null; then echo '🚨 CHAVE ANTHROPIC NO BUNDLE!' && exit 1; else echo '✅ Zero Trust OK: Nenhum segredo no frontend.'; fi",
     "check-jwt": "bash scripts/check-jwt-secret.sh",
@@ -47,6 +47,7 @@
     "ipfs-http-client": "^60.0.1",
     "lodash": "^4.18.1",
     "lucide-react": "^1.8.0",
+    "node-cron": "^4.6.0",
     "posthog-js": "^1.404.1",
     "react": "^19.2.4",
     "react-calendar": "^6.0.1",
@@ -54,6 +55,7 @@
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.72.1",
     "recharts": "^3.8.1",
+    "resend": "^6.17.2",
     "three": "^0.183.2",
     "use-long-press": "^3.3.0",
     "vite-plugin-compression": "^0.5.1",
@@ -69,6 +71,7 @@
     "@types/cors": "^2.8.19",
     "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.6",
+    "@types/node-cron": "^3.0.11",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
@@ -92,6 +95,7 @@
   },
   "allowScripts": {
     "esbuild@0.28.1": true,
-    "protobufjs@7.6.5": true
+    "protobufjs@7.6.5": true,
+    "core-js@3.49.0": true
   }
 }

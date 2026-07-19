@@ -1,7 +1,13 @@
 {
   "regions": ["fra1"],
+  "crons": [
+    {
+      "path": "/api/cron/weekly-report",
+      "schedule": "0 20 * * 0"
+    }
+  ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
