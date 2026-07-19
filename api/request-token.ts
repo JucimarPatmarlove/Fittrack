@@ -52,9 +52,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const signatureB64 = base64UrlEncode(Buffer.from(signatureBuffer));
     const token = `${signingInput}.${signatureB64}`;
 
-    res.json({ token });
+    return res.json({ token });
   } catch (e: any) {
     console.error('[Vercel API] Erro ao emitir token:', e.message);
-    res.status(500).json({ error: 'Erro ao emitir token.' });
+    return res.status(500).json({ error: 'Erro ao emitir token.' });
   }
 }

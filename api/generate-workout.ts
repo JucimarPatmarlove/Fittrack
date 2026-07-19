@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let parsedContent;
     try {
       const match = responseText.match(/```json\n([\s\S]*?)\n```/);
-      const jsonString = match ? match[1] : responseText.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
+      const jsonString = match ? (match[1] as string) : responseText.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
       parsedContent = JSON.parse(jsonString);
       return res.json({ content: parsedContent });
     } catch (parseErr) {

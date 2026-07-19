@@ -114,6 +114,10 @@ export async function protectApi(req: VercelRequest, res: VercelResponse): Promi
   }
 
   const token = authHeader.split(' ')[1];
+  if (!token) {
+    res.status(401).json({ error: 'Acesso negado. Token mal formatado.' });
+    return false;
+  }
   const { valid, error } = await verifyJWT(token);
 
   if (!valid) {
