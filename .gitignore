@@ -34,3 +34,5 @@ dist-ssr
 fittrack_briefing.md
 docs/walkthrough.md
 test-output.log
+api/*.js
+api/index.ts

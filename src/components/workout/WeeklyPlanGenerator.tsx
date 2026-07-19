@@ -113,20 +113,28 @@ export function WeeklyPlanGenerator({ profile, setProfile, onStartWorkout, onClo
 
             // Injetar treinos gerados no Calendário Global (Agenda)
             const daysMap: Record<string, number> = {
-                "Domingo": 0, "Segunda": 1, "Terça": 2, "Quarta": 3, "Quinta": 4, "Sexta": 5, "Sábado": 6
+                "domingo": 0, "segunda": 1, "terça": 2, "quarta": 3, "quinta": 4, "sexta": 5, "sábado": 6
             };
             const today = new Date();
             const currentDay = today.getDay();
 
             generated.plan.forEach((dayPlan: any) => {
-                const targetDay = daysMap[dayPlan.day];
+                // Normalizar "Segunda-feira" -> "segunda"
+                const normalizedDay = dayPlan.day.toLowerCase().split('-')[0].trim();
+                const targetDay = daysMap[normalizedDay];
+                
                 if (targetDay !== undefined) {
                     let daysUntil = targetDay - currentDay;
                     if (daysUntil < 0) daysUntil += 7; // Empurra para a próxima semana se o dia já passou
                     
                     const targetDate = new Date(today);
                     targetDate.setDate(today.getDate() + daysUntil);
-                    const dateString = targetDate.toISOString().split('T')[0];
+                    
+                    // Prevenir bug de fuso horário do toISOString() que empurra 1 dia para a frente
+                    const year = targetDate.getFullYear();
+                    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(targetDate.getDate()).padStart(2, '0');
+                    const dateString = `${year}-${month}-${day}`;
                     
                     const isRest = dayPlan.focus.toLowerCase().includes("descanso") || dayPlan.focus.toLowerCase().includes("recupera");
                     if (!isRest) {
