@@ -52,7 +52,8 @@ function base64UrlDecode(str: string): Buffer {
 export async function verifyJWT(token: string) {
   const JWT_SHARED_SECRET = process.env.JWT_SHARED_SECRET;
   if (!JWT_SHARED_SECRET) {
-    return { valid: true, payload: {} as any };
+    console.error('[CRITICAL] JWT_SHARED_SECRET ausente nas variáveis de ambiente!');
+    return { valid: false, error: 'Erro interno de configuração de segurança.' };
   }
 
   try {

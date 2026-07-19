@@ -14,7 +14,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const JWT_SHARED_SECRET = process.env.JWT_SHARED_SECRET;
 
   if (!JWT_SHARED_SECRET) {
-    return res.json({ token: 'dev-token-ignored', mock: true });
+    console.error('[CRITICAL] JWT_SHARED_SECRET ausente nas variáveis de ambiente!');
+    return res.status(500).json({ error: 'Erro de configuração no servidor.' });
   }
 
   if (!deviceId || !nonce) {
