@@ -36,10 +36,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const result = await model.generateContent(prompt);
-    res.status(200).json({ reply: result.response.text() });
+    return res.status(200).json({ reply: result.response.text() });
     
   } catch (error) {
     console.error('[Vercel API] Erro no Coach:', error);
-    res.status(500).json({ error: 'Falha nos servidores táticos.' });
+    return res.status(500).json({ error: 'Falha nos servidores táticos.' });
   }
 }

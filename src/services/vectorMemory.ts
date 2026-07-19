@@ -31,15 +31,17 @@ export class VectorMemory {
     try {
       const vector = await this.getEmbedding(summary);
       
-      await index.upsert([{
-        id: workoutId,
-        values: vector,
-        metadata: { 
-          userId, 
-          summary, 
-          timestamp: Date.now() 
-        }
-      }]);
+      await index.upsert({
+        records: [{
+          id: workoutId,
+          values: vector,
+          metadata: { 
+            userId, 
+            summary, 
+            timestamp: Date.now() 
+          }
+        }]
+      });
       
       console.log(`[Pinecone] Treino ${workoutId} injetado na matrix vetorial.`);
     } catch (error) {

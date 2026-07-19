@@ -17,8 +17,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       html: `<div style="background-color: #0f172a; color: #ccff00; padding: 20px;">Relatório Tático...</div>`,
     });
 
-    res.status(200).json({ success: true, message: 'Relatórios disparados.' });
+    return res.status(200).json({ success: true, message: 'Relatórios disparados.' });
   } catch (error) {
-    res.status(500).json({ error: 'Falha ao enviar relatórios.' });
+    return res.status(500).json({ error: 'Falha ao enviar relatórios.' });
   }
 }

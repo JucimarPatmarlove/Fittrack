@@ -61,7 +61,9 @@ export async function verifyJWT(token: string) {
       return { valid: false, error: 'Token JWT malformado' };
     }
 
-    const [headerB64, payloadB64, signatureB64] = parts;
+    const headerB64 = parts[0] as string;
+    const payloadB64 = parts[1] as string;
+    const signatureB64 = parts[2] as string;
     const key = await webcrypto.subtle.importKey(
       'raw',
       new TextEncoder().encode(JWT_SHARED_SECRET),

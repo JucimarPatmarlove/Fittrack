@@ -28,9 +28,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const result = await model.generateContent(userText);
-    res.json({ reply: result.response.text() });
+    return res.json({ reply: result.response.text() });
   } catch (e: any) {
     console.error('[Vercel API] Erro no /api/claude:', e);
-    res.status(500).json({ error: { message: e.message || 'Ocorreu um erro ao processar o pedido.' } });
+    return res.status(500).json({ error: { message: e.message || 'Ocorreu um erro ao processar o pedido.' } });
   }
 }

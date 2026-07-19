@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { webcrypto, createHmac } from 'crypto';
+import { webcrypto } from 'crypto';
 
 function base64UrlEncode(buffer: Buffer): string {
   return buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');

@@ -43,12 +43,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const match = responseText.match(/```json\n([\s\S]*?)\n```/);
       const jsonString = match ? match[1] : responseText.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
       parsedContent = JSON.parse(jsonString);
-      res.json({ content: parsedContent });
+      return res.json({ content: parsedContent });
     } catch (parseErr) {
-      res.json({ content: responseText, raw: responseText });
+      return res.json({ content: responseText, raw: responseText });
     }
   } catch (e: any) {
     console.error('[Vercel API] Erro no /api/generate-workout:', e);
-    res.status(500).json({ error: { message: e.message || 'Falha ao construir treino.' } });
+    return res.status(500).json({ error: { message: e.message || 'Falha ao construir treino.' } });
   }
 }
