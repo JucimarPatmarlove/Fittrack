@@ -7,6 +7,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { webcrypto, createHmac } from 'crypto';
 import { readFileSync, existsSync } from 'fs';
 import { VectorMemory } from './src/services/vectorMemory';
+import { startWeeklyReportJob } from './src/jobs/weeklyReport';
 
 // ─── CARREGAR VARIÁVEIS DE AMBIENTE ──────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -485,6 +486,9 @@ async function startServer() {
       }
     });
   };
+
+  // Ativa o motor de relatórios em background
+  startWeeklyReportJob();
 
   startWithFallback(PORT);
 }
