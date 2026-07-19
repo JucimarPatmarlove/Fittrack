@@ -2,31 +2,51 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { WorkoutSession } from '../db/schema';
 import { startSilentAudio, stopSilentAudio } from '../utils/silentAudio';
 
+// ── TIPOS ────────────────────────────────────────────────────────────────────
+
+export interface Hazard {
+  id: string;
+  lat: number;
+  lng: number;
+  type: 'water' | 'danger' | 'info';
+}
+
 interface CoachState {
   isActive: boolean;
-  isPaused: boolean; // Auto-pause state
+  isPaused: boolean;
   distance: number;
-  duration: number; // Active duration only
+  duration: number;
   pace: number;
+  gap: number;              // Grade Adjusted Pace (min/km corrigido por inclinação)
+  altitude: number;         // Altitude corrente (metros)
+  elevationGain: number;    // Ganho de elevação acumulado (metros)
   steps: number;
   speed: number;
+  heartRate: number;        // BPM (simulado — TODO: Web Bluetooth)
+  ghostDistance: number;     // Distância percorrida pelo fantasma (km)
+  hazards: Hazard[];        // Marcadores crowdsource
   isRunningSuggestion: boolean;
   isRunningChallenge: boolean;
   runChallengeTimeLeft: number;
   alertMessage: string | null;
+  path: {lat: number, lng: number}[];
 }
 
 interface GPSPoint {
   lat: number;
   lng: number;
+  alt: number;
   timestamp: number;
 }
 
-export function useWalkingCoach(targetPace: number = 8.0) {
+// ── HOOK PRINCIPAL ───────────────────────────────────────────────────────────
+
+export function useWalkingCoach(targetPace: number = 8.0, ghostSpeedKmh: number = 5.5) {
   const [state, setState] = useState<CoachState>({
     isActive: false, isPaused: false, distance: 0, duration: 0, pace: 0,
-    steps: 0, speed: 0, isRunningSuggestion: false,
-    isRunningChallenge: false, runChallengeTimeLeft: 0, alertMessage: null,
+    gap: 0, altitude: 0, elevationGain: 0, steps: 0, speed: 0, heartRate: 72,
+    ghostDistance: 0, hazards: [], isRunningSuggestion: false,
+    isRunningChallenge: false, runChallengeTimeLeft: 0, alertMessage: null, path: []
   });
 
   const watchId = useRef<number | null>(null);
@@ -35,7 +55,8 @@ export function useWalkingCoach(targetPace: number = 8.0) {
   
   // Accumulated totals
   const totalDistance = useRef<number>(0);
-  const activeDuration = useRef<number>(0); // in seconds
+  const totalElevation = useRef<number>(0);
+  const activeDuration = useRef<number>(0);
   const lastTickTime = useRef<number | null>(null);
 
   // Sliding window for Rolling Average Pace
@@ -50,6 +71,9 @@ export function useWalkingCoach(targetPace: number = 8.0) {
   // Step sensor
   const stepCount = useRef<number>(0);
   const lastAcceleration = useRef<number>(0);
+
+  // Ghost & HR spoken feedback cooldown
+  const lastGhostFeedbackTime = useRef<number>(0);
 
   // --- WAKE LOCK ---
   const requestWakeLock = useCallback(async () => {
@@ -134,7 +158,7 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     };
   }, [state.isActive, state.isPaused]);
 
-  // --- DURATION TICKER (so incrementa se não estiver em pausa) ---
+  // --- DURATION TICKER (só incrementa se não estiver em pausa) ---
   useEffect(() => {
     if (state.isActive && !state.isPaused) {
       lastTickTime.current = Date.now();
@@ -154,7 +178,61 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     };
   }, [state.isActive, state.isPaused]);
 
-  // --- MOTOR GPS ---
+  // ──────────────────────────────────────────────────────────────────────────
+  // 👻 MECÂNICA 3: Ghost Pacer + ❤️ MECÂNICA 4: Simulação HR & Proteção
+  // ──────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!state.isActive || state.isPaused) return;
+
+    const interval = setInterval(() => {
+      setState(prev => {
+        // Ghost avança a velocidade configurável (km/s = km/h ÷ 3600)
+        const newGhostDist = prev.ghostDistance + (ghostSpeedKmh / 3600);
+
+        // Simulação de HR (substituir por Web Bluetooth quando disponível)
+        let newHR: number;
+        if (prev.isRunningChallenge) {
+          // HR sobe durante challenge
+          newHR = Math.min(185, prev.heartRate + (Math.random() * 3 + 1));
+        } else {
+          // Flutuação normal ±2 BPM
+          newHR = Math.max(60, Math.min(160, prev.heartRate + (Math.random() * 4 - 2)));
+        }
+
+        // 🛡️ Proteção Cardíaca: Abort automático se HR > 180 em challenge
+        if (newHR > 180 && prev.isRunningChallenge) {
+          speak('Alerta vermelho. Frequência cardíaca no limite. Reduz o ritmo imediatamente.');
+          return {
+            ...prev,
+            heartRate: newHR,
+            ghostDistance: newGhostDist,
+            isRunningChallenge: false,
+            runChallengeTimeLeft: 0,
+            alertMessage: '⚠️ Corrida abortada: Zona 5 de HR.'
+          };
+        }
+
+        // 👻 Feedback do Ghost a cada 5 minutos
+        const now = Date.now();
+        if (now - lastGhostFeedbackTime.current > 300000 && prev.duration > 60) {
+          lastGhostFeedbackTime.current = now;
+          if (prev.distance > newGhostDist) {
+            speak('Estás à frente do teu recorde pessoal. Mantém!');
+          } else {
+            speak('O Fantasma ultrapassou-te. Acelera!');
+          }
+        }
+
+        return { ...prev, heartRate: newHR, ghostDistance: newGhostDist };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [state.isActive, state.isPaused, ghostSpeedKmh, speak]);
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 🗺️ MOTOR GPS com ⛰️ MECÂNICA 1: Altimetria e GAP
+  // ──────────────────────────────────────────────────────────────────────────
   const startTracking = useCallback(async () => {
     if (!navigator.geolocation) {
       alert('Geolocalização não suportada no teu dispositivo.');
@@ -169,22 +247,29 @@ export function useWalkingCoach(targetPace: number = 8.0) {
 
     // Reset counters
     totalDistance.current = 0;
+    totalElevation.current = 0;
     activeDuration.current = 0;
     stepCount.current = 0;
     lastCoords.current = null;
     paceWindow.current = [];
     goodPaceStartTime.current = null;
+    lastGhostFeedbackTime.current = Date.now();
     
     // Set UI to active immediately
-    setState(prev => ({ ...prev, isActive: true, alertMessage: 'A procurar sinal GPS...' }));
+    setState(prev => ({
+      ...prev, isActive: true, alertMessage: 'A procurar sinal GPS...',
+      path: [], hazards: [], ghostDistance: 0, heartRate: 72,
+      altitude: 0, elevationGain: 0, gap: 0
+    }));
 
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
+        const { latitude, longitude, accuracy, altitude } = position.coords;
         const now = Date.now();
+        const currentAlt = altitude || 0;
 
         // JITTER FILTER
-        if (accuracy > 30) return; // Ignore very bad signals
+        if (accuracy > 30) return;
 
         if (lastCoords.current) {
           const prev = lastCoords.current;
@@ -198,6 +283,11 @@ export function useWalkingCoach(targetPace: number = 8.0) {
                     Math.sin(dLon/2) * Math.sin(dLon/2);
           const dist = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
           
+          // ⛰️ Acumulação de elevação (só subidas contam)
+          if (currentAlt > prev.alt + 0.5) { // Filtro de 0.5m para jitter altimétrico
+            totalElevation.current += (currentAlt - prev.alt);
+          }
+
           if (timeDelta > 0) {
              const instSpeed = (dist / timeDelta) * 3600;
              // AUTO-PAUSE LOGIC (If moving < 1.5 km/h for > 10s, pause)
@@ -221,12 +311,12 @@ export function useWalkingCoach(targetPace: number = 8.0) {
                });
                
                // Only accumulate distance if active
-               if (dist > 0.001 && dist < 0.2) { // also ignore jumps > 200m
+               if (dist > 0.001 && dist < 0.2) {
                  totalDistance.current += dist;
                  
                  // ROLLING AVERAGE PACE
                  paceWindow.current.push({ dist, time: timeDelta });
-                 if (paceWindow.current.length > 5) paceWindow.current.shift(); // keep last 5 readings
+                 if (paceWindow.current.length > 5) paceWindow.current.shift();
                  
                  const sumDist = paceWindow.current.reduce((sum, item) => sum + item.dist, 0);
                  const sumTime = paceWindow.current.reduce((sum, item) => sum + item.time, 0);
@@ -234,18 +324,33 @@ export function useWalkingCoach(targetPace: number = 8.0) {
                  const speedKmh = sumTime > 0 ? (sumDist / sumTime) * 3600 : 0;
                  const paceMinKm = speedKmh > 0 ? 60 / speedKmh : 0;
 
+                 // ⛰️ Grade Adjusted Pace (GAP)
+                 // Gradiente = elevação / distância horizontal
+                 // Factor: cada 1% de inclinação adiciona ~3-5% ao esforço
+                 const distMeters = totalDistance.current * 1000;
+                 let gapValue = paceMinKm;
+                 if (distMeters > 10 && totalElevation.current > 0) {
+                   const gradient = totalElevation.current / distMeters; // ex: 0.05 = 5%
+                   const gapFactor = 1 - (gradient * 3.5); // Reduz pace (mais rápido "equivalente")
+                   gapValue = Math.max(paceMinKm * gapFactor, paceMinKm * 0.6); // Clamp a 60% do pace
+                 }
+
                  setState(prev => ({
                     ...prev,
                     distance: totalDistance.current,
                     speed: speedKmh,
                     pace: paceMinKm,
+                    gap: gapValue,
+                    altitude: currentAlt,
+                    elevationGain: totalElevation.current,
+                    path: [...prev.path, { lat: latitude, lng: longitude }]
                  }));
                }
              }
           }
         }
 
-        lastCoords.current = { lat: latitude, lng: longitude, timestamp: now };
+        lastCoords.current = { lat: latitude, lng: longitude, alt: currentAlt, timestamp: now };
       },
       (error) => {
         console.error('Erro GPS:', error);
@@ -253,8 +358,11 @@ export function useWalkingCoach(targetPace: number = 8.0) {
       },
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
     );
-  }, [requestWakeLock]);
+  }, [requestWakeLock, speak]);
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // 🏁 FINISH TRACKING (preserva gravação de sessão)
+  // ──────────────────────────────────────────────────────────────────────────
   const finishTracking = useCallback(() => {
     if (watchId.current) navigator.geolocation.clearWatch(watchId.current);
     if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
@@ -264,28 +372,33 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     stopSilentAudio();
     releaseWakeLock();
 
-    const finalState = { ...state };
-    
     // Reset internal refs
     lastCoords.current = null;
     goodPaceStartTime.current = null;
     
-    setState(prev => ({ ...prev, isActive: false, isPaused: false, isRunningSuggestion: false, isRunningChallenge: false }));
+    setState(prev => ({
+      ...prev, isActive: false, isPaused: false, isRunningSuggestion: false,
+      isRunningChallenge: false, path: [], hazards: [], ghostDistance: 0,
+      heartRate: 72, altitude: 0, elevationGain: 0, gap: 0
+    }));
     
     // BUILD WORKOUT SESSION FOR HISTORY
-    const finalDistance = totalDistance.current; // km
-    const finalDuration = activeDuration.current; // seconds
+    const finalDistance = totalDistance.current;
+    const finalDuration = activeDuration.current;
     const finalPace = finalDistance > 0 ? (finalDuration / 60) / finalDistance : 0;
+    const finalElevation = totalElevation.current;
     
-    // Calculate simple calories: avg 60 kcal per km walked
-    const calories = Math.round(finalDistance * 60);
+    // Calorias ajustadas por elevação (+15% por cada 100m de ganho)
+    const baseCalories = Math.round(finalDistance * 60);
+    const elevationBonus = Math.round(finalElevation * 0.09); // ~9 cal por metro de elevação
+    const calories = baseCalories + elevationBonus;
 
     const session: WorkoutSession = {
       id: crypto.randomUUID(),
       date: new Date().toISOString().split('T')[0],
       startTime: new Date(Date.now() - finalDuration * 1000).toISOString(),
       endTime: new Date().toISOString(),
-      duration: Math.round(finalDuration / 60), // em minutos
+      duration: Math.round(finalDuration / 60),
       name: 'Caminhada (Coach)',
       volume: 0,
       calories: calories,
@@ -295,15 +408,17 @@ export function useWalkingCoach(targetPace: number = 8.0) {
         id: crypto.randomUUID(),
         exerciseId: 'walking-coach',
         name: 'Caminhada c/ Radar',
-        sets: [{ reps: Math.round(finalDistance * 1000), weight: 0, completed: true }] // Mapeamos m para reps como hack temporário
+        sets: [{ reps: Math.round(finalDistance * 1000), weight: 0, completed: true }]
       }],
-      notes: `Radar registou: ${finalDistance.toFixed(2)}km em ${Math.round(finalDuration/60)} min. Ritmo: ${finalPace.toFixed(2)} min/km.`
-    };
+      notes: `Radar: ${finalDistance.toFixed(2)}km em ${Math.round(finalDuration/60)}min. Ritmo: ${finalPace.toFixed(2)} min/km. ⛰️ Elevação: +${finalElevation.toFixed(0)}m. GAP: ${state.gap > 0 ? state.gap.toFixed(1) : '--'} min/km.`
+    } as any;
 
     return { session, distance: finalDistance };
-  }, [state]);
+  }, [state, releaseWakeLock]);
 
-  // Cérebro do Coach (Lógica de Alertas)
+  // ──────────────────────────────────────────────────────────────────────────
+  // 🧠 Cérebro do Coach (Lógica de Alertas de Ritmo)
+  // ──────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!state.isActive || state.isPaused || state.pace === 0) return;
 
@@ -333,7 +448,9 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     }
   }, [state.pace, state.isActive, state.isPaused, state.duration, targetPace, speak, state.alertMessage, state.isRunningSuggestion, state.isRunningChallenge]);
 
-  // Lógica do Desafio
+  // ──────────────────────────────────────────────────────────────────────────
+  // 🏃 Lógica do Desafio de Corrida
+  // ──────────────────────────────────────────────────────────────────────────
   const acceptRunningChallenge = useCallback(() => {
     setState(prev => ({ ...prev, isRunningSuggestion: false, isRunningChallenge: true, runChallengeTimeLeft: 60 }));
     speak('Bora! Corre durante 1 minuto. Vou contar!');
@@ -356,5 +473,29 @@ export function useWalkingCoach(targetPace: number = 8.0) {
     }, 1000);
   }, [speak]);
 
-  return { state, startTracking, finishTracking, acceptRunningChallenge, speak };
+  // ──────────────────────────────────────────────────────────────────────────
+  // 📍 MECÂNICA 2: Drop Hazard (Waze-style Crowdsource)
+  // ──────────────────────────────────────────────────────────────────────────
+  const dropHazard = useCallback((type: 'water' | 'danger' | 'info') => {
+    if (!lastCoords.current) {
+      speak('Sem sinal GPS. Não é possível marcar.');
+      return;
+    }
+    const newHazard: Hazard = {
+      id: `hz_${Date.now()}`,
+      lat: lastCoords.current.lat,
+      lng: lastCoords.current.lng,
+      type
+    };
+    setState(prev => ({ ...prev, hazards: [...prev.hazards, newHazard] }));
+    
+    const labels: Record<string, string> = {
+      danger: 'Perigo marcado',
+      water: 'Ponto de água marcado',
+      info: 'Informação marcada'
+    };
+    speak(`${labels[type]} e partilhado com a rede.`);
+  }, [speak]);
+
+  return { state, startTracking, finishTracking, acceptRunningChallenge, dropHazard, speak };
 }
