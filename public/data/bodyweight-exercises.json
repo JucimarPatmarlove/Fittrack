@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "last_updated": "2026-07-19",
+  "source": "open-source (Unlicense + CC-BY-SA)",
+  "description": "Exercícios de peso corporal com instruções detalhadas em PT-PT para o módulo calistenia.",
+  "exercises": [
+    {
+      "id": "bw_pushup_01",
+      "name": "Push-Up",
+      "name_pt": "Flexão Clássica",
+      "category": "Peito",
+      "equipment": "PesoCorporal",
+      "difficulty": "iniciante",
+      "target_muscles": ["Peitorais", "Tríceps", "Deltoides"],
+      "illustration_url": "/assets/exercises/images/push_up.svg",
+      "gif_url": "/assets/exercises/gifs/push_up.gif",
+      "instructions": [
+        "Coloca as mãos no chão à largura dos ombros.",
+        "Mantém o corpo numa linha reta desde a cabeça até aos calcanhares.",
+        "Desce até o peito quase tocar no chão.",
+        "Empurra o chão com força para voltar à posição inicial."
+      ],
+      "tips": ["Contrai o core durante todo o movimento", "Não deixes a anca descair", "Cotovelos a 45° do corpo"]
+    },
+    {
+      "id": "bw_squat_01",
+      "name": "Bodyweight Squat",
+      "name_pt": "Agachamento Livre",
+      "category": "Pernas",
+      "equipment": "PesoCorporal",
+      "difficulty": "iniciante",
+      "target_muscles": ["Quadríceps", "Glúteos", "Isquiotibiais"],
+      "illustration_url": "/assets/exercises/images/bodyweight_squat.svg",
+      "gif_url": "/assets/exercises/gifs/bodyweight_squat.gif",
+      "instructions": [
+        "Pés à largura dos ombros, peito para fora.",
+        "Dobra os joelhos e empurra as ancas para trás como se fosses sentar numa cadeira.",
+        "Desce até as coxas ficarem paralelas ao chão.",
+        "Empurra através dos calcanhares para subir."
+      ],
+      "tips": ["Joelhos na direção dos dedos dos pés", "Peso nos calcanhares", "Mantem o peito alto"]
+    },
+    {
+      "id": "bw_plank_01",
+      "name": "Plank",
+      "name_pt": "Prancha Isométrica",
+      "category": "Core",
+      "equipment": "PesoCorporal",
+      "difficulty": "iniciante",
+      "target_muscles": ["Abdominais", "Lombar", "Ombros"],
+      "illustration_url": "/assets/exercises/images/plank.svg",
+      "gif_url": "/assets/exercises/gifs/plank.gif",
+      "instructions": [
+        "Apoia os antebraços e os dedos dos pés no chão.",
+        "Os cotovelos devem estar exatamente abaixo dos ombros.",
+        "Contrai o abdómen e os glúteos para evitar que a lombar descaia.",
+        "Mantém a posição durante o tempo indicado."
+      ],
+      "tips": ["Olha para o chão para alinhar a cervical", "Respira de forma controlada", "Começa com 20s e vai aumentando"]
+    },
+    {
+      "id": "bw_mountain_climber_01",
+      "name": "Mountain Climbers",
+      "name_pt": "Escaladores",
+      "category": "Cardio",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Core", "Ombros", "Quadríceps"],
+      "illustration_url": "/assets/exercises/images/mountain_climbers.svg",
+      "gif_url": "/assets/exercises/gifs/mountain_climbers.gif",
+      "instructions": [
+        "Começa na posição de flexão com braços esticados.",
+        "Puxa o joelho direito em direção ao peito de forma explosiva.",
+        "Troca rapidamente de perna, puxando a esquerda e esticando a direita.",
+        "Mantém um ritmo acelerado como se estivesses a correr no lugar."
+      ],
+      "tips": ["Mantém a anca baixa e estável", "Não deixes os ombros passar à frente das mãos", "Excelente para queimar calorias"]
+    },
+    {
+      "id": "bw_burpee_01",
+      "name": "Burpee",
+      "name_pt": "Burpee Completo",
+      "category": "Full Body",
+      "equipment": "PesoCorporal",
+      "difficulty": "avançado",
+      "target_muscles": ["Corpo Inteiro"],
+      "illustration_url": "/assets/exercises/images/burpee.svg",
+      "gif_url": "/assets/exercises/gifs/burpee.gif",
+      "instructions": [
+        "Começa em pé, baixa-te e coloca as mãos no chão.",
+        "Salta com os pés para trás para a posição de flexão.",
+        "Faz uma flexão completa (opcional mas recomendado).",
+        "Salta com os pés de volta para perto das mãos e dá um salto explosivo para cima."
+      ],
+      "tips": ["Fase excêntrica suave, fase concêntrica explosiva", "Respira na subida", "Escala removendo a flexão se necessário"]
+    },
+    {
+      "id": "bw_pullup_01",
+      "name": "Pull-Up",
+      "name_pt": "Elevação na Barra",
+      "category": "Costas",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Dorsais", "Bíceps", "Trapézio"],
+      "illustration_url": "/assets/exercises/images/pull_up.svg",
+      "gif_url": "/assets/exercises/gifs/pull_up.gif",
+      "instructions": [
+        "Agarra a barra com as mãos em pronação à largura dos ombros.",
+        "Puxa o corpo para cima até o queixo ultrapassar a barra.",
+        "Desce de forma controlada até os braços ficarem quase esticados.",
+        "Repete sem balançar o corpo."
+      ],
+      "tips": ["Inicia o movimento com as escápulas", "Evita kipping (balanço)", "Se não consegues, usa banda elástica"]
+    },
+    {
+      "id": "bw_dips_01",
+      "name": "Dips",
+      "name_pt": "Fundos em Paralelas",
+      "category": "Peito",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Peitorais", "Tríceps", "Deltoides"],
+      "illustration_url": "/assets/exercises/images/dips.svg",
+      "gif_url": "/assets/exercises/gifs/dips.gif",
+      "instructions": [
+        "Agarra as barras paralelas e levanta o corpo com os braços esticados.",
+        "Inclina ligeiramente o tronco para a frente para focar no peito.",
+        "Desce até os cotovelos fazerem 90 graus.",
+        "Empurra para cima até à extensão completa dos braços."
+      ],
+      "tips": ["Inclina para a frente = mais peito, vertical = mais tríceps", "Não descas demasiado para proteger o ombro", "Usa banco para assistência"]
+    },
+    {
+      "id": "bw_lunge_01",
+      "name": "Lunge",
+      "name_pt": "Afundo",
+      "category": "Pernas",
+      "equipment": "PesoCorporal",
+      "difficulty": "iniciante",
+      "target_muscles": ["Quadríceps", "Glúteos", "Isquiotibiais"],
+      "illustration_url": "/assets/exercises/images/lunge.svg",
+      "gif_url": "/assets/exercises/gifs/lunge.gif",
+      "instructions": [
+        "Em pé, dá um passo largo para a frente.",
+        "Desce o corpo até ambos os joelhos formarem 90 graus.",
+        "O joelho de trás quase toca no chão.",
+        "Empurra com o pé da frente para voltar à posição inicial."
+      ],
+      "tips": ["Joelho não ultrapassa a ponta do pé", "Tronco ereto durante todo o movimento", "Alterna as pernas"]
+    },
+    {
+      "id": "bw_russian_twist_01",
+      "name": "Russian Twist",
+      "name_pt": "Torção Russa",
+      "category": "Core",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Oblíquos", "Abdominais", "Flexores da Anca"],
+      "illustration_url": "/assets/exercises/images/russian_twist.svg",
+      "gif_url": "/assets/exercises/gifs/russian_twist.gif",
+      "instructions": [
+        "Senta-te no chão com os joelhos fletidos e os pés levantados.",
+        "Inclina o tronco ligeiramente para trás mantendo as costas retas.",
+        "Roda o tronco para a esquerda e depois para a direita.",
+        "Cada rotação completa conta como uma repetição."
+      ],
+      "tips": ["Levanta os pés para aumentar a dificuldade", "Usa peso para progredir", "Movimento vem do core, não dos braços"]
+    },
+    {
+      "id": "bw_diamond_pushup_01",
+      "name": "Diamond Push-Up",
+      "name_pt": "Flexão Diamante",
+      "category": "Braços",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Tríceps", "Peitorais Internos", "Deltoides"],
+      "illustration_url": "/assets/exercises/images/diamond_push_up.svg",
+      "gif_url": "/assets/exercises/gifs/diamond_push_up.gif",
+      "instructions": [
+        "Posição de flexão com as mãos juntas formando um diamante com os polegares e indicadores.",
+        "Desce o peito até quase tocar nas mãos.",
+        "Mantém os cotovelos junto ao corpo durante a descida.",
+        "Empurra para cima até à extensão completa."
+      ],
+      "tips": ["Foco total nos tríceps", "Se for difícil, faz de joelhos", "Variação avançada do push-up regular"]
+    },
+    {
+      "id": "bw_jump_squat_01",
+      "name": "Jump Squat",
+      "name_pt": "Agachamento com Salto",
+      "category": "Pernas",
+      "equipment": "PesoCorporal",
+      "difficulty": "intermediário",
+      "target_muscles": ["Quadríceps", "Glúteos", "Gémeos"],
+      "illustration_url": "/assets/exercises/images/jump_squat.svg",
+      "gif_url": "/assets/exercises/gifs/jump_squat.gif",
+      "instructions": [
+        "Realiza um agachamento normal até as coxas ficarem paralelas.",
+        "Explode para cima num salto vertical máximo.",
+        "Aterra suavemente com os joelhos ligeiramente fletidos.",
+        "Desce imediatamente para o próximo agachamento."
+      ],
+      "tips": ["Aterragem suave para proteger os joelhos", "Braços ajudam no impulso", "Excelente para potência explosiva"]
+    },
+    {
+      "id": "bw_hanging_leg_raise_01",
+      "name": "Hanging Leg Raise",
+      "name_pt": "Elevação de Pernas Suspenso",
+      "category": "Core",
+      "equipment": "PesoCorporal",
+      "difficulty": "avançado",
+      "target_muscles": ["Abdominais Inferiores", "Flexores da Anca", "Oblíquos"],
+      "illustration_url": "/assets/exercises/images/hanging_leg_raise.svg",
+      "gif_url": "/assets/exercises/gifs/hanging_leg_raise.gif",
+      "instructions": [
+        "Pendura-te numa barra com os braços esticados e pega em pronação.",
+        "Mantém as pernas juntas e retas.",
+        "Eleva as pernas até ficarem paralelas ao chão (ou mais alto).",
+        "Desce de forma controlada sem balançar."
+      ],
+      "tips": ["Evita momentum e balanço", "Começa com joelhos fletidos se for difícil", "Contrai o core antes de iniciar o movimento"]
+    }
+  ]
+}

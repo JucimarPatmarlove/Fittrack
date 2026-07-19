@@ -51,6 +51,21 @@ setInterval(() => {
   }
 }, NONCE_TTL_MS);
 
+// ─── RATE LIMITING (In-Memory) ───────────────────────────────────────────────
+const rateLimitCache = new Map<string, { count: number, resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minuto
+const MAX_REQUESTS_PER_WINDOW = 10;
+
+// Auto-clean expired rate limits
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimitCache) {
+    if (now > data.resetTime) {
+      rateLimitCache.delete(ip);
+    }
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
 // Inicializar Inteligência Artificial (Gemini SDK oficial)
 const ai = new GoogleGenerativeAI(GEMINI_API_KEY as string);
 
@@ -221,6 +236,34 @@ async function startServer() {
       console.error('[BFF] Erro ao emitir token:', e.message);
       res.status(500).json({ error: 'Erro ao emitir token.' });
     }
+  });
+
+  // ── MIDDLEWARE DE RATE LIMITING (Proteção Anti-Abuso) ──────────────────────
+  app.use('/api', (req, res, next) => {
+    // Aplicar rate limit APENAS aos endpoints pesados (IA)
+    if (req.path !== '/claude' && req.path !== '/generate-workout') {
+      return next();
+    }
+    
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    
+    let record = rateLimitCache.get(ip);
+    if (!record || now > record.resetTime) {
+      record = { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+    }
+    
+    record.count++;
+    rateLimitCache.set(ip, record);
+    
+    if (record.count > MAX_REQUESTS_PER_WINDOW) {
+      console.warn(`[BFF] 🛑 Bloqueado por Rate Limit: ${ip} (Requests: ${record.count})`);
+      res.setHeader('Retry-After', Math.ceil((record.resetTime - now) / 1000));
+      res.status(429).json({ error: { message: 'Demasiados pedidos. Por favor aguarda 60 segundos antes de tentar novamente.' } });
+      return;
+    }
+    
+    next();
   });
 
   // ── MIDDLEWARE GATEWAY JWT (Proteção de Endpoints de IA) ────────────────────
