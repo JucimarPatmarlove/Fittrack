@@ -28,7 +28,10 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { getWorkoutsForDate, completeWorkout } = useDualWorkoutStore();
   const { currentPlan } = usePlanStore();
-  const dateStr = selectedDate.toISOString().split('T')[0];
+  const year = selectedDate.getFullYear();
+  const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(selectedDate.getDate()).padStart(2, '0');
+  const dateStr = `${year}-${month}-${day}`;
   const workouts = getWorkoutsForDate(dateStr);
 
   const workoutsList = [
