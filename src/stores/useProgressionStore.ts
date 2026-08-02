@@ -78,7 +78,7 @@ export const useProgressionStore = create<ProgressionStore>()(
         const prev = get().exercises[name] || { consecutiveSuccesses: 0, lastWeight: 0, lastReps: 0, suggestedIncrease: false, deloadSuggested: false };
         const successRate = repsDone / repsTarget;
         const isHighQuality = successRate >= 0.9 && rpe <= 7;
-        let newSuccesses = isHighQuality ? prev.consecutiveSuccesses + 1 : 0;
+        const newSuccesses = isHighQuality ? prev.consecutiveSuccesses + 1 : 0;
         const increase = newSuccesses >= 3;
         set((state) => ({
           exercises: {

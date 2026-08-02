@@ -18,7 +18,7 @@ export const spinRoulette = () => {
   
   const pityCounter = parseInt(localStorage.getItem('roulette_pity') || '0');
   
-  let muscle = REWARDS.muscleGroups[Math.floor(Math.random() * REWARDS.muscleGroups.length)];
+  const muscle = REWARDS.muscleGroups[Math.floor(Math.random() * REWARDS.muscleGroups.length)];
   let bonus = REWARDS.bonuses[Math.floor(Math.random() * REWARDS.bonuses.length)];
   let duration = REWARDS.durations[Math.floor(Math.random() * REWARDS.durations.length)];
   

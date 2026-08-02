@@ -99,5 +99,10 @@
     "esbuild@0.28.1": true,
     "protobufjs@7.6.5": true,
     "core-js@3.49.0": true
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
   }
 }

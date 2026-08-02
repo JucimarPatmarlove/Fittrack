@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Bloqueante: lint tem de passar (0 erros; warnings são tolerados por agora)
+      - name: Lint
+        run: npx eslint src --ext .js,.jsx,.ts,.tsx --max-warnings 600
+
+      # Bloqueante: os testes têm de passar
+      - name: Testes unitários
+        run: npm run test
+
+      # Bloqueante: o build tem de passar
+      - name: Build
+        run: npm run build
+
+      # Informativo por agora: há dívida de tipos histórica (~400 erros).
+      # Não bloqueia builds, mas fica visível no log de cada PR.
+      # Quando o número descer para 0, muda para bloqueante (remove continue-on-error).
+      - name: Verificação de tipos (informativo)
+        continue-on-error: true
+        run: npx tsc --noEmit
+
+      # Bloqueante: garante que nenhuma chave sk-ant escapa para o bundle final
+      - name: Verificação de segredos no bundle
+        run: npm run security-check

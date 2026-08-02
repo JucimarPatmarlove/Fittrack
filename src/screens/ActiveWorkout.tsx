@@ -84,6 +84,10 @@ function initSets(exercises: LocalExercise[], profile: any, todayPlan: any, hist
       weight: startW,
       rpe: prescription.rpeTarget,
       done: false,
+      type: ex.type || 'weighted',
+      duration: 0,
+      distance: 0,
+      addedWeight: 0,
     }));
   });
 }
@@ -153,7 +157,18 @@ function fmt(s: number) {
 
 /** Calculate total volume from sets */
 function calcVolume(sets: SetArray) {
-  return sets.flat().filter((s: any) => s.done).reduce((a: any, s: any) => a + s.weight * s.reps, 0);
+  return sets.flat().filter((s: any) => s.done).reduce((a: any, s: any) => {
+    switch (s.type) {
+      case 'bodyweight':
+        return a + (s.reps || 0) + ((s.addedWeight || 0) * (s.reps || 0));
+      case 'cardio':
+        return a + ((s.distance || 0) * 100) + Math.floor((s.duration || 0) / 60) * 10;
+      case 'timed':
+        return a + Math.floor((s.duration || 0) / 60) * 5;
+      default:
+        return a + ((s.weight || 0) * (s.reps || 0));
+    }
+  }, 0);
 }
 
 /** Clones sets nested array immutably */
@@ -613,8 +628,11 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
       dayLabel: todayPlan.label || 'Treino Livre',
       duration: elapsed,
       exercises: localExs.map((ex, ei) => ({
-        name: ex.name, muscle: ex.muscle,
-        sets: sets[ei].filter((s) => s.done).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe || 8 })),
+        name: ex.name, muscle: ex.muscle, type: ex.type || 'weighted',
+        sets: sets[ei].filter((s) => s.done).map(s => ({
+          weight: s.weight, reps: s.reps, rpe: s.rpe || 8,
+          duration: s.duration, distance: s.distance, addedWeight: s.addedWeight, type: s.type || ex.type || 'weighted'
+        })),
       })).filter((e) => e.sets.length > 0),
       totalVolume: vol, avgRPE, isCustom,
       customExercisesList: isCustom ? todayPlan.exercises : [],
@@ -659,7 +677,14 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
                   const pr = findHistoricalPR(history, ex.name);
                   const prescription = getPrescription(profile, ex.name, pr, todayPlan.phase, history);
                   const startW = prescription.suggestedWeight || ProgressionSystem.calculateNextWeight((pr?.weight || 0), (pr?.reps || 10), 10);
-                  return Array.from({ length: 3 }, () => ({ reps: prescription.repsSuggested, weight: startW, rpe: prescription.rpeTarget, done: false }));
+                  return Array.from({ length: 3 }, () => ({
+                    reps: prescription.repsSuggested,
+                    weight: startW,
+                    rpe: prescription.rpeTarget,
+                    done: false,
+                    type: ex.type || 'weighted',
+                    duration: 0, distance: 0, addedWeight: 0
+                  }));
                 });
                 return [...prev, ...newSets];
               });

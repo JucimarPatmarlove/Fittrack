@@ -119,22 +119,29 @@ export const WorkoutExerciseList = ({
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 7 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "26px 1fr 1fr 1fr 38px", gap: 8, flex: 1 }}>
-                      {["#", todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "CARGA" : "KG", todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "TEMPO/REP" : "REPS", "INTENS.", ""].map((h, i) => (
-                        <div key={i} style={{ color: theme.muted, fontSize: 9, fontFamily: "'DM Mono'", textAlign: i > 0 && i < 4 ? "center" : "left", display: 'flex', justifyContent: i > 0 && i < 4 ? 'center' : 'flex-start' }}>
-                          {i === 3 ? (
-                            <Tooltip text="RPE (Taxa de Esforço Percebido). RPE 8 significa que terminaste a série sentindo que conseguirias fazer apenas mais 2 repetições antes da falha.">
-                              <span>{h}</span>
-                            </Tooltip>
-                          ) : h}
-                        </div>
-                      ))}
+                      {(() => {
+                        const isCardio = ex.type === 'cardio' || ex.type === 'distance';
+                        const isBodyweight = ex.type === 'bodyweight';
+                        const isTimed = ex.type === 'timed' || ex.type === 'mobility';
+                        const head1 = isCardio ? "KM" : isTimed ? "-" : isBodyweight ? "+KG" : (todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "CARGA" : "KG");
+                        const head2 = isCardio ? "MIN" : isTimed ? "SEGS" : (todayPlan.type === 'hiit' || todayPlan.type === 'functional' ? "TEMPO/REP" : "REPS");
+                        return ["#", head1, head2, "INTENS.", ""].map((h, i) => (
+                          <div key={i} style={{ color: theme.muted, fontSize: 9, fontFamily: "'DM Mono'", textAlign: i > 0 && i < 4 ? "center" : "left", display: 'flex', justifyContent: i > 0 && i < 4 ? 'center' : 'flex-start' }}>
+                            {i === 3 ? (
+                              <Tooltip text="RPE (Taxa de Esforço Percebido). RPE 8 significa que terminaste a série sentindo que conseguirias fazer apenas mais 2 repetições antes da falha.">
+                                <span>{h}</span>
+                              </Tooltip>
+                            ) : h}
+                          </div>
+                        ));
+                      })()}
                     </div>
                     <button onClick={() => addWarmups(ei)} style={{ background: C.accentLow, color: C.accent, border: `1px solid ${C.accent}`, borderRadius: 6, fontSize: 10, padding: "4px 8px", cursor: "pointer", whiteSpace: "nowrap", marginLeft: 12 }}>+ AQUECIMENTO</button>
                   </div>
                   {/* Ghost Mode: Show last set comparison */}
                   <GhostSetComparison exerciseName={localExs[ei].name} currentSets={sets[ei]} history={history} theme={theme} onPRDetected={(isPR: boolean) => setGhostPRs((prev: any) => ({ ...prev, [localExs[ei].name]: isPR }))} />
                   {sets[ei].map((s: any, si: number) => (
-                    <WorkoutSetRow key={si} s={s} ei={ei} si={si} theme={theme} C={C} upd={upd} toggle={toggle} setCurrentExerciseIdx={setCurrentExerciseIdx} setCurrentSetIdx={setCurrentSetIdx} setShowPlateCalc={setShowPlateCalc} profile={profile} setStartTimes={setStartTimes} tr={tr} />
+                    <WorkoutSetRow key={si} s={s} ei={ei} si={si} theme={theme} C={C} upd={upd} toggle={toggle} setCurrentExerciseIdx={setCurrentExerciseIdx} setCurrentSetIdx={setCurrentSetIdx} setShowPlateCalc={setShowPlateCalc} profile={profile} setStartTimes={setStartTimes} tr={tr} equipment={ex.equipment} />
                   ))}
                 </motion.div>
               )}

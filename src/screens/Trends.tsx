@@ -61,8 +61,8 @@ export default function Trends({ history }: any) {
          if (w.exercises && w.exercises[0] && w.exercises[0].sets && w.exercises[0].sets[0]) {
              distanceKm = w.exercises[0].sets[0].reps / 1000;
          }
-         let durationMins = w.duration || 0;
-         let pace = distanceKm > 0 ? (durationMins / distanceKm) : 0;
+         const durationMins = w.duration || 0;
+         const pace = distanceKm > 0 ? (durationMins / distanceKm) : 0;
          
          return {
             date: new Date(w.date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }),

@@ -43,7 +43,7 @@ export function calculateStreak(history: WorkoutSession[]): number {
   if (uniqueDates.length === 0) return 0;
   
   let streak = 0;
-  let currentDate = new Date();
+  const currentDate = new Date();
   
   // check if there's a workout today or yesterday
   const todayStr = currentDate.toISOString().split('T')[0];

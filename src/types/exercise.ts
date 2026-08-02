@@ -65,7 +65,10 @@ export interface ExerciseDefinition {
   // ── Campos legados (já existentes no EXERCISE_DB) ──
   muscle: string;
   equipment: string;
+  type?: 'weighted' | 'bodyweight' | 'cardio' | 'timed' | 'mobility' | 'distance';
   base?: Record<string, number[]>;
+  media?: { gif?: string; video?: string };
+  instructions?: string[];
 
   // ── Novos campos demográficos e de modalidade ──
   /** Objectivos para os quais este exercício é recomendado */

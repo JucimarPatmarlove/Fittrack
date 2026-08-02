@@ -21,14 +21,19 @@ export const ProfileSchema = z.object({
 
 
 export const SetSchema = z.object({
-  reps: z.number().min(0).max(100),
-  weight: z.number().min(0).max(1000),
+  reps: z.number().min(0).max(100).optional(),
+  weight: z.number().min(0).max(1000).optional(),
   rpe: z.number().min(1).max(10).optional(),
-});
+  duration: z.number().min(0).optional(), // seconds
+  distance: z.number().min(0).optional(), // km
+  addedWeight: z.number().min(0).optional(), // kg for calisthenics
+  type: z.enum(["weighted", "bodyweight", "cardio", "timed", "mobility", "distance"]).default("weighted"),
+}).passthrough();
 
 export const ExerciseSchema = z.object({
   name: z.string(),
   muscle: z.string(),
+  type: z.enum(["weighted", "bodyweight", "cardio", "timed", "mobility", "distance"]).default("weighted"),
   sets: z.array(SetSchema)
 });
 

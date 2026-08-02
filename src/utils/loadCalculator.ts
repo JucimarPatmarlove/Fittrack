@@ -76,7 +76,7 @@ export function calculateSuggestedWeight(input: LoadCalculationInput): number {
   }
   if (oneRM <= 0) return 0;
 
-  let basePercentage = getPercentageForReps(category, targetReps);
+  const basePercentage = getPercentageForReps(category, targetReps);
   // Aplica factores
   let factor = getSafeLevelFactor(userLevel);
   if (age >= 50) factor *= AGE_FACTOR;

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { MuscleHeatmap } from '../stats/MuscleHeatmap';
 import { estimateCaloriesBurned } from '../../services/fitnessMechanics';
+import { useCommunityStore } from '../../stores/useCommunityStore';
+import { Share2, Check } from 'lucide-react';
 
 const MetricCard = ({ title, value }: { title: string; value: string | number }) => (
     <div className="glass" style={{ padding: '16px 8px', textAlign: 'center' }}>
@@ -12,6 +14,26 @@ const MetricCard = ({ title, value }: { title: string; value: string | number })
 
 export const DetailedHistory = ({ workouts, profile, onStartWorkout }: { workouts: any[], profile?: any, onStartWorkout?: (plan: any) => void }) => {
     const [selectedMetric, setSelectedMetric] = useState<'volume' | 'duration'>('volume');
+    const { addPost } = useCommunityStore();
+    const [sharedIds, setSharedIds] = useState<Set<string>>(new Set());
+
+    const handleShare = (w: any) => {
+        const isWalk = w.name?.toLowerCase().includes('caminhada') || w.dayLabel?.toLowerCase().includes('caminhada');
+        addPost({
+            userId: profile?.id || 'me',
+            userName: profile?.name || 'Eu',
+            avatarInitials: (profile?.name || 'Eu').substring(0, 2).toUpperCase(),
+            workoutName: w.name || w.dayLabel || 'Treino',
+            durationMinutes: Math.floor((w.duration || w.durationSeconds || 0) / 60),
+            metrics: {
+                volume: w.totalVolume || 0,
+                calories: w.calories || estimateCaloriesBurned(w, profile || { weight: 70 }),
+                distanceKm: isWalk ? (w.distance || (w.exercises?.[0]?.sets?.[0]?.reps / 1000) || 0) : undefined,
+            },
+            isWalkingCoach: isWalk
+        });
+        setSharedIds(prev => new Set(prev).add(w.id || w.date));
+    };
 
     if (!workouts || workouts.length === 0) {
         return (
@@ -122,6 +144,27 @@ export const DetailedHistory = ({ workouts, profile, onStartWorkout }: { workout
                                 🔄 TREINAR NOVAMENTE
                             </button>
                         )}
+                        <button
+                            disabled={sharedIds.has(w.id || w.date)}
+                            onClick={() => handleShare(w)}
+                            style={{
+                                background: sharedIds.has(w.id || w.date) ? 'rgba(204,255,0,0.1)' : 'transparent',
+                                border: '1px solid #ccff00',
+                                color: sharedIds.has(w.id || w.date) ? '#ccff00' : '#ccff00',
+                                padding: '8px',
+                                borderRadius: 6,
+                                fontFamily: "'Bebas Neue'",
+                                fontSize: 16,
+                                cursor: sharedIds.has(w.id || w.date) ? 'default' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            {sharedIds.has(w.id || w.date) ? <><Check size={16} /> PARTILHADO NO FEED</> : <><Share2 size={16} /> PARTILHAR NO FEED</>}
+                        </button>
                     </div>
                 ))}
             </div>

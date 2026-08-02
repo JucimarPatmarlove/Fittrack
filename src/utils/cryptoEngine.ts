@@ -1,5 +1,21 @@
-const SALT = "fit_track_v7_salt";
 const ITERATIONS = 100000;
+
+export function getOrCreateInstallSalt(): string {
+    let salt = localStorage.getItem('ft_install_salt');
+    if (!salt) {
+        // Migration check: If old master key or encrypted data exists, use the old salt to preserve data
+        // For simplicity and to avoid breaking existing users on update, we default to old salt if they have history
+        const hasHistory = localStorage.getItem('fit_history');
+        if (hasHistory) {
+            salt = "fit_track_v7_salt";
+        } else {
+            const buffer = crypto.getRandomValues(new Uint8Array(16));
+            salt = btoa(String.fromCharCode(...buffer));
+        }
+        localStorage.setItem('ft_install_salt', salt);
+    }
+    return salt;
+}
 
 export async function deriveKey(pin: string): Promise<CryptoKey> {
     return new Promise((resolve, reject) => {
@@ -31,7 +47,7 @@ export async function deriveKey(pin: string): Promise<CryptoKey> {
             worker.terminate();
         };
         
-        worker.postMessage({ pin, salt: SALT, iterations: ITERATIONS });
+        worker.postMessage({ pin, salt: getOrCreateInstallSalt(), iterations: ITERATIONS });
     });
 }
 
