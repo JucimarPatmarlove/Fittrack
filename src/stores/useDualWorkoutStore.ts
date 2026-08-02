@@ -64,15 +64,15 @@ export const useDualWorkoutStore = create<DualWorkoutStore>()(
       },
 
       getNextWorkout: () => {
-        const today = new Date().toISOString().split('T')[0];
         const workouts = get().scheduledWorkouts
           .filter(w => !w.completed)
-          .sort((a, b) => a.date.localeCompare(b.date));
-
-        const todayWorkout = workouts.find(w => w.date === today);
-        if (todayWorkout) return todayWorkout;
-
-        return workouts.find(w => w.date > today) || null;
+          .sort((a, b) => {
+             if (a.date !== b.date) return a.date.localeCompare(b.date);
+             if (a.slot === 'morning' && b.slot === 'afternoon') return -1;
+             if (a.slot === 'afternoon' && b.slot === 'morning') return 1;
+             return 0;
+          });
+        return workouts.length > 0 ? workouts[0] : null;
       },
     }),
     { name: 'dual-workout-storage' }

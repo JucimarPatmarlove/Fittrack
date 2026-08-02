@@ -284,18 +284,22 @@ export default function WalkingCoachScreen({ onClose, onFinish }: Props) {
                 let lng = -7.2658;
                 let alt = 850; // Altitude da Guarda
                 let isFirst = true;
+                let intervalId: any;
                 (navigator.geolocation as any).watchPosition = (success: any) => {
                   if (isFirst) {
                     success({ coords: { latitude: lat, longitude: lng, accuracy: 10, altitude: alt } });
                     isFirst = false;
                   }
-                  setInterval(() => {
+                  intervalId = setInterval(() => {
                     lat += 0.0001;
                     lng += 0.00005;
                     alt += (Math.random() * 4 - 1); // Simular subidas e descidas
                     success({ coords: { latitude: lat, longitude: lng, accuracy: 10, altitude: alt } });
                   }, 2000);
                   return 999;
+                };
+                (navigator.geolocation as any).clearWatch = () => {
+                  if (intervalId) clearInterval(intervalId);
                 };
                 speak("Simulação com altimetria ativada.");
                 startTracking();

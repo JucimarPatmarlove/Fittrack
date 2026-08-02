@@ -66,6 +66,15 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
             }
           }
 
+          let isPast = false;
+          if (workout) {
+            const wDate = new Date(workout.date);
+            const today = new Date();
+            wDate.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+            isPast = wDate < today;
+          }
+
           return (
             <motion.div
               key={slot}
@@ -98,17 +107,17 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
                 {workout && !workout.completed && onStartWorkout && rawDayPlan && (
                   <button
                     onClick={() => onStartWorkout({ id: `day_${workout.id}`, label: `${rawDayPlan.day}: ${rawDayPlan.focus}`, exercises: rawDayPlan.exercises })}
-                    style={{ padding: '4px 8px', background: C.accent, color: '#000', borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}
+                    style={{ padding: '4px 8px', background: isPast ? '#ef4444' : C.accent, color: isPast ? '#fff' : '#000', borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}
                   >
-                    <Play size={12} /> Iniciar
+                    <Play size={12} /> {isPast ? 'Fazer em Atraso' : 'Iniciar'}
                   </button>
                 )}
                 {workout && !workout.completed && (
                   <button
                     onClick={() => completeWorkout(workout.date, workout.slot)}
-                    style={{ padding: '4px 12px', background: `${C.accent}22`, color: C.accent, borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                    style={{ padding: '4px 12px', background: isPast ? 'rgba(239, 68, 68, 0.2)' : `${C.accent}22`, color: isPast ? '#ef4444' : C.accent, borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
                   >
-                    Concluir
+                    {isPast ? 'Ignorar' : 'Concluir'}
                   </button>
                 )}
                 {workout?.completed && (
@@ -116,12 +125,12 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
                     {onStartWorkout && rawDayPlan && (
                       <button
                         onClick={() => onStartWorkout({ id: `day_${workout.id}_redo`, label: `${rawDayPlan.day}: ${rawDayPlan.focus} (Refazer)`, exercises: rawDayPlan.exercises })}
-                        style={{ padding: '4px 8px', background: 'transparent', border: `1px solid ${C.accent}`, color: C.accent, borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }}
+                        style={{ padding: '4px 8px', background: 'transparent', border: `1px solid ${isPast ? '#60a5fa' : C.accent}`, color: isPast ? '#60a5fa' : C.accent, borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }}
                       >
-                        Ver / Refazer
+                        {isPast ? 'Refazer Treino' : 'Ver / Refazer'}
                       </button>
                     )}
-                    <CheckCircle size={20} style={{ color: '#10b981' }} />
+                    <CheckCircle size={20} style={{ color: isPast ? '#60a5fa' : '#10b981' }} />
                   </div>
                 )}
               </div>

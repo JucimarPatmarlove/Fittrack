@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 
 export default function Dashboard({ history = [], onStartWorkout, onNavigateToPlanner }: { history?: any[], onStartWorkout?: any, onNavigateToPlanner?: () => void }) {
   const { profile, meals, hydration, weightHistory, currentDate, addWater, setWeight, loadNutritionData, loadAllWeightLogs, setCurrentDate } = useNutritionStore();
-  const { getWorkoutsForDate } = useDualWorkoutStore();
+  const { getWorkoutsForDate, getNextWorkout } = useDualWorkoutStore();
   const { currentPlan } = usePlanStore();
   const [quickWeight, setQuickWeight] = useState(profile.weight?.toString() || "75");
   const [showP2P, setShowP2P] = useState(false);
@@ -73,17 +73,26 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
   // Detetar se o sistema está vazio (primeiro uso / após factory reset)
   const isSystemEmpty = !todayMealLog && weightHistory.length === 0 && history.length === 0;
 
-  // Extrair o treino planeado para hoje
-  const todayWorkouts = getWorkoutsForDate(currentDate);
+  // Extrair o próximo treino planeado (inclui dívidas do passado)
+  const nextWorkout = getNextWorkout();
   const plannedWorkoutToday = React.useMemo(() => {
-    if (todayWorkouts?.morning && !todayWorkouts.morning.completed) {
-      return { title: todayWorkouts.morning.workoutName, period: 'Manhã' as const, slot: 'morning' as const };
-    }
-    if (todayWorkouts?.afternoon && !todayWorkouts.afternoon.completed) {
-      return { title: todayWorkouts.afternoon.workoutName, period: 'Tarde' as const, slot: 'afternoon' as const };
+    if (nextWorkout && !nextWorkout.completed) {
+      const wDate = new Date(nextWorkout.date);
+      const today = new Date();
+      wDate.setHours(0,0,0,0);
+      today.setHours(0,0,0,0);
+      const isPast = wDate < today;
+
+      return { 
+        title: nextWorkout.workoutName + (isPast ? ' (Em atraso)' : ''), 
+        period: nextWorkout.slot === 'morning' ? 'Manhã' as const : 'Tarde' as const, 
+        slot: nextWorkout.slot as 'morning' | 'afternoon',
+        id: nextWorkout.id,
+        date: nextWorkout.date
+      };
     }
     return null;
-  }, [todayWorkouts]);
+  }, [nextWorkout]);
 
   // Gráfico de calorias: dados reais dos últimos 7 dias (sem mock random)
   const chartDataCal = React.useMemo(() => {
@@ -208,8 +217,7 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
           plannedWorkoutToday={plannedWorkoutToday}
           onStartPlannedWorkout={() => {
             if (plannedWorkoutToday) {
-              const todayWorkouts = getWorkoutsForDate(currentDate);
-              const slotData = todayWorkouts?.[plannedWorkoutToday.slot];
+              const slotData = getWorkoutsForDate(plannedWorkoutToday.date)?.[plannedWorkoutToday.slot];
               if (slotData) {
                 let exercisesList: string[] = [];
                 if (currentPlan && typeof currentPlan !== 'string') {
