@@ -84,12 +84,14 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
           const fallbackPlan = rawDayPlan || (workout ? { day: dateStr, focus: workout.workoutName, exercises: [workout.workoutName] } : null);
 
           let isPast = false;
+          let isFuture = false;
           if (workout) {
             const wDate = new Date(workout.date);
             const today = new Date();
             wDate.setHours(0,0,0,0);
             today.setHours(0,0,0,0);
             isPast = wDate < today;
+            isFuture = wDate > today;
           }
 
           return (
@@ -121,7 +123,7 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
               </div>
               
               <div style={{ display: 'flex', gap: 6 }}>
-                {workout && !workout.completed && onStartWorkout && canStart && (
+                {workout && !workout.completed && onStartWorkout && canStart && !isFuture && (
                   <button
                     onClick={() => onStartWorkout({ id: `day_${workout.id}`, label: `${fallbackPlan!.day}: ${fallbackPlan!.focus}`, exercises: fallbackPlan!.exercises })}
                     style={{ padding: '4px 8px', background: isPast ? '#ef4444' : C.accent, color: isPast ? '#fff' : '#000', borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}
@@ -129,7 +131,7 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
                     <Play size={12} /> {isPast ? 'Fazer em Atraso' : 'Iniciar'}
                   </button>
                 )}
-                {workout && !workout.completed && (
+                {workout && !workout.completed && !isFuture && (
                   <button
                     onClick={() => completeWorkout(workout.date, workout.slot)}
                     style={{ padding: '4px 12px', background: isPast ? 'rgba(239, 68, 68, 0.2)' : `${C.accent}22`, color: isPast ? '#ef4444' : C.accent, borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
