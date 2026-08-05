@@ -31,22 +31,9 @@ export const MealItemSchema = z.object({
 
 // ── EXERCÍCIO: Validação de Set ──────────────────────────────────────────────
 
-export const ExerciseSetSchema = z.object({
-  weight: z
-    .number({ invalid_type_error: 'Carga deve ser um número.' })
-    .min(0, 'Carga não pode ser negativa.')
-    .max(1000, 'Carga máxima: 1000 kg.'),
-  reps: z
-    .number({ invalid_type_error: 'Repetições deve ser um número.' })
-    .int('Repetições deve ser um número inteiro.')
-    .min(0, 'Repetições não pode ser negativo.')
-    .max(100, 'Máximo de repetições: 100.'),
-  rpe: z
-    .number({ invalid_type_error: 'RPE deve ser um número.' })
-    .min(1, 'RPE mínimo: 1.')
-    .max(10, 'RPE máximo: 10.')
-    .optional(),
-});
+import { SetSchema } from './schemas';
+
+export const ExerciseSetSchema = SetSchema;
 
 // ── PERFIL: Validação de campos numéricos do utilizador ──────────────────────
 

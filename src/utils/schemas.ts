@@ -20,20 +20,56 @@ export const ProfileSchema = z.object({
 }).passthrough();
 
 
-export const SetSchema = z.object({
-  reps: z.number().min(0).max(100).optional(),
-  weight: z.number().min(0).max(1000).optional(),
+// ── BASE SET SCHEMA (Campos comuns a todos) ──
+const BaseSetSchema = z.object({
   rpe: z.number().min(1).max(10).optional(),
-  duration: z.number().min(0).optional(), // seconds
+  done: z.boolean().optional(),
+  isWarmup: z.boolean().optional(),
+});
+
+// ── SCHEMAS ESPECÍFICOS POR TIPO ──
+const WeightedSetSchema = BaseSetSchema.extend({
+  type: z.literal("weighted"),
+  reps: z.number().min(0).max(100),
+  weight: z.number().min(0).max(1000),
+});
+
+const BodyweightSetSchema = BaseSetSchema.extend({
+  type: z.literal("bodyweight"),
+  reps: z.number().min(0).max(100),
+  addedWeight: z.number().min(0).max(200).optional(),
+});
+
+const CardioSetSchema = BaseSetSchema.extend({
+  type: z.union([z.literal("cardio"), z.literal("distance")]),
+  duration: z.number().min(0), // seconds
   distance: z.number().min(0).optional(), // km
-  addedWeight: z.number().min(0).optional(), // kg for calisthenics
-  type: z.enum(["weighted", "bodyweight", "cardio", "timed", "mobility", "distance"]).default("weighted"),
-}).passthrough();
+});
+
+const TimedSetSchema = BaseSetSchema.extend({
+  type: z.union([z.literal("timed"), z.literal("mobility")]),
+  duration: z.number().min(0), // seconds
+});
+
+// ── DISCRIMINATED UNION COM FALLBACK ──
+// O z.preprocess garante que dados antigos (sem 'type') recebem 'weighted'
+// e remove os `undefined` que o Zod strict reprovaria, protegendo a Base de Dados.
+export const SetSchema = z.preprocess((val: any) => {
+  if (typeof val === 'object' && val !== null) {
+    if (!val.type) return { ...val, type: 'weighted' };
+  }
+  return val;
+}, z.discriminatedUnion("type", [
+  WeightedSetSchema,
+  BodyweightSetSchema,
+  CardioSetSchema,
+  TimedSetSchema,
+]));
 
 export const ExerciseSchema = z.object({
   name: z.string(),
   muscle: z.string(),
-  type: z.enum(["weighted", "bodyweight", "cardio", "timed", "mobility", "distance"]).default("weighted"),
+  type: z.enum(["weighted", "bodyweight", "cardio", "timed", "mobility", "distance"]), // Sem default, obriga a declaração
   sets: z.array(SetSchema)
 });
 
