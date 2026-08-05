@@ -66,6 +66,23 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
             }
           }
 
+          // Fallback: se não encontrou o dayPlan no store mas existe workout agendado,
+          // cria um plano mínimo para permitir Iniciar/Refazer
+          if (workout && !rawDayPlan && currentPlan && workout.workoutId === currentPlan.id) {
+            // Tenta match parcial (nome do workout pode ter sido alterado)
+            rawDayPlan = currentPlan.workouts.find(w =>
+              w.focus.toLowerCase().includes(workout.workoutName.toLowerCase()) ||
+              workout.workoutName.toLowerCase().includes(w.focus.toLowerCase())
+            );
+            if (rawDayPlan) {
+              exercisesList = rawDayPlan.exercises || [];
+            }
+          }
+
+          // Último recurso: permite iniciar mesmo sem plano detalhado
+          const canStart = !!workout && (!!rawDayPlan || !!workout.workoutName);
+          const fallbackPlan = rawDayPlan || (workout ? { day: dateStr, focus: workout.workoutName, exercises: [workout.workoutName] } : null);
+
           let isPast = false;
           if (workout) {
             const wDate = new Date(workout.date);
@@ -104,9 +121,9 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
               </div>
               
               <div style={{ display: 'flex', gap: 6 }}>
-                {workout && !workout.completed && onStartWorkout && rawDayPlan && (
+                {workout && !workout.completed && onStartWorkout && canStart && (
                   <button
-                    onClick={() => onStartWorkout({ id: `day_${workout.id}`, label: `${rawDayPlan.day}: ${rawDayPlan.focus}`, exercises: rawDayPlan.exercises })}
+                    onClick={() => onStartWorkout({ id: `day_${workout.id}`, label: `${fallbackPlan!.day}: ${fallbackPlan!.focus}`, exercises: fallbackPlan!.exercises })}
                     style={{ padding: '4px 8px', background: isPast ? '#ef4444' : C.accent, color: isPast ? '#fff' : '#000', borderRadius: 6, fontSize: 12, border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}
                   >
                     <Play size={12} /> {isPast ? 'Fazer em Atraso' : 'Iniciar'}
@@ -122,9 +139,9 @@ export const DualWorkoutCalendar = ({ onStartWorkout }: { onStartWorkout?: any }
                 )}
                 {workout?.completed && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {onStartWorkout && rawDayPlan && (
+                    {onStartWorkout && canStart && (
                       <button
-                        onClick={() => onStartWorkout({ id: `day_${workout.id}_redo`, label: `${rawDayPlan.day}: ${rawDayPlan.focus} (Refazer)`, exercises: rawDayPlan.exercises })}
+                        onClick={() => onStartWorkout({ id: `day_${workout.id}_redo`, label: `${fallbackPlan!.day}: ${fallbackPlan!.focus} (Refazer)`, exercises: fallbackPlan!.exercises })}
                         style={{ padding: '4px 8px', background: 'transparent', border: `1px solid ${isPast ? '#60a5fa' : C.accent}`, color: isPast ? '#60a5fa' : C.accent, borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }}
                       >
                         {isPast ? 'Refazer Treino' : 'Ver / Refazer'}

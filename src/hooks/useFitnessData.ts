@@ -18,7 +18,8 @@ export type ViewName =
   | 'dashboard' | 'workout' | 'settings' | 'assessment' | 'guide'
   | 'feedback' | 'history' | 'aicoach' | 'trends' | 'planner'
   | 'gymvibe' | 'milestones' | 'cyclereview' | 'nutrition'
-  | 'devices' | 'rewards' | 'backup' | 'walkingcoach' | 'community';
+  | 'devices' | 'rewards' | 'backup' | 'walkingcoach' | 'community'
+  | 'compete';
 
 interface PendingBackup {
   id: string;

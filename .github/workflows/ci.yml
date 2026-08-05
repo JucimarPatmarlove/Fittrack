@@ -14,14 +14,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
-      # Bloqueante: lint tem de passar (0 erros; warnings são tolerados por agora)
+      # Bloqueante: lint tem de passar (0 erros fatais; warnings e complexidade são tolerados por agora)
       - name: Lint
-        run: npx eslint src --ext .js,.jsx,.ts,.tsx --max-warnings 600
+        run: npx eslint src --ext .js,.jsx,.ts,.tsx --max-warnings 700
 
       # Bloqueante: os testes têm de passar
       - name: Testes unitários

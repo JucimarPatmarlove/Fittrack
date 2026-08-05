@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageSquare, MapPin, Activity, Flame } from 'lucide-react';
 import { C } from '../data/constants';
 import { useCommunityStore } from '../stores/useCommunityStore';
