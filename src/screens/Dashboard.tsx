@@ -14,6 +14,8 @@ import { usePlanStore } from "../stores/usePlanStore";
 import { getTodayDateString } from "../services/nutritionEngine";
 import { EmptyState } from "../components/ui/EmptyState";
 import { motion } from "framer-motion";
+import { InjuryRiskPanel } from "../components/injury/InjuryRiskPanel";
+import { useInjuryStore } from "../stores/useInjuryStore";
 
 export default function Dashboard({ history = [], onStartWorkout, onNavigateToPlanner }: { history?: any[], onStartWorkout?: any, onNavigateToPlanner?: () => void }) {
   const { profile, meals, hydration, weightHistory, currentDate, addWater, setWeight, loadNutritionData, loadAllWeightLogs, setCurrentDate } = useNutritionStore();
@@ -24,6 +26,14 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
 
   // ── HealthKit Sync (Telemetria Biológica) ──
   const { healthKitData, dailyAdjustment, isSyncing: isHealthSyncing, syncHealthKit } = useHealthStore();
+  
+  const { lastReport, generateReport } = useInjuryStore();
+
+  useEffect(() => {
+    if (history && profile) {
+      generateReport(history, profile.weight || 75);
+    }
+  }, [history, profile, generateReport]);
 
   // Carregar dados no mount
   useEffect(() => {
@@ -188,6 +198,12 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
           Sync P2P
         </button>
       </div>
+
+      {lastReport && (
+        <div style={{ marginBottom: '4px' }}>
+          <InjuryRiskPanel report={lastReport} compact />
+        </div>
+      )}
 
       {/* WALKING COACH BANNER */}
       <button

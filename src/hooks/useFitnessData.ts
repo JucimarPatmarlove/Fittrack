@@ -19,7 +19,7 @@ export type ViewName =
   | 'feedback' | 'history' | 'aicoach' | 'trends' | 'planner'
   | 'gymvibe' | 'milestones' | 'cyclereview' | 'nutrition'
   | 'devices' | 'rewards' | 'backup' | 'walkingcoach' | 'community'
-  | 'compete';
+  | 'compete' | 'recovery';
 
 interface PendingBackup {
   id: string;

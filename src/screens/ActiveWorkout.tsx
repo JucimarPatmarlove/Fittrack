@@ -7,7 +7,9 @@ import { useWakeLock, useBeep, useGhostMode } from "../hooks";
 import { useBluetoothHRM } from "../hooks/useBluetoothHRM";
 import { useFitnessMachine } from "../hooks/useFitnessMachine";
 import { useDeviceStore } from "../stores/useDeviceStore";
-import { preWorkoutSafetyCheck, InjuryRiskReport } from "../services/injuryPredictionEngine";
+import { InjuryRiskReport, WorkoutModification } from "../types/injury";
+import { useInjuryStore } from "../stores/useInjuryStore";
+import { InjuryRiskPanel } from "../components/injury/InjuryRiskPanel";
 import { getPrescription } from "../utils/prescriptionEngine";
 import { ProgressionSystem } from "../services/ProgressionSystem";
 import { useAudioCoach } from "../hooks/useAudioCoach";
@@ -382,7 +384,9 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   const [showRivalResult, setShowRivalResult] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [finalVolume, setFinalVolume] = useState(0);
-  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskReport | null>(null);
+  const [showRiskPanel, setShowRiskPanel] = useState(true);
+  const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
+  const { generateReport } = useInjuryStore();
   const [newPRData, setNewPRData] = useState<{ exerciseName: string; weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{ text: string; type: string } | null>(null);
   const [autoRepActive, setAutoRepActive] = useState(false);
@@ -434,10 +438,43 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   }, []);
 
   useEffect(() => {
-    preWorkoutSafetyCheck().then(res => {
-      if (res.overrideRequired) setInjuryRisk(res.report);
-    }).catch(() => {});
-  }, []);
+    if (profile && history) {
+      const report = generateReport(history, profile.weight || 75, todayPlan);
+      setRiskReport(report);
+      if (report.overallRisk === 'low') {
+        const hasSeenLowRisk = localStorage.getItem('fittrack_seen_low_risk');
+        if (hasSeenLowRisk) {
+          setShowRiskPanel(false);
+        } else {
+          localStorage.setItem('fittrack_seen_low_risk', 'true');
+        }
+      }
+    }
+  }, [profile, history, todayPlan]);
+
+  function applyWorkoutModifications(mods: WorkoutModification[]) {
+    const newExs = [...localExs];
+    const newSets = cloneSets(sets);
+
+    mods.forEach(mod => {
+      const idx = newExs.findIndex(e => e.name === mod.exerciseName);
+      if (idx === -1) return;
+
+      if (mod.originalType === 'swap' && mod.alternativeExercise) {
+        newExs[idx].name = mod.alternativeExercise;
+      } else if (mod.originalType === 'reduce_load') {
+        newSets[idx].forEach(s => { s.weight = Math.floor((s.weight || 0) * 0.8); });
+      } else if (mod.originalType === 'reduce_volume') {
+        const keepCount = Math.ceil(newSets[idx].length * 0.7);
+        newSets[idx] = newSets[idx].slice(0, keepCount);
+      } else if (mod.originalType === 'remove') {
+        newSets[idx] = [];
+      }
+    });
+
+    setLocalExs(newExs);
+    setSets(newSets);
+  }
 
   useEffect(() => {
     if (workoutMode !== 'amrap' || !amrapRunning) return;
@@ -656,6 +693,24 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
   const currentVolume = calcVolume(sets);
 
   // Render
+  if (showRiskPanel && riskReport) {
+    return (
+      <GlobalBackground>
+        <div style={{ minHeight: "100vh", padding: 16 }}>
+          <InjuryRiskPanel
+            report={riskReport}
+            onStartWorkout={() => setShowRiskPanel(false)}
+            onApplyAllModifications={(mods) => {
+              applyWorkoutModifications(mods);
+              setShowRiskPanel(false);
+            }}
+            onDismiss={() => setShowRiskPanel(false)}
+          />
+        </div>
+      </GlobalBackground>
+    );
+  }
+
   return (
     <GlobalBackground>
       <div style={{ minHeight: "100vh", paddingBottom: 90 }}>
@@ -704,7 +759,7 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
           initialWeight={sets[currentExerciseIdx]?.[currentSetIdx]?.weight || 0}
           onSelectWeight={(newWeight) => upd(currentExerciseIdx, currentSetIdx, "weight", String(newWeight))} />
         {confirmCancel && <ConfirmCancelModal onBack={() => setConfirmCancel(false)} onConfirm={onCancel} />}
-        {injuryRisk && <InjuryRiskModal injuryRisk={injuryRisk} onDismiss={() => setInjuryRisk(null)} onCancel={onCancel} />}
+
         {showRivalResult && (
           <RivalResult isWinner={finalVolume >= rivalState.rivalVolume} rivalVolume={rivalState.rivalVolume}
             userVolume={finalVolume} onContinue={() => commitFinish(finalVolume)} />
