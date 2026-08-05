@@ -43,3 +43,28 @@ export function getSupabaseBrowser(): SupabaseClient | null {
 export function isSupabaseConfigured(): boolean {
   return getSupabaseBrowser() !== null;
 }
+
+/**
+ * Faz login anónimo no Supabase.
+ * Cria um utilizador fantasma (shadow user) se não existir sessão.
+ * Ideal para apps locais (local-first) que precisam de RLS.
+ */
+export async function signInAnonymously(): Promise<string | null> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return null;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      return session.user.id;
+    }
+
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) throw error;
+    
+    return data.user?.id || null;
+  } catch (error) {
+    console.error('[Supabase Browser] Erro no login anónimo:', error);
+    return null;
+  }
+}

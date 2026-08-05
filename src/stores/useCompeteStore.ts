@@ -3,14 +3,13 @@
 // ════════════════════════════════════════════════════════════════
 //
 // Store Zustand para o sistema competitivo "Strava do treino de força".
-// Fase 1: Mock data local. Fase 2: Liga ao Supabase via supabaseBrowser.
-//
-// Princípio: O vault cifrado local NUNCA é sincronizado.
-// Apenas PRs explicitamente publicados pelo utilizador entram aqui.
+// Quando configurado via VITE_SUPABASE_URL, liga-se ao Supabase
+// mantendo os dados de fallback local para quando estiver offline.
 // ════════════════════════════════════════════════════════════════
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getSupabaseBrowser, signInAnonymously } from '../lib/supabaseBrowser';
 
 // ─── TIPOS ──────────────────────────────────────────────────────
 
@@ -56,122 +55,53 @@ export interface Challenge {
   targetResult?: number;
   status: ChallengeStatus;
   createdAt: number;
-  deadline: number; // timestamp
+  deadline: number;
   winnerId?: string;
 }
 
-// ─── MOCK DATA ──────────────────────────────────────────────────
+// ─── MOCK DATA (Fallback) ───────────────────────────────────────
 
 const MOCK_USERS: PublicProfile[] = [
   { userId: 'u_iron', username: 'IronMike_PT', avatarInitials: 'IM', weightClass: 'u90', totalPublishedPRs: 12, joinedAt: Date.now() - 86400000 * 60 },
   { userId: 'u_steel', username: 'SteelQueen', avatarInitials: 'SQ', weightClass: 'u70', totalPublishedPRs: 8, joinedAt: Date.now() - 86400000 * 45 },
   { userId: 'u_titan', username: 'TitanForge', avatarInitials: 'TF', weightClass: 'u100', totalPublishedPRs: 15, joinedAt: Date.now() - 86400000 * 90 },
-  { userId: 'u_ghost', username: 'GhostLifter', avatarInitials: 'GL', weightClass: 'u80', totalPublishedPRs: 6, joinedAt: Date.now() - 86400000 * 30 },
-  { userId: 'u_nova', username: 'NovaPower', avatarInitials: 'NP', weightClass: 'u60', totalPublishedPRs: 10, joinedAt: Date.now() - 86400000 * 20 },
-  { userId: 'u_viper', username: 'ViperStrength', avatarInitials: 'VS', weightClass: 'o100', totalPublishedPRs: 18, joinedAt: Date.now() - 86400000 * 120 },
-  { userId: 'u_blaze', username: 'BlazeBarbell', avatarInitials: 'BB', weightClass: 'u90', totalPublishedPRs: 9, joinedAt: Date.now() - 86400000 * 15 },
-  { userId: 'u_apex', username: 'ApexAthlete', avatarInitials: 'AA', weightClass: 'u80', totalPublishedPRs: 11, joinedAt: Date.now() - 86400000 * 55 },
 ];
 
 function generateMockLeaderboard(exerciseName: string, userPR?: number): LeaderboardEntry[] {
-  // Baseline weights per exercise for realistic mock data
   const baselines: Record<string, number> = {
-    'Barbell Bench Press': 100,
-    'Barbell Back Squat': 140,
-    'Barbell Deadlift': 170,
-    'Barbell Overhead Press': 65,
-    'Barbell Bent Over Row': 90,
-    'Pull-Up': 100,    // peso corporal + lastro
-    'Dips': 95,
-    'Machine Leg Press': 200,
-    'Barbell Hip Thrust': 130,
-    'Barbell Bicep Curl': 45,
+    'Barbell Bench Press': 100, 'Barbell Back Squat': 140, 'Barbell Deadlift': 170,
   };
-  
   const base = baselines[exerciseName] || 80;
   
   const entries: LeaderboardEntry[] = MOCK_USERS.map((u, i) => ({
-    rank: 0,
-    userId: u.userId,
-    username: u.username,
-    avatarInitials: u.avatarInitials,
-    weightClass: u.weightClass,
-    best1RM: Math.round(base * (1.3 - i * 0.08) + Math.random() * 10),
+    rank: 0, userId: u.userId, username: u.username, avatarInitials: u.avatarInitials,
+    weightClass: u.weightClass, best1RM: Math.round(base * (1.3 - i * 0.08) + Math.random() * 10),
     isCurrentUser: false,
   }));
 
-  // Inject current user if they have a published PR
   if (userPR && userPR > 0) {
     entries.push({
-      rank: 0,
-      userId: 'user_local',
-      username: 'Tu',
-      avatarInitials: '⭐',
-      weightClass: 'open',
-      best1RM: userPR,
-      isCurrentUser: true,
+      rank: 0, userId: 'user_local', username: 'Tu', avatarInitials: '⭐', weightClass: 'open',
+      best1RM: userPR, isCurrentUser: true,
     });
   }
 
-  // Sort and rank
   entries.sort((a, b) => b.best1RM - a.best1RM);
   entries.forEach((e, i) => { e.rank = i + 1; });
-
   return entries;
 }
-
-const MOCK_CHALLENGES: Challenge[] = [
-  {
-    id: 'ch_1',
-    exerciseName: 'Barbell Bench Press',
-    challengerUserId: 'u_iron',
-    challengerUsername: 'IronMike_PT',
-    challengerResult: 115,
-    targetUserId: 'user_local',
-    targetUsername: 'Tu',
-    status: 'pending',
-    createdAt: Date.now() - 3600000 * 6,
-    deadline: Date.now() + 86400000 * 5,
-  },
-  {
-    id: 'ch_2',
-    exerciseName: 'Barbell Back Squat',
-    challengerUserId: 'user_local',
-    challengerUsername: 'Tu',
-    challengerResult: 130,
-    targetUserId: 'u_titan',
-    targetUsername: 'TitanForge',
-    targetResult: 155,
-    status: 'completed',
-    createdAt: Date.now() - 86400000 * 10,
-    deadline: Date.now() - 86400000 * 3,
-    winnerId: 'u_titan',
-  },
-  {
-    id: 'ch_3',
-    exerciseName: 'Barbell Deadlift',
-    challengerUserId: 'u_ghost',
-    challengerUsername: 'GhostLifter',
-    challengerResult: undefined,
-    targetUserId: 'user_local',
-    targetUsername: 'Tu',
-    status: 'active',
-    createdAt: Date.now() - 86400000 * 2,
-    deadline: Date.now() + 86400000 * 4,
-  },
-];
 
 // ─── STORE ──────────────────────────────────────────────────────
 
 interface CompeteState {
   // Profile
   publicProfile: PublicProfile | null;
-  setupProfile: (username: string, weightClass: WeightClass) => void;
+  setupProfile: (username: string, weightClass: WeightClass) => Promise<void>;
 
   // Published PRs
   publishedPRs: PublishedPR[];
-  publishPR: (exerciseName: string, best1RM: number) => void;
-  unpublishPR: (exerciseName: string) => void;
+  publishPR: (exerciseName: string, best1RM: number) => Promise<void>;
+  unpublishPR: (exerciseName: string) => Promise<void>;
   isExercisePublished: (exerciseName: string) => boolean;
 
   // Leaderboard
@@ -181,10 +111,11 @@ interface CompeteState {
 
   // Challenges
   challenges: Challenge[];
-  createChallenge: (targetUserId: string, targetUsername: string, exerciseName: string, daysUntilDeadline: number) => void;
-  acceptChallenge: (challengeId: string) => void;
-  declineChallenge: (challengeId: string) => void;
-  submitChallengeResult: (challengeId: string, result: number) => void;
+  fetchChallenges: () => Promise<void>;
+  createChallenge: (targetUserId: string, targetUsername: string, exerciseName: string, daysUntilDeadline: number) => Promise<void>;
+  acceptChallenge: (challengeId: string) => Promise<void>;
+  declineChallenge: (challengeId: string) => Promise<void>;
+  submitChallengeResult: (challengeId: string, result: number) => Promise<void>;
 
   // Derived
   myRank: number | null;
@@ -197,11 +128,27 @@ export const useCompeteStore = create<CompeteState>()(
       // ── Profile ──
       publicProfile: null,
 
-      setupProfile: (username, weightClass) => {
+      setupProfile: async (username, weightClass) => {
         const initials = username.slice(0, 2).toUpperCase();
+        let userId = 'user_local';
+        
+        const sb = getSupabaseBrowser();
+        if (sb) {
+          const authId = await signInAnonymously();
+          if (authId) {
+            userId = authId;
+            await sb.from('compete_profiles').upsert({
+              user_id: userId,
+              username,
+              avatar_initials: initials,
+              weight_class: weightClass,
+            });
+          }
+        }
+
         set({
           publicProfile: {
-            userId: 'user_local',
+            userId,
             username,
             avatarInitials: initials,
             weightClass,
@@ -214,7 +161,18 @@ export const useCompeteStore = create<CompeteState>()(
       // ── Published PRs ──
       publishedPRs: [],
 
-      publishPR: (exerciseName, best1RM) => {
+      publishPR: async (exerciseName, best1RM) => {
+        const profile = get().publicProfile;
+        const sb = getSupabaseBrowser();
+
+        if (sb && profile && profile.userId !== 'user_local') {
+          await sb.from('compete_prs').upsert({
+            user_id: profile.userId,
+            exercise_name: exerciseName,
+            best_1rm: best1RM,
+          }, { onConflict: 'user_id, exercise_name' });
+        }
+
         set(state => {
           const existing = state.publishedPRs.find(p => p.exerciseName === exerciseName);
           if (existing) {
@@ -230,7 +188,7 @@ export const useCompeteStore = create<CompeteState>()(
             publishedPRs: [
               ...state.publishedPRs,
               {
-                id: `pr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                id: `pr_${Date.now()}`,
                 exerciseName,
                 best1RM,
                 publishedAt: Date.now(),
@@ -241,12 +199,20 @@ export const useCompeteStore = create<CompeteState>()(
         });
       },
 
-      unpublishPR: (exerciseName) => {
+      unpublishPR: async (exerciseName) => {
+        const profile = get().publicProfile;
+        const sb = getSupabaseBrowser();
+
+        if (sb && profile && profile.userId !== 'user_local') {
+          await sb.from('compete_prs')
+            .delete()
+            .eq('user_id', profile.userId)
+            .eq('exercise_name', exerciseName);
+        }
+
         set(state => ({
           publishedPRs: state.publishedPRs.map(p =>
-            p.exerciseName === exerciseName
-              ? { ...p, isPublished: false }
-              : p
+            p.exerciseName === exerciseName ? { ...p, isPublished: false } : p
           ),
         }));
       },
@@ -260,44 +226,120 @@ export const useCompeteStore = create<CompeteState>()(
       leaderboardExercise: 'Barbell Bench Press',
 
       fetchLeaderboard: async (exerciseName) => {
-        // Phase 1: Mock delay + generated data
-        await new Promise(r => setTimeout(r, 300));
+        const sb = getSupabaseBrowser();
         
-        const userPR = get().publishedPRs.find(
-          p => p.exerciseName === exerciseName && p.isPublished
-        );
-        
+        if (sb) {
+          const { data, error } = await sb
+            .from('compete_prs')
+            .select(`
+              best_1rm,
+              compete_profiles (user_id, username, avatar_initials, weight_class)
+            `)
+            .eq('exercise_name', exerciseName)
+            .order('best_1rm', { ascending: false })
+            .limit(50);
+
+          if (!error && data) {
+            const myId = get().publicProfile?.userId;
+            const entries: LeaderboardEntry[] = data.map((d: any, i) => ({
+              rank: i + 1,
+              userId: d.compete_profiles.user_id,
+              username: d.compete_profiles.username,
+              avatarInitials: d.compete_profiles.avatar_initials,
+              weightClass: d.compete_profiles.weight_class,
+              best1RM: d.best_1rm,
+              isCurrentUser: d.compete_profiles.user_id === myId,
+            }));
+            
+            const myEntry = entries.find(e => e.isCurrentUser);
+            set({ leaderboard: entries, leaderboardExercise: exerciseName, myRank: myEntry?.rank ?? null });
+            return;
+          }
+        }
+
+        // Fallback to mock
+        const userPR = get().publishedPRs.find(p => p.exerciseName === exerciseName && p.isPublished);
         const entries = generateMockLeaderboard(exerciseName, userPR?.best1RM);
         const myEntry = entries.find(e => e.isCurrentUser);
-
-        set({
-          leaderboard: entries,
-          leaderboardExercise: exerciseName,
-          myRank: myEntry?.rank ?? null,
-        });
+        set({ leaderboard: entries, leaderboardExercise: exerciseName, myRank: myEntry?.rank ?? null });
       },
 
       // ── Challenges ──
-      challenges: MOCK_CHALLENGES,
+      challenges: [],
 
-      createChallenge: (targetUserId, targetUsername, exerciseName, daysUntilDeadline) => {
+      fetchChallenges: async () => {
+        const sb = getSupabaseBrowser();
         const profile = get().publicProfile;
+
+        if (sb && profile && profile.userId !== 'user_local') {
+          const { data, error } = await sb
+            .from('compete_challenges')
+            .select(`
+              *,
+              challenger:compete_profiles!challenger_id(username),
+              target:compete_profiles!target_id(username)
+            `)
+            .or(`challenger_id.eq.${profile.userId},target_id.eq.${profile.userId}`)
+            .order('created_at', { ascending: false });
+
+          if (!error && data) {
+            const parsed: Challenge[] = data.map((d: any) => ({
+              id: d.id,
+              exerciseName: d.exercise_name,
+              challengerUserId: d.challenger_id,
+              challengerUsername: d.challenger?.username || '?',
+              challengerResult: d.challenger_result,
+              targetUserId: d.target_id,
+              targetUsername: d.target?.username || '?',
+              targetResult: d.target_result,
+              status: d.status as ChallengeStatus,
+              createdAt: new Date(d.created_at).getTime(),
+              deadline: new Date(d.deadline).getTime(),
+              winnerId: d.winner_id,
+            }));
+            set({ challenges: parsed });
+          }
+        }
+      },
+
+      createChallenge: async (targetUserId, targetUsername, exerciseName, daysUntilDeadline) => {
+        const profile = get().publicProfile;
+        const sb = getSupabaseBrowser();
+        const deadline = new Date(Date.now() + daysUntilDeadline * 86400000).toISOString();
+
+        let newId = `ch_${Date.now()}`;
+
+        if (sb && profile && profile.userId !== 'user_local') {
+          const { data } = await sb.from('compete_challenges').insert({
+            exercise_name: exerciseName,
+            challenger_id: profile.userId,
+            target_id: targetUserId,
+            deadline,
+          }).select('id').single();
+          if (data) newId = data.id;
+        }
+
         const newChallenge: Challenge = {
-          id: `ch_${Date.now()}`,
+          id: newId,
           exerciseName,
-          challengerUserId: 'user_local',
+          challengerUserId: profile?.userId || 'user_local',
           challengerUsername: profile?.username || 'Tu',
           targetUserId,
           targetUsername,
-          status: 'active',
+          status: 'pending',
           createdAt: Date.now(),
-          deadline: Date.now() + daysUntilDeadline * 86400000,
+          deadline: new Date(deadline).getTime(),
         };
 
         set(state => ({ challenges: [newChallenge, ...state.challenges] }));
       },
 
-      acceptChallenge: (challengeId) => {
+      acceptChallenge: async (challengeId) => {
+        const sb = getSupabaseBrowser();
+        if (sb && !challengeId.startsWith('ch_')) {
+          await sb.from('compete_challenges').update({ status: 'active' }).eq('id', challengeId);
+        }
+
         set(state => ({
           challenges: state.challenges.map(c =>
             c.id === challengeId ? { ...c, status: 'active' as ChallengeStatus } : c
@@ -305,7 +347,12 @@ export const useCompeteStore = create<CompeteState>()(
         }));
       },
 
-      declineChallenge: (challengeId) => {
+      declineChallenge: async (challengeId) => {
+        const sb = getSupabaseBrowser();
+        if (sb && !challengeId.startsWith('ch_')) {
+          await sb.from('compete_challenges').update({ status: 'declined' }).eq('id', challengeId);
+        }
+
         set(state => ({
           challenges: state.challenges.map(c =>
             c.id === challengeId ? { ...c, status: 'declined' as ChallengeStatus } : c
@@ -313,25 +360,36 @@ export const useCompeteStore = create<CompeteState>()(
         }));
       },
 
-      submitChallengeResult: (challengeId, result) => {
+      submitChallengeResult: async (challengeId, result) => {
+        const profile = get().publicProfile;
+        const stateChallenge = get().challenges.find(c => c.id === challengeId);
+        if (!profile || !stateChallenge) return;
+
+        const isChallenger = stateChallenge.challengerUserId === profile.userId;
+        const updates: any = {};
+        
+        if (isChallenger) updates.challenger_result = result;
+        else updates.target_result = result;
+
+        // Verify if both have completed to set winner
+        const opponentResult = isChallenger ? stateChallenge.targetResult : stateChallenge.challengerResult;
+        
+        if (opponentResult) {
+          updates.status = 'completed';
+          updates.winner_id = result >= opponentResult 
+            ? profile.userId 
+            : (isChallenger ? stateChallenge.targetUserId : stateChallenge.challengerUserId);
+        }
+
+        const sb = getSupabaseBrowser();
+        if (sb && !challengeId.startsWith('ch_')) {
+          await sb.from('compete_challenges').update(updates).eq('id', challengeId);
+        }
+
         set(state => ({
           challenges: state.challenges.map(c => {
             if (c.id !== challengeId) return c;
-
-            const isChallenger = c.challengerUserId === 'user_local';
-            const updated = isChallenger
-              ? { ...c, challengerResult: result }
-              : { ...c, targetResult: result };
-
-            // Auto-complete if both results are in
-            if (updated.challengerResult && updated.targetResult) {
-              updated.status = 'completed';
-              updated.winnerId = updated.challengerResult >= updated.targetResult
-                ? updated.challengerUserId
-                : updated.targetUserId;
-            }
-
-            return updated;
+            return { ...c, ...updates, winnerId: updates.winner_id };
           }),
         }));
       },
@@ -340,8 +398,10 @@ export const useCompeteStore = create<CompeteState>()(
       myRank: null,
 
       get pendingChallengesCount() {
+        const profile = get().publicProfile;
+        if (!profile) return 0;
         return get().challenges.filter(
-          c => c.status === 'pending' && c.targetUserId === 'user_local'
+          c => c.status === 'pending' && c.targetUserId === profile.userId
         ).length;
       },
     }),
