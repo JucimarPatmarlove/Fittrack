@@ -44,9 +44,10 @@ export async function calculateWorkoutXP(workoutId: string): Promise<XPEvent[]> 
   const baseXP = Math.floor(session.durationSeconds / 60) * 1; 
   events.push({ amount: baseXP, reason: 'Tempo de treino' });
 
-  const totalVolume = sets.reduce((sum, s) => sum + (s.weightKg * s.repsCompleted), 0);
-  const volumeXP = Math.floor(totalVolume / 1000) * 5; 
-  if (volumeXP > 0) events.push({ amount: volumeXP, reason: 'Volume levantado' });
+  // Fallback to the old logic if effortScore is missing (legacy workouts)
+  const effortScore = session.effortScore ?? sets.reduce((sum, s) => sum + (s.weightKg * s.repsCompleted), 0);
+  const effortXP = Math.floor(effortScore / 100) * 5; 
+  if (effortXP > 0) events.push({ amount: effortXP, reason: 'Esforço de Treino (Effort Score)' });
 
   const hardSets = sets.filter(s => s.rpe >= 8).length;
   if (hardSets > 0) events.push({ amount: hardSets * 2, reason: 'Séries difíceis (RPE 8+)' });

@@ -42,6 +42,7 @@ import { analyzeExerciseTrend, TrendAnalysis } from "../services/trendAnalyzer";
 import { getExerciseCategory } from "../data/exerciseClassifier";
 import { getWarmupSets } from "../services/fitnessMechanics";
 import { checkAutoProgression } from "../data/utils";
+import { calculateWorkoutEffort } from "../utils/xpCalculator";
 
 // ── TYPES ──────────────────────────────────────────────────────────────────
 export interface ActiveWorkoutProps {
@@ -622,24 +623,30 @@ export default function ActiveWorkout({ todayPlan, profile, history, onFinish, o
     const doneSetsArr = sets.flat().filter((s) => s.done);
     const totalRpe = doneSetsArr.reduce((sum, s) => sum + (s.rpe || 8), 0);
     const avgRPE = doneSetsArr.length > 0 ? Math.round((totalRpe / doneSetsArr.length) * 10) / 10 : 0;
+    
+    const payloadExercises = localExs.map((ex, ei) => ({
+      name: ex.name, muscle: ex.muscle, type: ex.type || 'weighted',
+      sets: sets[ei].filter((s) => s.done).map(s => ({
+        weight: s.weight, reps: s.reps, rpe: s.rpe || 8,
+        duration: s.duration, distance: s.distance, addedWeight: s.addedWeight, type: s.type || ex.type || 'weighted'
+      })),
+    })).filter((e) => e.sets.length > 0);
+
+    const allSetsFlat = payloadExercises.flatMap(e => e.sets.map(s => ({...s, done: true})));
+    const effortScore = calculateWorkoutEffort(allSetsFlat, profile.weight || 75);
+
     const payload = {
       id: workoutIdRef.current,
       date: new Date().toISOString(),
       dayLabel: todayPlan.label || 'Treino Livre',
       duration: elapsed,
-      exercises: localExs.map((ex, ei) => ({
-        name: ex.name, muscle: ex.muscle, type: ex.type || 'weighted',
-        sets: sets[ei].filter((s) => s.done).map(s => ({
-          weight: s.weight, reps: s.reps, rpe: s.rpe || 8,
-          duration: s.duration, distance: s.distance, addedWeight: s.addedWeight, type: s.type || ex.type || 'weighted'
-        })),
-      })).filter((e) => e.sets.length > 0),
+      exercises: payloadExercises,
       totalVolume: vol, avgRPE, isCustom,
       customExercisesList: isCustom ? todayPlan.exercises : [],
     };
     saveWorkoutSession({
       id: workoutIdRef.current, date: Date.now(), name: todayPlan.label || 'Treino Livre',
-      durationSeconds: elapsed, readinessScore: 85, totalVolumeKg: vol, avgRPE, isCompleted: true,
+      durationSeconds: elapsed, readinessScore: 85, totalVolumeKg: vol, effortScore, avgRPE, isCompleted: true,
     } as any).catch(e => console.warn('[IDB] Falha ao gravar WorkoutSession:', e));
     onFinish(payload);
   };

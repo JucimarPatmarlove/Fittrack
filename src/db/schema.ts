@@ -15,6 +15,7 @@ export interface WorkoutSession {
   durationSeconds: number;   // Tempo total do treino
   readinessScore: number;    // Fadiga neural antes de começar (0-100)
   totalVolumeKg: number;     // Somatório do peso levantado
+  effortScore?: number;      // NOVO: Esforço normalizado para XP justo (Cardio/Bodyweight)
   avgRPE?: number;           // RPE médio do treino
   isCompleted: boolean;
   sleepHours?: number;
