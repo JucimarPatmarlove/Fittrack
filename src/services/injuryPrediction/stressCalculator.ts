@@ -4,6 +4,35 @@ import { BodyRegion, MuscleGroup } from '../../types/injury';
 import { EXERCISE_REGION_MAP } from './exerciseRegionMap';
 import { calculateSetEffort } from '../../utils/xpCalculator';
 
+// ── Input types for the stress calculator ────────────────────────────────────
+// These mirror the runtime workout shape from useFitnessData / WorkoutSession.
+// They are intentionally permissive to handle legacy data without breaking.
+
+export interface SetEntry {
+  type?: 'weighted' | 'bodyweight' | 'cardio' | 'timed' | 'mobility' | 'distance';
+  weight?: number;
+  reps?: number;
+  rpe?: number;
+  done?: boolean;
+  addedWeight?: number;
+  duration?: number;   // seconds
+  distance?: number;   // km
+}
+
+export interface ExerciseEntry {
+  name: string;
+  muscle?: string;
+  sets: SetEntry[];
+}
+
+export interface WorkoutHistoryEntry {
+  date: string | number;
+  exercises?: ExerciseEntry[];
+  name?: string;
+  durationSeconds?: number;
+  totalVolumeKg?: number;
+}
+
 // Constantes do modelo
 const ACUTE_WINDOW_DAYS = 7;
 const CHRONIC_WINDOW_DAYS = 28;
@@ -19,7 +48,7 @@ export interface SessionStress {
  * Calcula o stress de uma única série numa região específica
  */
 export function calculateSetStress(
-  set: any, // AnySet from db
+  set: SetEntry,
   exerciseName: string,
   userBodyweight: number = 75
 ): { region: BodyRegion; muscle: MuscleGroup; stress: number }[] {
@@ -53,16 +82,16 @@ export function calculateSetStress(
  * Calcula o stress total de uma sessão de treino
  */
 export function calculateSessionStress(
-  workout: any, // WorkoutSession ou equivalente JSON
+  workout: WorkoutHistoryEntry,
   userBodyweight: number = 75
 ): SessionStress[] {
   const stresses: SessionStress[] = [];
 
   if (!workout.exercises || !Array.isArray(workout.exercises)) return stresses;
 
-  workout.exercises.forEach((exercise: any) => {
+  workout.exercises.forEach((exercise) => {
     if (exercise.sets && Array.isArray(exercise.sets)) {
-      exercise.sets.forEach((set: any) => {
+      exercise.sets.forEach((set) => {
         const setStresses = calculateSetStress(set, exercise.name, userBodyweight);
         setStresses.forEach(({ region, muscle, stress }) => {
           stresses.push({
@@ -83,7 +112,7 @@ export function calculateSessionStress(
  * Calcula AC Ratio (Acute:Chronic Workload Ratio)
  */
 export function calculateACRatio(
-  history: any[], // WorkoutSessions
+  history: WorkoutHistoryEntry[],
   region: BodyRegion,
   userBodyweight: number = 75,
   referenceDate: string = new Date().toISOString()

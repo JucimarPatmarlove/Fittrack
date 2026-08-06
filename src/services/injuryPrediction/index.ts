@@ -1,13 +1,13 @@
 // src/services/injuryPrediction/index.ts
 
-import { calculateSessionStress, calculateACRatio } from './stressCalculator';
+import { calculateSessionStress, calculateACRatio, WorkoutHistoryEntry } from './stressCalculator';
 import { calculateInjuryRisk } from './riskModel';
 import { calculateRecoveryScore, estimateRecoveryTime } from './recoveryTracker';
 import { WorkoutPlan } from '../../types';
 import { InjuryRiskReport, StressReading, RecoveryInput } from '../../types/injury';
 
 export interface InjuryEngineInput {
-  workoutHistory: any[]; // Array of WorkoutSessions
+  workoutHistory: WorkoutHistoryEntry[];
   userBodyweight: number;
   plannedWorkout?: WorkoutPlan;
   recoveryData?: RecoveryInput;
@@ -33,7 +33,7 @@ export function runInjuryPrediction(input: InjuryEngineInput): InjuryRiskReport 
     const { acute, chronic, ratio } = calculateACRatio(regionHistory, region, userBodyweight);
     
     // Calcular recovery score para esta região
-    let recoveryScore = 50; // default
+    let recoveryScore = 75; // Optimistic default — assume healthy without data
     if (recoveryData) {
       recoveryScore = calculateRecoveryScore(recoveryData);
     }
@@ -57,7 +57,7 @@ export function runInjuryPrediction(input: InjuryEngineInput): InjuryRiskReport 
   });
 
   // 3. Calcular risco
-  return calculateInjuryRisk(stressReadings, plannedWorkout);
+  return calculateInjuryRisk(stressReadings, plannedWorkout, userBodyweight);
 }
 
 // Exportar funções individuais para uso granular

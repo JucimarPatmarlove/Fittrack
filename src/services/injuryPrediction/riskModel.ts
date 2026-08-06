@@ -16,7 +16,8 @@ const RISK_THRESHOLD_CRITICAL = 1.5; // AC Ratio > 1.5 = risco crítico
 
 export function calculateInjuryRisk(
   stressReadings: StressReading[],
-  plannedWorkout?: WorkoutPlan
+  plannedWorkout?: WorkoutPlan,
+  userBodyweight: number = 75
 ): InjuryRiskReport {
   const flaggedRegions: StressReading[] = [];
   let totalRiskScore = 0;
@@ -44,9 +45,10 @@ export function calculateInjuryRisk(
       regionRisk += 25;
     }
 
-    // Fator 4: Stress crónico elevado (normalizado para 70 de 100)
-    // O EffortScore crónico depende do nível do utilizador, por isso aqui usamos uma flag de emergência
-    if (reading.chronicStress > 10000) {
+    // Fator 4: Stress crónico elevado (normalizado ao peso corporal do utilizador)
+    // ~60x bodyweight em effort = volume semanal extremo para qualquer atleta
+    const chronicThreshold = userBodyweight * 60;
+    if (reading.chronicStress > chronicThreshold) {
       regionRisk += 15;
     }
 

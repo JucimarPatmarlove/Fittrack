@@ -1,6 +1,6 @@
 # FitTrack
 
-FitTrack is a Vite + React fitness app focused on training guidance, workout tracking, progression, recovery, and gamification. The main application lives in [src/](src) and is the active codebase. There is also a legacy/minimal clone in [v2/FitTrack/](v2/FitTrack), which should be treated separately when debugging or cleaning lint issues.
+FitTrack is a Vite + React fitness app focused on training guidance, workout tracking, progression, recovery, and gamification. The main application lives in [src/](src) and is the active codebase.
 
 ## What this project already has
 
@@ -92,9 +92,8 @@ npm run preview:host
 
 ## Important notes
 
-- The main entry point is [src/main.jsx](src/main.jsx).
-- The current app shell is TypeScript-based in [src/App.tsx](src/App.tsx), while [src/App.jsx](src/App.jsx) belongs to an older variant and should not be confused with the active app.
-- The repository-wide lint currently scans both the active app and the legacy [v2/FitTrack/](v2/FitTrack) tree, which is why lint can fail on old files even if the main app still builds.
+- The main entry point is [src/main.tsx](src/main.tsx).
+- The current app shell is TypeScript-based in [src/App.tsx](src/App.tsx).
 - [README.md](README.md) used to be the default Vite template; this document replaces that with project-specific information.
 
 ## Current health snapshot
@@ -107,18 +106,13 @@ What looks good:
 
 What needs attention:
 
-- Lint is failing because of a mix of small issues and legacy files.
-- The workspace contains two app trees, which can confuse maintenance and support.
-- Some code still uses loose typing and broad persistence access patterns.
+- Some code still uses loose typing in certain services.
 - The project would benefit from clearer documentation and tighter boundaries between core app logic and helpers.
 
 ## Suggestions for improvement
 
 If you want to ask for help in forums, AI tools, or from another developer, these are the highest-value topics to show first:
 
-- How to split or exclude [v2/FitTrack/](v2/FitTrack) from the active lint/build workflow
-- How to standardize the app entrypoint and remove ambiguity between `.jsx` and `.tsx` variants
-- How to replace broad `any` usage in [src/App.tsx](src/App.tsx) with proper types
 - How to centralize persistence and reduce direct `localStorage` coupling
 - How to create a cleaner navigation/state architecture for the main app shell
 - How to add tests for workout progression, XP, and challenge evaluation
@@ -131,13 +125,11 @@ When you ask for help elsewhere, it helps to include:
 
 1. The goal of the app: fitness tracking, workout guidance, AI coaching, and progression.
 2. The main entry file: [src/App.tsx](src/App.tsx).
-3. The fact that [v2/FitTrack/](v2/FitTrack) is a legacy clone still present in the repo.
-4. The current status: build passes, lint fails because it includes legacy files and small code issues.
-5. The specific pain point you want to solve: lint cleanup, architecture cleanup, documentation, or feature development.
+3. The current status: build passes, TypeScript strict mode enabled.
+4. The specific pain point you want to solve: architecture cleanup, documentation, or feature development.
 
 ## Recommended next steps
 
-1. Clean up the legacy tree or exclude it from active checks.
-2. Fix the lint issues in the active app and legacy code.
-3. Add a short contributor guide or architecture overview.
-4. Introduce tests for the most business-critical flows.
+1. Add a short contributor guide or architecture overview.
+2. Introduce tests for the most business-critical flows.
+3. Migrate `createViewConfigs` to a cleaner routing pattern.
