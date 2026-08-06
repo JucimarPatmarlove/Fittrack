@@ -25,8 +25,8 @@ self.onmessage = async (e: MessageEvent) => {
         256
       );
       self.postMessage({ success: true, rawKey });
-    } catch (err: any) {
-      self.postMessage({ success: false, error: err.message });
+    } catch (err) {
+      self.postMessage({ success: false, error: err instanceof Error ? err.message : String(err) });
     }
     return;
   }
@@ -46,7 +46,7 @@ self.onmessage = async (e: MessageEvent) => {
       const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(iv) }, key, payloadData);
       self.postMessage({ type: 'decrypted', decrypted: new TextDecoder().decode(decrypted) });
     }
-  } catch (err: any) {
-    self.postMessage({ type: 'error', error: err.message });
+  } catch (err) {
+    self.postMessage({ type: 'error', error: err instanceof Error ? err.message : String(err) });
   }
 };

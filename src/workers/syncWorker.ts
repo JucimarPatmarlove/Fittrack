@@ -6,7 +6,7 @@ declare const self: DedicatedWorkerGlobalScope;
 interface SyncEntry {
   id: string;
   type: 'hrm' | 'ftms' | string;
-  data: any;
+  data: unknown;
   timestamp: number;
   pending: boolean;
 }
@@ -67,7 +67,7 @@ async function removeFromIndexedDB(id: string) {
   });
 }
 
-async function compressData(data: any): Promise<any> {
+async function compressData(data: unknown): Promise<{ compressed: boolean; data: unknown }> {
   const str = JSON.stringify(data);
   if (typeof CompressionStream !== 'undefined') {
     try {
@@ -75,7 +75,7 @@ async function compressData(data: any): Promise<any> {
       const buffer = await new Response(stream).arrayBuffer();
       // Retornar array para armazenar no IndexedDB facilmente
       return { compressed: true, data: Array.from(new Uint8Array(buffer)) };
-    } catch(e) {
+    } catch {
       return { compressed: false, data: str };
     }
   }
@@ -110,7 +110,7 @@ self.onmessage = async (event: MessageEvent) => {
   if (type === 'sync') {
     const pendingItems = queue.filter(e => e.pending);
     // Prioritizar treinos
-    pendingItems.sort((a, b) => a.type === 'workout' ? -1 : 1);
+    pendingItems.sort((a) => a.type === 'workout' ? -1 : 1);
     
     const chunkSize = 10;
     const syncedIds: string[] = [];
