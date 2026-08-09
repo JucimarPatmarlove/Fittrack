@@ -1,7 +1,7 @@
 import type React from 'react';
 import { lazy } from 'react';
 import { PageTransition } from '../components/ui/MotionComponents';
-import type { WorkoutSession } from '../db/schema';
+import type { WorkoutSession, DailyMealLog, MealItem } from '../db/schema';
 import type { ViewName } from '../hooks/useFitnessData';
 import type { UserProfile, WorkoutPlan } from '../types';
 import { useNutritionStore } from '../stores/useNutritionStore';
@@ -63,12 +63,12 @@ export function buildNutritionView(
   return (
     <NutritionPlanner
       profile={profile}
-      meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as any}
+      meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as DailyMealLog[]}
       onUpdateProfile={(p: Partial<UserProfile>) => setProfile({ ...profile, ...p } as UserProfile)}
-      onAddMealItem={(type: string, item: any) =>
-        useNutritionStore.getState().addMeal(getTodayDateString(), type, item as any)
+      onAddMealItem={(type: 'breakfast' | 'lunch' | 'snack' | 'dinner', item: MealItem) =>
+        useNutritionStore.getState().addMeal(getTodayDateString(), type, item)
       }
-      onRemoveMealItem={(type: string, id: string) =>
+      onRemoveMealItem={(type: 'breakfast' | 'lunch' | 'snack' | 'dinner', id: string) =>
         useNutritionStore.getState().removeMeal(getTodayDateString(), type, id)
       }
       currentDate={getTodayDateString()}

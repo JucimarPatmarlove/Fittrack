@@ -11,10 +11,11 @@
 
 import { type Tool } from '@google/generative-ai';
 
-const SchemaType = {
-  OBJECT: 'OBJECT' as any,
-  STRING: 'STRING' as any,
-  NUMBER: 'NUMBER' as any,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SchemaType: Record<string, any> = {
+  OBJECT: 'OBJECT',
+  STRING: 'STRING',
+  NUMBER: 'NUMBER',
 };
 
 /**
