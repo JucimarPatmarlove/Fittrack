@@ -9,7 +9,7 @@
 // o nome e argumentos. O agentLoop.ts executa e devolve o resultado.
 // ════════════════════════════════════════════════════════════════
 
-import { SchemaType, type Tool } from '@google/generative-ai';
+import { Type, type Tool } from '@google/generative-ai';
 
 /**
  * Arsenal completo de ferramentas do AI Coach.
@@ -27,10 +27,10 @@ export const COACH_TOOLS: Tool[] = [
           'ou qualquer dado que muda frequentemente e não está no teu treino interno. ' +
           'NÃO uses para perguntas que consegues responder com conhecimento geral.',
         parameters: {
-          type: SchemaType.OBJECT,
+          type: Type.OBJECT,
           properties: {
             query: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               description: 'A pesquisa a realizar na internet (em português ou inglês)',
             },
           },
@@ -47,10 +47,10 @@ export const COACH_TOOLS: Tool[] = [
           'recordes pessoais (PRs), histórico de peso corporal, e tendências numéricas. ' +
           'NÃO uses para perguntas qualitativas — apenas para números concretos.',
         parameters: {
-          type: SchemaType.OBJECT,
+          type: Type.OBJECT,
           properties: {
             metric_type: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               enum: [
                 'volume_total',
                 'frequencia_treinos',
@@ -67,12 +67,12 @@ export const COACH_TOOLS: Tool[] = [
                 'treinos_por_grupo_muscular = distribuição de treinos por grupo.',
             },
             exercise_name: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               description:
                 'Nome do exercício (ex: "Supino Plano", "Agachamento"). Opcional para métricas globais.',
             },
             period_days: {
-              type: SchemaType.NUMBER,
+              type: Type.NUMBER,
               description:
                 'Período em dias para a consulta (ex: 7 = última semana, 30 = último mês). Default: 30.',
             },
@@ -89,10 +89,10 @@ export const COACH_TOOLS: Tool[] = [
           'perguntar sobre código, commits, issues, ou segurança do projeto. ' +
           'Esta ferramenta é para DevOps/administração técnica.',
         parameters: {
-          type: SchemaType.OBJECT,
+          type: Type.OBJECT,
           properties: {
             action: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               enum: ['recent_commits', 'file_content', 'open_issues'],
               description:
                 'recent_commits = últimos commits na branch. ' +
@@ -100,12 +100,12 @@ export const COACH_TOOLS: Tool[] = [
                 'open_issues = listar issues abertas no repositório.',
             },
             file_path: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               description:
                 'Caminho do ficheiro a ler (ex: "src/services/vectorMemory.ts"). Só para action=file_content.',
             },
             branch: {
-              type: SchemaType.STRING,
+              type: Type.STRING,
               description: 'Nome da branch (default: "main").',
             },
           },
