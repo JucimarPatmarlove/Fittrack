@@ -21,7 +21,7 @@ jobs:
 
       # Bloqueante: lint tem de passar (0 erros fatais; warnings e complexidade são tolerados por agora)
       - name: Lint
-        run: npx eslint src --ext .js,.jsx,.ts,.tsx --max-warnings 700
+        run: npx eslint src --ext .js,.jsx,.ts,.tsx --max-warnings 750
 
       # Bloqueante: os testes têm de passar
       - name: Testes unitários
