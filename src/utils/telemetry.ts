@@ -6,34 +6,17 @@
 // ============================================================
 
 import { trace, context, SpanStatusCode, type Span } from '@opentelemetry/api';
-import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { Resource } from '@opentelemetry/resources';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
 import * as Sentry from '@sentry/react';
 import posthog from 'posthog-js';
 
 // ── 1. Initialize OpenTelemetry ────────────────────────────
 
 export function initTelemetry() {
-  const provider = new WebTracerProvider({
-    resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: 'fittrack-v7',
-      [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-      [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: import.meta.env.MODE,
-    }),
-  });
-
-  const exporter = new OTLPTraceExporter({
-    url: import.meta.env.VITE_OTEL_COLLECTOR_URL || 'http://localhost:4318/v1/traces',
-  });
-
-  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-  provider.register();
-
-  console.log('🔭 OpenTelemetry initialized');
+  // 🔭 OpenTelemetry is configured to use the global no-op provider by default
+  // To enable actual tracing export, install the OTel SDK packages:
+  // npm install @opentelemetry/sdk-trace-web @opentelemetry/sdk-trace-base @opentelemetry/exporter-trace-otlp-http @opentelemetry/resources @opentelemetry/semantic-conventions
+  console.log('🔭 OpenTelemetry initialized (No-Op mode)');
 }
 
 // ── 2. Error Tracking ──────────────────────────────────────
@@ -117,7 +100,7 @@ export function reportWebVitals(metric: any) {
 
 export function initWebVitals() {
   onCLS(reportWebVitals);
-  onFID(reportWebVitals);
+  onINP(reportWebVitals);
   onFCP(reportWebVitals);
   onLCP(reportWebVitals);
   onTTFB(reportWebVitals);
