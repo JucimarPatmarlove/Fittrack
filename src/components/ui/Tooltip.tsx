@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { C } from '../../data/constants';
 
 // Mapa de tooltips explicativos para conceitos do FitTrack
 export const TOOLTIP_TEXTS: Record<string, string> = {
   rpe: 'RPE (Rating of Perceived Exertion) é uma escala de 1 a 10 que mede o quão difícil foi a série. RPE 8 significa que ainda conseguirias fazer 2 repetições. RPE 10 = falha total.',
-  '1rm': '1RM (1 Repetition Maximum) é o peso máximo que consegues levantar numa única repetição. É estimado automaticamente com base no peso e repetições que realizaste.',
-  fadiga: 'A fadiga compensatória ocorre quando o teu sistema nervoso central está cansado e o corpo compensa com má postura. Reduz a carga em 10-15% quando sentires.',
-  readiness: 'O Readiness Score é uma pontuação de 0-100 que indica o quão recuperado estás para treinar. Leva em conta sono, treinos recentes e fadiga acumulada.',
+  '1rm':
+    '1RM (1 Repetition Maximum) é o peso máximo que consegues levantar numa única repetição. É estimado automaticamente com base no peso e repetições que realizaste.',
+  fadiga:
+    'A fadiga compensatória ocorre quando o teu sistema nervoso central está cansado e o corpo compensa com má postura. Reduz a carga em 10-15% quando sentires.',
+  readiness:
+    'O Readiness Score é uma pontuação de 0-100 que indica o quão recuperado estás para treinar. Leva em conta sono, treinos recentes e fadiga acumulada.',
   acwr: 'ACWR (Acute:Chronic Workload Ratio) compara a carga da última semana com a média das últimas 4 semanas. Entre 0.8-1.3 é a zona segura. Acima de 1.5 é risco de lesão.',
-  cadencia: 'Cadência é o número de rotações por minuto (rpm) no ciclismo ou passos por minuto na corrida. Cadências entre 80-100 rpm são eficientes para ciclismo.',
+  cadencia:
+    'Cadência é o número de rotações por minuto (rpm) no ciclismo ou passos por minuto na corrida. Cadências entre 80-100 rpm são eficientes para ciclismo.',
   pace: 'Pace é o tempo que levas a percorrer 1 km. Por exemplo, 5:00 min/km significa que corres 1 km em 5 minutos.',
-  ghost: 'Ghost Mode permite-te competir contra a melhor versão de ti mesmo. O sistema usa o teu melhor desempenho anterior como alvo e dás XP se bateres o recorde.',
+  ghost:
+    'Ghost Mode permite-te competir contra a melhor versão de ti mesmo. O sistema usa o teu melhor desempenho anterior como alvo e dás XP se bateres o recorde.',
 };
 
 interface TooltipProps {
@@ -71,7 +77,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
     >
       {children}
       {icon && (
-        <span style={{ color: C.muted, fontSize: small ? 10 : 12, lineHeight: 1, userSelect: 'none' }}>
+        <span
+          style={{ color: C.muted, fontSize: small ? 10 : 12, lineHeight: 1, userSelect: 'none' }}
+        >
           ℹ️
         </span>
       )}
@@ -122,7 +130,15 @@ export const LabelWithTooltip: React.FC<{
   const text = TOOLTIP_TEXTS[tooltipKey] || tooltipKey;
   return (
     <Tooltip text={text} small>
-      <span style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, ...style }}>
+      <span
+        style={{
+          fontSize: 11,
+          color: C.muted,
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+          ...style,
+        }}
+      >
         {label}
       </span>
     </Tooltip>

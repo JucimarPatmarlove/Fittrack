@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { getRecentSetLogsDecrypted, getAllExercisesFromHistory } from '../db/encryptedDb';
-import { SetLog } from '../db/schema';
-import { DemographicProfile } from './demographicEngine';
+import { getAllExercisesFromHistory, getRecentSetLogsDecrypted } from '../db/encryptedDb';
+import type { SetLog } from '../db/schema';
+import type { DemographicProfile } from './demographicEngine';
 
 export type InjuryRisk = 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
 
 export interface InjuryAssessment {
   overallRisk: InjuryRisk;
-  acwr: number;               // Acute:Chronic Workload Ratio
-  acuteLoad: number;          // Carga últimos 7 dias (kg)
-  chronicLoad: number;        // Carga média últimos 28 dias (kg)
+  acwr: number; // Acute:Chronic Workload Ratio
+  acuteLoad: number; // Carga últimos 7 dias (kg)
+  chronicLoad: number; // Carga média últimos 28 dias (kg)
   warnings: string[];
   alternativeExercises?: string[];
   restrictedExercises?: string[];
@@ -28,21 +28,19 @@ const ONE_WEEK_MS = 7 * 24 * 3600 * 1000;
 // ---- Pure utility functions ----
 
 /** Fetch all set logs for given exercises within the last 4 weeks */
-async function fetchRecentSets(
-  exercisesToCheck?: string[]
-): Promise<SetLog[]> {
+async function fetchRecentSets(exercisesToCheck?: string[]): Promise<SetLog[]> {
   const fourWeeksAgo = Date.now() - FOUR_WEEKS_MS;
 
   if (exercisesToCheck && exercisesToCheck.length > 0) {
-    const setsPromises = exercisesToCheck.map(ex => getRecentSetLogsDecrypted(ex, 200));
+    const setsPromises = exercisesToCheck.map((ex) => getRecentSetLogsDecrypted(ex, 200));
     const setsArrays = await Promise.all(setsPromises);
-    return setsArrays.flat().filter(s => s.timestamp > fourWeeksAgo);
+    return setsArrays.flat().filter((s) => s.timestamp > fourWeeksAgo);
   }
 
   const allExercises = await getAllExercisesFromHistory();
-  const setsPromises = allExercises.map(ex => getRecentSetLogsDecrypted(ex, 200));
+  const setsPromises = allExercises.map((ex) => getRecentSetLogsDecrypted(ex, 200));
   const setsArrays = await Promise.all(setsPromises);
-  return setsArrays.flat().filter(s => s.timestamp > fourWeeksAgo);
+  return setsArrays.flat().filter((s) => s.timestamp > fourWeeksAgo);
 }
 
 /** Calculate acute and chronic loads from sets */
@@ -75,7 +73,7 @@ function classifyBaseRisk(acwr: number): InjuryRisk {
 function adjustRiskForDemographic(
   baseRisk: InjuryRisk,
   acwr: number,
-  demographicProfile: DemographicProfile
+  demographicProfile: DemographicProfile,
 ): InjuryRisk {
   if (demographicProfile !== 'senior_joint_focus') return baseRisk;
 
@@ -108,7 +106,9 @@ function buildRiskConfig(adjustedRisk: InjuryRisk, acwr: number): RiskConfig {
     case 'MODERATE':
       return {
         risk: 'MODERATE',
-        warnings: [`⚖️ Atenção: ACWR = ${acwr.toFixed(2)}. Mantém carga, mas evita picos de intensidade.`],
+        warnings: [
+          `⚖️ Atenção: ACWR = ${acwr.toFixed(2)}. Mantém carga, mas evita picos de intensidade.`,
+        ],
         restricted: [],
         alternatives: [],
       };
@@ -127,7 +127,7 @@ function buildRiskConfig(adjustedRisk: InjuryRisk, acwr: number): RiskConfig {
 export async function analyzeInjuryRisk(
   userId: string,
   demographicProfile: DemographicProfile,
-  exercisesToCheck?: string[]
+  exercisesToCheck?: string[],
 ): Promise<InjuryAssessment> {
   const allSets = await fetchRecentSets(exercisesToCheck);
 

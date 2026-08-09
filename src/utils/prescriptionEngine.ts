@@ -1,11 +1,11 @@
+import { getExerciseCategory } from '../data/exerciseClassifier';
+import type { WorkoutSession } from '../db/schema';
+import { MacrocycleEngine } from '../services/macrocycleEngine';
 // @ts-nocheck
 // src/utils/prescriptionEngine.ts
-import { ExerciseCategory, Goal, UserLevel } from '../types/exercise';
-import { getExerciseCategory } from '../data/exerciseClassifier';
+import type { Goal, UserLevel } from '../types/exercise';
 import { calculateSuggestedWeight } from './loadCalculator';
-import { MacrocycleEngine } from '../services/macrocycleEngine';
 import { getMissedDays } from './missedDaysDetector';
-import { WorkoutSession } from "../db/schema";;
 
 export interface UserProfile {
   sex?: 'male' | 'female' | string;
@@ -26,7 +26,7 @@ export interface ExercisePrescription {
   restSeconds: number;
   warmupSets: { weightPercent: number; reps: number }[];
   suggestedWeight: number;
-  explanation: string;   // explicação da sugestão
+  explanation: string; // explicação da sugestão
   presets: {
     strength: { weight: number; reps: number };
     endurance: { weight: number; reps: number };
@@ -44,7 +44,7 @@ export function getPrescription(
   exerciseName: string,
   historicalPR?: { weight: number; reps: number } | null,
   phase?: 'powerlifting' | 'bodybuilding',
-  history?: WorkoutSession[]
+  history?: WorkoutSession[],
 ): ExercisePrescription {
   const category = getExerciseCategory(exerciseName);
   const goal: Goal = profile?.goal || 'hipertrofia';
@@ -53,18 +53,28 @@ export function getPrescription(
   const injuries = profile?.injuries || [];
 
   // 1. Definir reps alvo e RPE baseados no objetivo
-  let repsMin = 8, repsMax = 12, rpe = 7, rest = 60;
+  let repsMin = 8,
+    repsMax = 12,
+    rpe = 7,
+    rest = 60;
   const gStr = String(goal).toLowerCase();
   if (gStr.includes('forc') || gStr.includes('forç') || phase === 'powerlifting') {
-    repsMin = 3; repsMax = 5;
+    repsMin = 3;
+    repsMax = 5;
     rpe = 9;
     rest = 180;
-  } else if (gStr.includes('resist') || gStr.includes('perda') || gStr.includes('condicionamento')) {
-    repsMin = 15; repsMax = 20;
+  } else if (
+    gStr.includes('resist') ||
+    gStr.includes('perda') ||
+    gStr.includes('condicionamento')
+  ) {
+    repsMin = 15;
+    repsMax = 20;
     rpe = 6;
     rest = 45;
   } else if (gStr === 'v_taper_aesthetics') {
-    repsMin = 10; repsMax = 15;
+    repsMin = 10;
+    repsMax = 15;
     rpe = 8;
     rest = 60;
   }
@@ -73,12 +83,12 @@ export function getPrescription(
   const weeksActive = profile?.weeksActive ?? 0;
   const macroPhase = MacrocycleEngine.getCurrentPhase(weeksActive);
   const phaseRules = MacrocycleEngine.getPrescriptionRules(macroPhase);
-  
+
   if (macroPhase !== 'ADAPTACAO' || String(level).toLowerCase() !== 'avancado') {
     const repsMatch = phaseRules.repsTarget.match(/(\d+)-?(\d+)?/);
     if (repsMatch) {
-      repsMin = parseInt(repsMatch[1], 10);
-      repsMax = repsMatch[2] ? parseInt(repsMatch[2], 10) : repsMin;
+      repsMin = Number.parseInt(repsMatch[1], 10);
+      repsMax = repsMatch[2] ? Number.parseInt(repsMatch[2], 10) : repsMin;
     }
     rest = phaseRules.restSeconds;
   }
@@ -140,53 +150,64 @@ export function getPrescription(
 
   // 4. Criar presets (Força, Resistência, Volume)
   const strengthReps = Math.max(3, targetReps - 5);
-  const strengthWeight = calculateSuggestedWeight({
-    oneRM,
-    targetReps: strengthReps,
-    category,
-    userLevel: level,
-    age,
-    goal: 'forca',
-    injuryModifier,
-  }) || suggestedWeight + 5;
+  const strengthWeight =
+    calculateSuggestedWeight({
+      oneRM,
+      targetReps: strengthReps,
+      category,
+      userLevel: level,
+      age,
+      goal: 'forca',
+      injuryModifier,
+    }) || suggestedWeight + 5;
 
   const enduranceReps = targetReps + 5;
-  const enduranceWeight = calculateSuggestedWeight({
-    oneRM,
-    targetReps: enduranceReps,
-    category,
-    userLevel: level,
-    age,
-    goal: 'resistencia',
-    injuryModifier,
-  }) || Math.max(0, suggestedWeight - 5);
+  const enduranceWeight =
+    calculateSuggestedWeight({
+      oneRM,
+      targetReps: enduranceReps,
+      category,
+      userLevel: level,
+      age,
+      goal: 'resistencia',
+      injuryModifier,
+    }) || Math.max(0, suggestedWeight - 5);
 
   const volumeWeight = suggestedWeight; // mantém peso
   const volumeSetsDelta = 1; // adiciona uma série
 
   // 5. Explicação textual complementar
-  if (category === 'compound_multi') explanation += ` Este é um exercício composto, por isso a carga pode ser mais elevada.`;
-  else if (category === 'isolation_multi') explanation += ` Este é um exercício de isolamento, por isso a carga é naturalmente mais baixa.`;
+  if (category === 'compound_multi')
+    explanation += ` Este é um exercício composto, por isso a carga pode ser mais elevada.`;
+  else if (category === 'isolation_multi')
+    explanation += ` Este é um exercício de isolamento, por isso a carga é naturalmente mais baixa.`;
 
   let vTaperModifiers;
   if (goal === 'v_taper_aesthetics') {
-      vTaperModifiers = {
-          priority: ['Ombros', 'Costas'],
-          avoid: ['Oblíquos', 'Quadríceps'],
-          includeStomachVacuum: true
-      };
-      const exNameLower = exerciseName.toLowerCase();
-      if (exNameLower.includes('lateral') || exNameLower.includes('pull') || exNameLower.includes('face')) {
-          explanation += ` Modo V-Taper: Volume focado para maximizar a largura.`;
-      }
+    vTaperModifiers = {
+      priority: ['Ombros', 'Costas'],
+      avoid: ['Oblíquos', 'Quadríceps'],
+      includeStomachVacuum: true,
+    };
+    const exNameLower = exerciseName.toLowerCase();
+    if (
+      exNameLower.includes('lateral') ||
+      exNameLower.includes('pull') ||
+      exNameLower.includes('face')
+    ) {
+      explanation += ` Modo V-Taper: Volume focado para maximizar a largura.`;
+    }
   }
 
   // 6. Séries de aquecimento (apenas para cargas > 0)
-  const warmupSets = suggestedWeight > 0 ? [
-    { weightPercent: 0.5, reps: Math.min(8, targetReps) },
-    { weightPercent: 0.7, reps: Math.min(5, targetReps) },
-    { weightPercent: 0.85, reps: Math.min(3, targetReps) },
-  ].filter(w => w.reps > 0) : [];
+  const warmupSets =
+    suggestedWeight > 0
+      ? [
+          { weightPercent: 0.5, reps: Math.min(8, targetReps) },
+          { weightPercent: 0.7, reps: Math.min(5, targetReps) },
+          { weightPercent: 0.85, reps: Math.min(3, targetReps) },
+        ].filter((w) => w.reps > 0)
+      : [];
 
   return {
     repsTarget: `${repsMin}-${repsMax}`,

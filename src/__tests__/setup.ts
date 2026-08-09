@@ -1,10 +1,3 @@
-// @ts-nocheck
-// src/__tests__/setup.ts
-// Setup global para todos os testes Vitest
-// Fornece polyfills do Web Crypto e outros globals do browser
-
-import { vi } from 'vitest';
-
 // ─── Web Crypto API ───────────────────────────────────────────────────────────
 // jsdom não implementa crypto.subtle — usamos o crypto do Node.js
 
@@ -29,11 +22,24 @@ if (!globalThis.crypto) {
 if (!globalThis.IDBKeyRange) {
   (globalThis as any).IDBKeyRange = {
     bound: (lower: any, upper: any, lowerOpen?: boolean, upperOpen?: boolean) => ({
-      lower, upper, lowerOpen: !!lowerOpen, upperOpen: !!upperOpen,
+      lower,
+      upper,
+      lowerOpen: !!lowerOpen,
+      upperOpen: !!upperOpen,
     }),
     only: (value: any) => ({ lower: value, upper: value, lowerOpen: false, upperOpen: false }),
-    lowerBound: (lower: any, open?: boolean) => ({ lower, upper: undefined, lowerOpen: !!open, upperOpen: true }),
-    upperBound: (upper: any, open?: boolean) => ({ lower: undefined, upper, lowerOpen: true, upperOpen: !!open }),
+    lowerBound: (lower: any, open?: boolean) => ({
+      lower,
+      upper: undefined,
+      lowerOpen: !!open,
+      upperOpen: true,
+    }),
+    upperBound: (upper: any, open?: boolean) => ({
+      lower: undefined,
+      upper,
+      lowerOpen: true,
+      upperOpen: !!open,
+    }),
   };
 }
 // ─── Worker Mock ─────────────────────────────────────────────────────────────
@@ -42,7 +48,7 @@ if (!globalThis.IDBKeyRange) {
 
 // ─── TextEncoder / TextDecoder ────────────────────────────────────────────────
 // Node.js 18+ já os tem, mas garantimos que estão disponíveis
-import { TextEncoder, TextDecoder } from 'node:util';
+import { TextDecoder, TextEncoder } from 'node:util';
 if (!globalThis.TextEncoder) {
   (globalThis as any).TextEncoder = TextEncoder;
 }

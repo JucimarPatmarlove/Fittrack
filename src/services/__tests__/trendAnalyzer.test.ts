@@ -2,9 +2,9 @@
 // Testes unitários para o motor de análise de tendências.
 // Usa vi.mock para simular a base de dados encryptedDb.
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { analyzeExerciseTrend, analyzeMultipleExercises } from '../trendAnalyzer';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SetLog } from '../../db/schema';
+import { analyzeExerciseTrend, analyzeMultipleExercises } from '../trendAnalyzer';
 
 // ─── MOCK: encryptedDb ────────────────────────────────────────────────────────
 // Simulamos getRecentSetLogsDecrypted para controlar os dados retornados
@@ -20,12 +20,7 @@ const mockGetRecentSets = vi.mocked(getRecentSetLogsDecrypted);
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 /** Criar SetLogs de teste para um workoutId específico */
-function makeSets(
-  workoutId: string,
-  rpeValues: number[],
-  weight = 100,
-  reps = 8
-): SetLog[] {
+function makeSets(workoutId: string, rpeValues: number[], weight = 100, reps = 8): SetLog[] {
   return rpeValues.map((rpe, i) => ({
     id: `set-${workoutId}-${i}`,
     workoutId,
@@ -43,7 +38,6 @@ function makeSets(
 // ─── SUITE: analyzeExerciseTrend ─────────────────────────────────────────────
 
 describe('trendAnalyzer — analyzeExerciseTrend', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -65,11 +59,17 @@ describe('trendAnalyzer — analyzeExerciseTrend', () => {
     // Séries com weightKg=0 (dados incompletos)
     const incompleteSets: SetLog[] = [
       {
-        id: 'set-1', workoutId: 'w1', exerciseName: 'Bench Press',
-        category: 'compound_multi', setNumber: 1,
-        weightKg: 0, repsCompleted: 0, rpe: 0, estimated1RM: 0,
+        id: 'set-1',
+        workoutId: 'w1',
+        exerciseName: 'Bench Press',
+        category: 'compound_multi',
+        setNumber: 1,
+        weightKg: 0,
+        repsCompleted: 0,
+        rpe: 0,
+        estimated1RM: 0,
         timestamp: Date.now(),
-      }
+      },
     ];
     mockGetRecentSets.mockResolvedValueOnce(incompleteSets);
 
@@ -139,7 +139,7 @@ describe('trendAnalyzer — analyzeExerciseTrend', () => {
   it('deve analisar apenas o último workoutId, não séries antigas', async () => {
     // Mistura de treinos: último tem RPE alto, anterior tinha RPE baixo
     const oldSets = makeSets('workout-1', [6, 6.5]); // workoutId 'workout-1' (antigo)
-    const newSets = makeSets('workout-2', [10, 10]);   // workoutId 'workout-2' (recente)
+    const newSets = makeSets('workout-2', [10, 10]); // workoutId 'workout-2' (recente)
 
     // A função retorna por timestamp descendente, então 'workout-2' vem primeiro
     // Como setsByWorkout é um Map, a primeira chave será o último treino
@@ -175,7 +175,6 @@ describe('trendAnalyzer — analyzeExerciseTrend', () => {
 // ─── SUITE: analyzeMultipleExercises ─────────────────────────────────────────
 
 describe('trendAnalyzer — analyzeMultipleExercises', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });

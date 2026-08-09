@@ -1,4 +1,4 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.fittrack.v7',
@@ -7,8 +7,8 @@ const config: CapacitorConfig = {
   bundledWebRuntime: false,
   server: {
     cleartext: true,
-    androidScheme: 'https'
-  }
+    androidScheme: 'https',
+  },
 };
 
 export default config;

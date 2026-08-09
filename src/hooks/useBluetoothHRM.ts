@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { type BluetoothContext, bluetoothReducer } from '../machines/bluetoothMachine';
 import { useMachine } from './useMachine';
-import { bluetoothReducer, BluetoothContext } from '../machines/bluetoothMachine';
 
 const HRM_SERVICE = '0000180d-0000-1000-8000-00805f9b34fb';
 const HRM_CHARACTERISTIC = '00002a37-0000-1000-8000-00805f9b34fb';
@@ -55,7 +55,7 @@ async function getHeartRateCharacteristic(service: any) {
 function createHeartRateListener(
   characteristic: any,
   lastUpdateRef: React.MutableRefObject<number>,
-  onData: (data: HeartRateData) => void
+  onData: (data: HeartRateData) => void,
 ) {
   const handler = (event: any) => {
     const target = event.target;
@@ -79,43 +79,49 @@ const initialContext: BluetoothContext = {
   device: null,
   heartRate: null,
   reconnectAttempts: 0,
-  errorMsg: ''
+  errorMsg: '',
 };
 
 export function useBluetoothHRM() {
   const [state, send] = useMachine('IDLE', initialContext, bluetoothReducer);
-  
+
   const characteristicRef = useRef<any>(null);
   const lastUpdateRef = useRef<number>(0);
   const cleanupRef = useRef<(() => void) | null>(null);
 
-  const setupCharacteristicListener = useCallback(async (characteristic: any) => {
-    cleanupRef.current?.();
-    await characteristic.startNotifications();
-    characteristicRef.current = characteristic;
+  const setupCharacteristicListener = useCallback(
+    async (characteristic: any) => {
+      cleanupRef.current?.();
+      await characteristic.startNotifications();
+      characteristicRef.current = characteristic;
 
-    const removeListener = createHeartRateListener(characteristic, lastUpdateRef, (data) => {
-      send({ type: 'HEART_RATE_UPDATE', data });
-    });
-    cleanupRef.current = removeListener;
-  }, [send]);
+      const removeListener = createHeartRateListener(characteristic, lastUpdateRef, (data) => {
+        send({ type: 'HEART_RATE_UPDATE', data });
+      });
+      cleanupRef.current = removeListener;
+    },
+    [send],
+  );
 
-  const connectDevice = useCallback(async (deviceObj: any) => {
-    try {
-      const server = await deviceObj.gatt?.connect();
-      if (!server) throw new Error("GATT server indisponível");
+  const connectDevice = useCallback(
+    async (deviceObj: any) => {
+      try {
+        const server = await deviceObj.gatt?.connect();
+        if (!server) throw new Error('GATT server indisponível');
 
-      const service = await getHeartRateService(server);
-      const characteristic = await getHeartRateCharacteristic(service);
-      if (!characteristic) throw new Error("Característica indisponível");
+        const service = await getHeartRateService(server);
+        const characteristic = await getHeartRateCharacteristic(service);
+        if (!characteristic) throw new Error('Característica indisponível');
 
-      await setupCharacteristicListener(characteristic);
-      send({ type: 'CONNECTION_SUCCESS' });
-    } catch (e: any) {
-      console.warn('Falha na conexão:', e);
-      send({ type: 'CONNECTION_LOST' });
-    }
-  }, [setupCharacteristicListener, send]);
+        await setupCharacteristicListener(characteristic);
+        send({ type: 'CONNECTION_SUCCESS' });
+      } catch (e: any) {
+        console.warn('Falha na conexão:', e);
+        send({ type: 'CONNECTION_LOST' });
+      }
+    },
+    [setupCharacteristicListener, send],
+  );
 
   const connect = useCallback(async () => {
     if (!navigator.bluetooth) {
@@ -148,12 +154,16 @@ export function useBluetoothHRM() {
     cleanupRef.current = null;
 
     if (characteristicRef.current) {
-      try { await characteristicRef.current.stopNotifications(); } catch {}
+      try {
+        await characteristicRef.current.stopNotifications();
+      } catch {}
       characteristicRef.current = null;
     }
 
     if (state.context.device?.gatt?.connected) {
-      try { state.context.device.gatt.disconnect(); } catch {}
+      try {
+        state.context.device.gatt.disconnect();
+      } catch {}
     }
 
     send({ type: 'DISCONNECT' });
@@ -183,7 +193,9 @@ export function useBluetoothHRM() {
     return () => {
       cleanupRef.current?.();
       if (state.context.device?.gatt?.connected) {
-        try { state.context.device.gatt.disconnect(); } catch {}
+        try {
+          state.context.device.gatt.disconnect();
+        } catch {}
       }
     };
   }, [state.context.device]);
@@ -194,7 +206,8 @@ export function useBluetoothHRM() {
     heartRate: state.context.heartRate,
     connect,
     disconnect,
-    isScanning: state.value === 'SCANNING' || state.value === 'CONNECTING' || state.value === 'RECONNECTING',
+    isScanning:
+      state.value === 'SCANNING' || state.value === 'CONNECTING' || state.value === 'RECONNECTING',
     bpm: state.context.heartRate?.bpm || 0,
     status: state.value,
     errorMsg: state.context.errorMsg,

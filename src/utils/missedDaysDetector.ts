@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { WorkoutSession } from "../db/schema";;
+import type { WorkoutSession } from '../db/schema';
 
 export interface MissedDayInfo {
   date: string;
@@ -10,15 +10,13 @@ export interface MissedDayInfo {
 export function getMissedDays(
   history: WorkoutSession[],
   plannedDays: number[] = [],
-  daysToCheck = 7
+  daysToCheck = 7,
 ): MissedDayInfo[] {
   const missed: MissedDayInfo[] = [];
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const workoutDates = new Set(
-    history.map(w => new Date(w.date).toISOString().slice(0, 10))
-  );
+  const workoutDates = new Set(history.map((w) => new Date(w.date).toISOString().slice(0, 10)));
 
   for (let i = 1; i <= daysToCheck; i++) {
     const checkDate = new Date(today);
@@ -38,9 +36,7 @@ export function getMissedDays(
 }
 
 export function getCurrentStreak(history: WorkoutSession[]): number {
-  const workoutDates = new Set(
-    history.map(w => new Date(w.date).toISOString().slice(0, 10))
-  );
+  const workoutDates = new Set(history.map((w) => new Date(w.date).toISOString().slice(0, 10)));
   let streak = 0;
   const today = new Date();
   today.setHours(0, 0, 0, 0);

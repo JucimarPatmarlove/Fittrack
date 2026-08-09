@@ -1,8 +1,8 @@
 // @ts-nocheck
 // src/services/__tests__/recoveryEngine.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculateReadinessScore } from '../recoveryEngine';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as schemaDb from '../../db/schema';
+import { calculateReadinessScore } from '../recoveryEngine';
 
 // ─── INJETA O MOCK DO BROWSER AQUI ───
 globalThis.IDBKeyRange = {
@@ -49,7 +49,7 @@ describe('Recovery Engine', () => {
     });
 
     const report = await calculateReadinessScore();
-    
+
     expect(report.score).toBeGreaterThan(80);
     expect(report.status).toBe('excellent');
     expect(report.trainingAdjustment.loadModifier).toBeGreaterThanOrEqual(1.0);
@@ -82,7 +82,7 @@ describe('Recovery Engine', () => {
     });
 
     const report = await calculateReadinessScore();
-    
+
     expect(report.score).toBeLessThan(50);
     expect(['poor', 'critical']).toContain(report.status);
     expect(report.trainingAdjustment.loadModifier).toBeLessThan(1.0);

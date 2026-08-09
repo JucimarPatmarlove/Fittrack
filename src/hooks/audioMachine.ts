@@ -47,7 +47,11 @@ export const audioMachine = createMachine<AudioState, AudioEvent>({
           target: (state, event) => {
             if (state.status === 'speaking') {
               const queue = state.queue || [];
-              return { status: 'speaking', message: state.message, queue: [...queue, event.message] };
+              return {
+                status: 'speaking',
+                message: state.message,
+                queue: [...queue, event.message],
+              };
             }
             return { status: 'speaking', message: event.message };
           },
@@ -62,7 +66,11 @@ export const audioMachine = createMachine<AudioState, AudioEvent>({
         RESUME: {
           target: (state) => {
             if (state.status === 'paused') {
-              return { status: 'speaking', message: state.currentMessage, queue: state.queue || [] };
+              return {
+                status: 'speaking',
+                message: state.currentMessage,
+                queue: state.queue || [],
+              };
             }
             return { status: 'idle' };
           },

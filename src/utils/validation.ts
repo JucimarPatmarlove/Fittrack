@@ -91,7 +91,9 @@ export function validateMealItem(data: unknown): ValidationResult<z.infer<typeof
 /**
  * Valida um set de exercício e retorna erros mapeados por campo.
  */
-export function validateExerciseSet(data: unknown): ValidationResult<z.infer<typeof ExerciseSetSchema>> {
+export function validateExerciseSet(
+  data: unknown,
+): ValidationResult<z.infer<typeof ExerciseSetSchema>> {
   const result = ExerciseSetSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -107,7 +109,9 @@ export function validateExerciseSet(data: unknown): ValidationResult<z.infer<typ
 /**
  * Valida campos numéricos do perfil e retorna erros mapeados por campo.
  */
-export function validateProfileFields(data: unknown): ValidationResult<z.infer<typeof ProfileFieldsSchema>> {
+export function validateProfileFields(
+  data: unknown,
+): ValidationResult<z.infer<typeof ProfileFieldsSchema>> {
   const result = ProfileFieldsSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };

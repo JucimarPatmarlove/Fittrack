@@ -1,14 +1,14 @@
 export const DISCS = [25, 20, 15, 10, 5, 2.5, 1.25] as const;
-export type DiscKg = typeof DISCS[number];
+export type DiscKg = (typeof DISCS)[number];
 
 export const DISC_COLORS: Record<DiscKg, string> = {
-  25: "#e84a4a", // vermelho
-  20: "#4a9ee8", // azul
-  15: "#e8c84a", // amarelo (gold)
-  10: "#4ae87a", // verde
-  5:  "#f0ede8", // branco
-  2.5:"#222222", // preto
-  1.25:"#888888",// cinza
+  25: '#e84a4a', // vermelho
+  20: '#4a9ee8', // azul
+  15: '#e8c84a', // amarelo (gold)
+  10: '#4ae87a', // verde
+  5: '#f0ede8', // branco
+  2.5: '#222222', // preto
+  1.25: '#888888', // cinza
 };
 
 export interface PlateResult {
@@ -17,10 +17,7 @@ export interface PlateResult {
   color: string;
 }
 
-export function calculatePlates(
-  totalKg: number,
-  barKg: number = 20
-): PlateResult[] | { error: string } {
+export function calculatePlates(totalKg: number, barKg = 20): PlateResult[] | { error: string } {
   const weightPerSide = (totalKg - barKg) / 2;
 
   if (weightPerSide < 1.25) {

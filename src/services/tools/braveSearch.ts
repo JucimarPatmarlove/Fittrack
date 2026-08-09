@@ -45,15 +45,15 @@ export async function executeBraveSearch(query: string): Promise<string> {
   try {
     const params = new URLSearchParams({
       q: query,
-      count: '5',           // Pedir 5 para ter margem de filtragem
-      search_lang: 'pt',    // Preferência por resultados em português
+      count: '5', // Pedir 5 para ter margem de filtragem
+      search_lang: 'pt', // Preferência por resultados em português
       text_decorations: '0', // Sem HTML nos snippets
     });
 
     const response = await fetch(`${BRAVE_API_URL}?${params.toString()}`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Accept-Encoding': 'gzip',
         'X-Subscription-Token': apiKey,
       },

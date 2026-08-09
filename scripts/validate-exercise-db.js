@@ -12,7 +12,7 @@
  */
 
 import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,13 +34,27 @@ function extractKeysFromTS(filepath, recordVarName) {
   const keyRegex = /"([^"]+)"\s*:/g;
   const keys = new Set();
   let match;
-  
+
   // Só analisar a partir do índice da variável para evitar falsos positivos
   const relevantContent = content.slice(startIdx);
   while ((match = keyRegex.exec(relevantContent)) !== null) {
     const key = match[1];
     // Ignorar chaves que são nomes de campo (ex: "muscle", "hipertrofia", etc.)
-    if (!['muscle', 'equipment', 'base', 'hipertrofia', 'forca', 'resistencia', 'goals', 'modalities', 'jointImpact', 'ageMin', 'secondaryMuscles'].includes(key)) {
+    if (
+      ![
+        'muscle',
+        'equipment',
+        'base',
+        'hipertrofia',
+        'forca',
+        'resistencia',
+        'goals',
+        'modalities',
+        'jointImpact',
+        'ageMin',
+        'secondaryMuscles',
+      ].includes(key)
+    ) {
       keys.add(key);
     }
   }
@@ -62,22 +76,24 @@ console.log(`📊 exerciseDB.ts       → ${dbKeys.size} exercícios`);
 console.log(`📊 exerciseClassifier  → ${classKeys.size} exercícios`);
 console.log('');
 
-const onlyInDB = [...dbKeys].filter(k => !classKeys.has(k));
-const onlyInClassifier = [...classKeys].filter(k => !dbKeys.has(k));
-const inBoth = [...dbKeys].filter(k => classKeys.has(k));
+const onlyInDB = [...dbKeys].filter((k) => !classKeys.has(k));
+const onlyInClassifier = [...classKeys].filter((k) => !dbKeys.has(k));
+const inBoth = [...dbKeys].filter((k) => classKeys.has(k));
 
 if (onlyInDB.length === 0 && onlyInClassifier.length === 0) {
   console.log('✅ Perfeito! Os dois ficheiros estão completamente sincronizados.\n');
 } else {
   if (onlyInDB.length > 0) {
     console.log(`⚠️  Apenas em exerciseDB.ts (${onlyInDB.length}) — falta categoria no classifier:`);
-    onlyInDB.forEach(k => console.log(`   → "${k}"`));
+    onlyInDB.forEach((k) => console.log(`   → "${k}"`));
     console.log('');
   }
 
   if (onlyInClassifier.length > 0) {
-    console.log(`⚠️  Apenas em exerciseClassifier.ts (${onlyInClassifier.length}) — falta entrada na DB:`);
-    onlyInClassifier.forEach(k => console.log(`   → "${k}"`));
+    console.log(
+      `⚠️  Apenas em exerciseClassifier.ts (${onlyInClassifier.length}) — falta entrada na DB:`,
+    );
+    onlyInClassifier.forEach((k) => console.log(`   → "${k}"`));
     console.log('');
   }
 }
@@ -86,8 +102,10 @@ console.log(`✅ Em ambos os ficheiros: ${inBoth.length} exercícios\n`);
 
 // Sugere acções de correcção
 if (onlyInDB.length > 0) {
-  console.log('💡 Para corrigir os exercícios em falta no classifier, adiciona ao exerciseCategoryMap:');
-  onlyInDB.forEach(k => {
+  console.log(
+    '💡 Para corrigir os exercícios em falta no classifier, adiciona ao exerciseCategoryMap:',
+  );
+  onlyInDB.forEach((k) => {
     console.log(`   "${k}": "compound_multi", // TODO: verificar categoria correcta`);
   });
   console.log('');
@@ -95,8 +113,10 @@ if (onlyInDB.length > 0) {
 
 if (onlyInClassifier.length > 0) {
   console.log('💡 Para corrigir os exercícios em falta na DB, adiciona ao EXERCISE_DB:');
-  onlyInClassifier.forEach(k => {
-    console.log(`   "${k}": { muscle: "TODO", equipment: "TODO", base: { hipertrofia: [3, 8, 12] } },`);
+  onlyInClassifier.forEach((k) => {
+    console.log(
+      `   "${k}": { muscle: "TODO", equipment: "TODO", base: { hipertrofia: [3, 8, 12] } },`,
+    );
   });
   console.log('');
 }

@@ -1,5 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { aiRateLimiter, protectApi } from '../src/middleware/auth';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -17,7 +17,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { metrics, fitnessLevel, format, availableEquipment } = req.body;
   if (!metrics || !fitnessLevel || !format) {
-    return res.status(400).json({ error: 'Faltam dados essenciais (metrics, fitnessLevel, format).' });
+    return res
+      .status(400)
+      .json({ error: 'Faltam dados essenciais (metrics, fitnessLevel, format).' });
   }
 
   try {
@@ -35,13 +37,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       systemInstruction: finalSystem,
     });
 
-    const result = await model.generateContent("Gera o treino otimizado. Responde exclusivamente com JSON válido.");
+    const result = await model.generateContent(
+      'Gera o treino otimizado. Responde exclusivamente com JSON válido.',
+    );
     const responseText = result.response.text();
-    
+
     let parsedContent;
     try {
       const match = responseText.match(/```json\n([\s\S]*?)\n```/);
-      const jsonString = match ? (match[1] as string) : responseText.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
+      const jsonString = match
+        ? (match[1] as string)
+        : responseText.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
       parsedContent = JSON.parse(jsonString);
       return res.json({ content: parsedContent });
     } catch (parseErr) {

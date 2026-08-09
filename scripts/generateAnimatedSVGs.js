@@ -6,28 +6,90 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMG_DIR = path.resolve(__dirname, '../public/assets/exercises/images');
 
 const exercises = [
-  "barbell_bench_press", "barbell_incline_bench_press", "dumbbell_bench_press", "dumbbell_incline_bench_press",
-  "decline_bench_press", "close_grip_bench_press", "cable_crossover", "dumbbell_pullover",
-  "barbell_bent_over_row", "dumbbell_row", "single_arm_dumbbell_row", "cable_lat_pulldown_wide_grip",
-  "close_grip_pulldown", "pull_up", "chin_up", "seated_cable_row", "t_bar_row", "rack_pull",
-  "barbell_back_squat", "front_squat", "goblet_squat", "barbell_deadlift", "romanian_deadlift",
-  "sumo_deadlift", "machine_leg_press", "leg_extension", "lying_leg_curl", "seated_leg_curl",
-  "hip_thrust", "lunge", "bulgarian_split_squat", "standing_calf_raise", "seated_calf_raise", "box_jump",
-  "barbell_overhead_press", "dumbbell_shoulder_press", "arnold_press", "dumbbell_lateral_raise",
-  "front_raise", "face_pull", "upright_row", "reverse_pec_deck", "barbell_shrug",
-  "barbell_bicep_curl", "alternating_dumbbell_curl", "hammer_curl", "concentration_curl", "preacher_curl",
-  "cable_rope_tricep_pushdown", "skull_crusher", "triceps_pushdown", "overhead_triceps_extension",
-  "diamond_push_up", "bench_dip",
-  "plank", "side_plank", "crunch", "cable_crunch", "hanging_leg_raise", "russian_twist", "pallof_press", "lying_leg_raise",
-  "push_up", "burpee", "dips", "kettlebell_swing", "power_clean", "jump_squat", "box_step_up",
-  "clean_and_jerk", "snatch", "thruster", "farmers_walk", "sled_push", "medicine_ball_slam", "battle_ropes", "sandbag_carry"
+  'barbell_bench_press',
+  'barbell_incline_bench_press',
+  'dumbbell_bench_press',
+  'dumbbell_incline_bench_press',
+  'decline_bench_press',
+  'close_grip_bench_press',
+  'cable_crossover',
+  'dumbbell_pullover',
+  'barbell_bent_over_row',
+  'dumbbell_row',
+  'single_arm_dumbbell_row',
+  'cable_lat_pulldown_wide_grip',
+  'close_grip_pulldown',
+  'pull_up',
+  'chin_up',
+  'seated_cable_row',
+  't_bar_row',
+  'rack_pull',
+  'barbell_back_squat',
+  'front_squat',
+  'goblet_squat',
+  'barbell_deadlift',
+  'romanian_deadlift',
+  'sumo_deadlift',
+  'machine_leg_press',
+  'leg_extension',
+  'lying_leg_curl',
+  'seated_leg_curl',
+  'hip_thrust',
+  'lunge',
+  'bulgarian_split_squat',
+  'standing_calf_raise',
+  'seated_calf_raise',
+  'box_jump',
+  'barbell_overhead_press',
+  'dumbbell_shoulder_press',
+  'arnold_press',
+  'dumbbell_lateral_raise',
+  'front_raise',
+  'face_pull',
+  'upright_row',
+  'reverse_pec_deck',
+  'barbell_shrug',
+  'barbell_bicep_curl',
+  'alternating_dumbbell_curl',
+  'hammer_curl',
+  'concentration_curl',
+  'preacher_curl',
+  'cable_rope_tricep_pushdown',
+  'skull_crusher',
+  'triceps_pushdown',
+  'overhead_triceps_extension',
+  'diamond_push_up',
+  'bench_dip',
+  'plank',
+  'side_plank',
+  'crunch',
+  'cable_crunch',
+  'hanging_leg_raise',
+  'russian_twist',
+  'pallof_press',
+  'lying_leg_raise',
+  'push_up',
+  'burpee',
+  'dips',
+  'kettlebell_swing',
+  'power_clean',
+  'jump_squat',
+  'box_step_up',
+  'clean_and_jerk',
+  'snatch',
+  'thruster',
+  'farmers_walk',
+  'sled_push',
+  'medicine_ball_slam',
+  'battle_ropes',
+  'sandbag_carry',
 ];
 
 // Helper to format exercise name for display
 const formatName = (slug) => {
   return slug
     .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
 
@@ -40,11 +102,16 @@ const getExerciseMeta = (name) => {
     pernas: ['squat', 'Pernas', '#10b981'],
     bracos: ['curl', 'Braços', '#a855f7'],
     core: ['core', 'Core', '#f59e0b'],
-    full: ['cardio_power', 'Full Body', '#eceae4']
+    full: ['cardio_power', 'Full Body', '#eceae4'],
   };
 
   // Specific overrides for category mapping
-  if (name.includes('lat_pulldown') || name.includes('pulldown') || name.includes('pull_up') || name.includes('chin_up')) {
+  if (
+    name.includes('lat_pulldown') ||
+    name.includes('pulldown') ||
+    name.includes('pull_up') ||
+    name.includes('chin_up')
+  ) {
     return { category: 'pulldown', muscle: 'Costas', color: '#38bdf8' };
   }
   if (name.includes('row') || name.includes('shrug') || name.includes('pull')) {
@@ -53,28 +120,59 @@ const getExerciseMeta = (name) => {
   if (name.includes('deadlift') || name.includes('hip_thrust')) {
     return { category: 'deadlift', muscle: 'Pernas/Lombar', color: '#10b981' };
   }
-  if (name.includes('squat') || name.includes('leg_press') || name.includes('lunge') || name.includes('calf') || name.includes('jump') || name.includes('step_up') || name.includes('leg_curl') || name.includes('leg_extension')) {
+  if (
+    name.includes('squat') ||
+    name.includes('leg_press') ||
+    name.includes('lunge') ||
+    name.includes('calf') ||
+    name.includes('jump') ||
+    name.includes('step_up') ||
+    name.includes('leg_curl') ||
+    name.includes('leg_extension')
+  ) {
     return { category: 'squat', muscle: 'Pernas', color: '#10b981' };
   }
   if (name.includes('bicep') || name.includes('curl')) {
     return { category: 'curl', muscle: 'Bíceps', color: '#a855f7' };
   }
-  if (name.includes('tricep') || name.includes('dip') || name.includes('skull_crusher') || name.includes('extension')) {
+  if (
+    name.includes('tricep') ||
+    name.includes('dip') ||
+    name.includes('skull_crusher') ||
+    name.includes('extension')
+  ) {
     return { category: 'extension', muscle: 'Tríceps', color: '#d946ef' };
   }
-  if (name.includes('press') && (name.includes('overhead') || name.includes('shoulder') || name.includes('arnold') || name.includes('upright'))) {
+  if (
+    name.includes('press') &&
+    (name.includes('overhead') ||
+      name.includes('shoulder') ||
+      name.includes('arnold') ||
+      name.includes('upright'))
+  ) {
     return { category: 'overhead_press', muscle: 'Ombros', color: '#fb923c' };
   }
   if (name.includes('raise') || name.includes('face_pull') || name.includes('pec_deck')) {
     return { category: 'raise', muscle: 'Ombros', color: '#fb923c' };
   }
-  if (name.includes('plank') || name.includes('crunch') || name.includes('raise') || name.includes('twist') || name.includes('pallof')) {
+  if (
+    name.includes('plank') ||
+    name.includes('crunch') ||
+    name.includes('raise') ||
+    name.includes('twist') ||
+    name.includes('pallof')
+  ) {
     return { category: 'core', muscle: 'Core', color: '#f59e0b' };
   }
-  if (name.includes('bench_press') || name.includes('push_up') || name.includes('crossover') || name.includes('pullover')) {
+  if (
+    name.includes('bench_press') ||
+    name.includes('push_up') ||
+    name.includes('crossover') ||
+    name.includes('pullover')
+  ) {
     return { category: 'bench_press', muscle: 'Peito', color: '#ef4444' };
   }
-  
+
   // Cardio / Dynamic
   return { category: 'cardio_power', muscle: 'Full Body', color: '#14b8a6' };
 };
@@ -768,7 +866,7 @@ const templates = {
 
   <!-- Dynamic Energy Flow representation -->
   <path class="energy-path" d="M 150,120 Q 230,80 310,140" fill="none" stroke="${color}" stroke-width="2" opacity="0.6" filter="url(#glow)"/>
-  `
+  `,
 };
 
 // Generate directory
@@ -788,9 +886,10 @@ for (const name of exercises) {
     continue;
   }
 
-  const svgContent = getSvgHeader(displayName, meta.muscle, meta.color) +
-                     templateFn(name, meta.muscle, meta.color) +
-                     getSvgFooter();
+  const svgContent =
+    getSvgHeader(displayName, meta.muscle, meta.color) +
+    templateFn(name, meta.muscle, meta.color) +
+    getSvgFooter();
 
   const fileName = `${name}.svg`;
   const filePath = path.join(IMG_DIR, fileName);
@@ -799,4 +898,6 @@ for (const name of exercises) {
   createdCount++;
 }
 
-console.log(`Successfully generated ${createdCount} animated exercise SVGs inside public/assets/exercises/images/`);
+console.log(
+  `Successfully generated ${createdCount} animated exercise SVGs inside public/assets/exercises/images/`,
+);

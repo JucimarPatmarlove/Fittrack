@@ -4,8 +4,8 @@
 // Valida que os parâmetros de treino (reps, RPE, descanso, peso) estão
 // dentro dos intervalos esperados para cada perfil de atleta.
 
-import { describe, it, expect } from 'vitest';
-import { getPrescription, UserProfile } from '../prescriptionEngine';
+import { describe, expect, it } from 'vitest';
+import { type UserProfile, getPrescription } from '../prescriptionEngine';
 
 // ─── PERFIS DE TESTE ──────────────────────────────────────────────────────────
 
@@ -45,12 +45,11 @@ const profileComLesao: UserProfile = {
 // ─── PR de referência ─────────────────────────────────────────────────────────
 
 const prBenchPress = { weight: 100, reps: 8 }; // 1RM estimado ≈ 127kg
-const prSquat = { weight: 140, reps: 5 };       // 1RM estimado ≈ 163kg
+const prSquat = { weight: 140, reps: 5 }; // 1RM estimado ≈ 163kg
 
 // ─── SUITE: Perfil Hipertrofia Intermédio ─────────────────────────────────────
 
 describe('prescriptionEngine — Hipertrofia Intermédio', () => {
-
   it('deve sugerir peso dentro do intervalo razoável para Bench Press', () => {
     const rx = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', prBenchPress);
     // Para hipertrofia: ~70-75% de 127kg ≈ 89-95kg, factor intermédio 0.95 → ~85-90kg
@@ -101,7 +100,6 @@ describe('prescriptionEngine — Hipertrofia Intermédio', () => {
 // ─── SUITE: Perfil Força Avançado ─────────────────────────────────────────────
 
 describe('prescriptionEngine — Força Avançado', () => {
-
   it('deve recomendar reps baixas (3-5) para força', () => {
     const rx = getPrescription(profileForcaAvancado, 'Barbell Back Squat', prSquat);
     expect(rx.repsSuggested).toBeGreaterThanOrEqual(3);
@@ -120,7 +118,11 @@ describe('prescriptionEngine — Força Avançado', () => {
 
   it('deve sugerir peso mais elevado que hipertrofia para o mesmo PR', () => {
     const rxStrength = getPrescription(profileForcaAvancado, 'Barbell Back Squat', prSquat);
-    const rxHypertrophy = getPrescription(profileHipertrofiaIntermedio, 'Barbell Back Squat', prSquat);
+    const rxHypertrophy = getPrescription(
+      profileHipertrofiaIntermedio,
+      'Barbell Back Squat',
+      prSquat,
+    );
     expect(rxStrength.suggestedWeight).toBeGreaterThan(rxHypertrophy.suggestedWeight);
   });
 });
@@ -128,7 +130,6 @@ describe('prescriptionEngine — Força Avançado', () => {
 // ─── SUITE: Sem histórico (PR null) ───────────────────────────────────────────
 
 describe('prescriptionEngine — Sem histórico de PR', () => {
-
   it('deve usar fallback de 20kg quando não há PR', () => {
     const rx = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', null);
     expect(rx.suggestedWeight).toBeGreaterThan(0);
@@ -146,27 +147,33 @@ describe('prescriptionEngine — Sem histórico de PR', () => {
 // ─── SUITE: Modificador de lesão ──────────────────────────────────────────────
 
 describe('prescriptionEngine — Com lesão', () => {
-
   it('deve sugerir peso menor para atleta com lesão', () => {
-    const rxNormal = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', prBenchPress);
+    const rxNormal = getPrescription(
+      profileHipertrofiaIntermedio,
+      'Barbell Bench Press',
+      prBenchPress,
+    );
     const rxInjured = getPrescription(profileComLesao, 'Barbell Bench Press', prBenchPress);
     expect(rxInjured.suggestedWeight).toBeLessThan(rxNormal.suggestedWeight);
   });
 
   it('redução deve ser aproximadamente 20%', () => {
-    const rxNormal = getPrescription(profileHipertrofiaIntermedio, 'Barbell Bench Press', prBenchPress);
+    const rxNormal = getPrescription(
+      profileHipertrofiaIntermedio,
+      'Barbell Bench Press',
+      prBenchPress,
+    );
     const rxInjured = getPrescription(profileComLesao, 'Barbell Bench Press', prBenchPress);
     const reductionRatio = rxInjured.suggestedWeight / rxNormal.suggestedWeight;
     // Deve estar entre 0.70 e 0.90 (20% de redução ±tolerância de arredondamento)
     expect(reductionRatio).toBeGreaterThan(0.68);
-    expect(reductionRatio).toBeLessThanOrEqual(0.90);
+    expect(reductionRatio).toBeLessThanOrEqual(0.9);
   });
 });
 
 // ─── SUITE: Exercícios bodyweight ─────────────────────────────────────────────
 
 describe('prescriptionEngine — Exercícios bodyweight', () => {
-
   it('deve retornar suggestedWeight=0 para exercícios de peso corporal', () => {
     const rx = getPrescription(profileHipertrofiaIntermedio, 'Pull-up', { weight: 0, reps: 10 });
     // Pull-up é bodyweight → calculateSuggestedWeight retorna 0

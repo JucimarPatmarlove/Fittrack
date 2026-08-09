@@ -7,12 +7,12 @@ export const startWeeklyReportJob = () => {
   // Corre todos os domingos às 20h00
   cron.schedule('0 20 * * 0', async () => {
     console.log('[Cron Job] A preparar o relatório tático semanal...');
-    
+
     try {
       // No futuro, podes extrair as métricas reais do utilizador da base de dados aqui
       const xpGained = 1250;
       const workoutsCompleted = 4;
-      
+
       await resend.emails.send({
         from: 'FitTrack V7 Coach <coach@teudominio.com>', // Precisarás de verificar um domínio no Resend
         to: ['primo@email.com'], // E-mail de destino
@@ -35,6 +35,6 @@ export const startWeeklyReportJob = () => {
       console.error('[Cron Job] Falha ao enviar relatório tático:', error);
     }
   });
-  
+
   console.log('[Cron Job] Sistema de relatórios semanais ativado.');
 };

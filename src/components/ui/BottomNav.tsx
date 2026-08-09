@@ -1,7 +1,8 @@
 // src/components/ui/BottomNav.tsx
 // Barra de navegação inferior extraída do App.tsx para componente reutilizável.
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { C } from '../../data/constants';
 import type { ViewName } from '../../hooks/useFitnessData';
 
@@ -21,53 +22,60 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', icon: '🏋️', label: 'Treino' },
-  { id: 'trends',    icon: '📈', label: 'Tendências' },
-  { id: 'recovery',  icon: '⚕️', label: 'Recovery' },
-  { id: 'planner',   icon: '🗓️', label: 'Planner' },
-  { id: 'gymvibe',   icon: '🎵', label: 'Vibe' },
+  { id: 'trends', icon: '📈', label: 'Tendências' },
+  { id: 'recovery', icon: '⚕️', label: 'Recovery' },
+  { id: 'planner', icon: '🗓️', label: 'Planner' },
+  { id: 'gymvibe', icon: '🎵', label: 'Vibe' },
 ];
 
-const HIDDEN_VIEWS = new Set<ViewName>([
-  'workout', 'assessment', 'guide', 'feedback', 'rewards'
-]);
+const HIDDEN_VIEWS = new Set<ViewName>(['workout', 'assessment', 'guide', 'feedback', 'rewards']);
 
-export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCount, onOpenClub }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({
+  view,
+  setView,
+  historyCount,
+  onOpenClub,
+}) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
-      setToastMessage(msg);
-      setTimeout(() => setToastMessage(null), 3000);
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   if (HIDDEN_VIEWS.has(view)) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 24,
-      left: 0,
-      right: 0,
-      display: 'flex',
-      justifyContent: 'center',
-      zIndex: 100,
-      pointerEvents: 'none',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        zIndex: 100,
+        pointerEvents: 'none',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       {toastMessage && (
-        <div style={{
-          background: 'rgba(232, 74, 74, 0.9)',
-          color: '#fff',
-          padding: '12px 24px',
-          borderRadius: 20,
-          marginBottom: 16,
-          fontSize: 13,
-          fontWeight: 'bold',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          pointerEvents: 'auto',
-          animation: 'fadeInOut 3s ease-in-out'
-        }}>
+        <div
+          style={{
+            background: 'rgba(232, 74, 74, 0.9)',
+            color: '#fff',
+            padding: '12px 24px',
+            borderRadius: 20,
+            marginBottom: 16,
+            fontSize: 13,
+            fontWeight: 'bold',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            pointerEvents: 'auto',
+            animation: 'fadeInOut 3s ease-in-out',
+          }}
+        >
           {toastMessage}
         </div>
       )}
@@ -82,7 +90,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCoun
           boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
         }}
       >
-        {NAV_ITEMS.map(item => (
+        {NAV_ITEMS.map((item) => (
           <NavButton
             key={item.id}
             icon={item.icon}
@@ -94,19 +102,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({ view, setView, historyCoun
 
         {/* Club button — locked until 3 workouts */}
         {historyCount >= 3 ? (
-          <NavButton
-            icon="👥"
-            label="Clube"
-            isActive={false}
-            onClick={onOpenClub}
-          />
+          <NavButton icon="👥" label="Clube" isActive={false} onClick={onOpenClub} />
         ) : (
           <NavButton
             icon="👥"
             label=""
             isActive={false}
             disabled
-            onClick={() => showToast('🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!')}
+            onClick={() =>
+              showToast(
+                '🔒 Os Clubes Sociais desbloqueiam ao completares o 3º Treino! Continua assim!',
+              )
+            }
           />
         )}
 
@@ -151,8 +158,6 @@ const NavButton: React.FC<{
     }}
   >
     <span style={{ fontSize: 20 }}>{icon}</span>
-    {isActive && label && (
-      <span style={{ fontSize: 10, fontWeight: 'bold' }}>{label}</span>
-    )}
+    {isActive && label && <span style={{ fontSize: 10, fontWeight: 'bold' }}>{label}</span>}
   </button>
 );

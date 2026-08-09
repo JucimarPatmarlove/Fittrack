@@ -3,8 +3,8 @@
 // FitTrack V7 — Motion Components Library
 // ============================================================
 
+import { AnimatePresence, type Variants, motion } from 'framer-motion';
 import React, { Suspense } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
 // ============================================================
@@ -28,7 +28,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
   const baseClasses = 'bg-gray-200 animate-pulse';
   const shapeClasses = circle ? 'rounded-full' : 'rounded';
-  
+
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
@@ -100,9 +100,7 @@ export const LazyLoad: React.FC<LazyLoadProps> = ({
   };
 
   return (
-    <Suspense fallback={fallback || skeletonMap[skeleton] || <SkeletonCard />}>
-      {children}
-    </Suspense>
+    <Suspense fallback={fallback || skeletonMap[skeleton] || <SkeletonCard />}>{children}</Suspense>
   );
 };
 
@@ -293,7 +291,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   children,
   direction = 1,
   className = '',
-  viewKey
+  viewKey,
 }) => (
   <AnimatePresence mode="wait">
     <motion.div
@@ -461,9 +459,22 @@ export const AccessibleMotion: React.FC<{
 };
 
 export default {
-  Skeleton, SkeletonText, SkeletonCard, SkeletonBodyMap,
-  LazyLoad, FadeIn, SlideUp, SlideIn, ScaleIn,
-  StaggerList, ScrollReveal, PageTransition, AnimatedPanel,
-  InteractiveButton, InteractiveCard, ProgressBar,
-  usePrefersReducedMotion, AccessibleMotion,
+  Skeleton,
+  SkeletonText,
+  SkeletonCard,
+  SkeletonBodyMap,
+  LazyLoad,
+  FadeIn,
+  SlideUp,
+  SlideIn,
+  ScaleIn,
+  StaggerList,
+  ScrollReveal,
+  PageTransition,
+  AnimatedPanel,
+  InteractiveButton,
+  InteractiveCard,
+  ProgressBar,
+  usePrefersReducedMotion,
+  AccessibleMotion,
 };

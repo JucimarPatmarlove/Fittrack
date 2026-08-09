@@ -1,8 +1,8 @@
 // src/components/injury/WorkoutModifications.tsx
 
-import React from 'react';
-import { ArrowRightLeft, MinusCircle, AlertCircle } from 'lucide-react';
-import { WorkoutModification } from '../../types/injury';
+import { AlertCircle, ArrowRightLeft, MinusCircle } from 'lucide-react';
+import type React from 'react';
+import type { WorkoutModification } from '../../types/injury';
 
 interface WorkoutModificationsProps {
   modifications: WorkoutModification[];
@@ -33,22 +33,19 @@ export const WorkoutModifications: React.FC<WorkoutModificationsProps> = ({
         <AlertCircle className="w-5 h-5" />
         Ajustes Recomendados para este Treino
       </h4>
-      
+
       <div className="space-y-3">
         {modifications.map((mod, i) => {
           const config = TYPE_CONFIG[mod.originalType];
           const Icon = config.icon;
-          
+
           return (
-            <div 
-              key={i} 
-              className={`flex items-start gap-3 rounded-md p-3 ${config.bg}`}
-            >
+            <div key={i} className={`flex items-start gap-3 rounded-md p-3 ${config.bg}`}>
               {Icon && <Icon className={`w-5 h-5 mt-0.5 ${config.color}`} />}
               <div className="flex-1">
                 <p className="font-medium text-gray-900">{mod.exerciseName}</p>
                 <p className="text-sm text-gray-600 mt-1">{mod.suggestion}</p>
-                
+
                 {mod.alternativeExercise && (
                   <div className="mt-2 flex items-center gap-2">
                     <ArrowRightLeft className="w-4 h-4 text-orange-500" />
@@ -58,7 +55,7 @@ export const WorkoutModifications: React.FC<WorkoutModificationsProps> = ({
                   </div>
                 )}
               </div>
-              
+
               {onApplyModification && (
                 <button
                   onClick={() => onApplyModification(mod)}
@@ -81,7 +78,7 @@ export const WorkoutModifications: React.FC<WorkoutModificationsProps> = ({
             Aplicar Todas as Modificações
           </button>
         )}
-        
+
         {onDismiss && (
           <button
             onClick={onDismiss}

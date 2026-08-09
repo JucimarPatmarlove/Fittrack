@@ -68,11 +68,13 @@ export const COACH_TOOLS: Tool[] = [
             },
             exercise_name: {
               type: SchemaType.STRING,
-              description: 'Nome do exercício (ex: "Supino Plano", "Agachamento"). Opcional para métricas globais.',
+              description:
+                'Nome do exercício (ex: "Supino Plano", "Agachamento"). Opcional para métricas globais.',
             },
             period_days: {
               type: SchemaType.NUMBER,
-              description: 'Período em dias para a consulta (ex: 7 = última semana, 30 = último mês). Default: 30.',
+              description:
+                'Período em dias para a consulta (ex: 7 = última semana, 30 = último mês). Default: 30.',
             },
           },
           required: ['metric_type'],
@@ -99,7 +101,8 @@ export const COACH_TOOLS: Tool[] = [
             },
             file_path: {
               type: SchemaType.STRING,
-              description: 'Caminho do ficheiro a ler (ex: "src/services/vectorMemory.ts"). Só para action=file_content.',
+              description:
+                'Caminho do ficheiro a ler (ex: "src/services/vectorMemory.ts"). Só para action=file_content.',
             },
             branch: {
               type: SchemaType.STRING,

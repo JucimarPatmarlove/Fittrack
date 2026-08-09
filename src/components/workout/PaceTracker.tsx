@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 interface Props {
   startTime: number;
@@ -29,7 +29,10 @@ export const PaceTracker = ({ startTime, targetReps, currentRep }: Props) => {
         {pace.toFixed(1)} s/rep
       </div>
       {isTooFast && (
-        <div style={{ color: '#eab308', fontSize: 10, marginTop: 2, fontWeight: 'bold' }} className="animate-pulse">
+        <div
+          style={{ color: '#eab308', fontSize: 10, marginTop: 2, fontWeight: 'bold' }}
+          className="animate-pulse"
+        >
           ⚡ Muito rápido! Controla a excêntrica
         </div>
       )}

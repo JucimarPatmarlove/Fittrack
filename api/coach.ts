@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { VectorMemory } from '../src/services/vectorMemory';
 import { aiRateLimiter } from '../src/middleware/rateLimiter';
 import { runAgentLoop } from '../src/services/tools/agentLoop';
+import { VectorMemory } from '../src/services/vectorMemory';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // 2. Memória Vetorial (Pinecone RAG)
     const pastMemories = await VectorMemory.recallMemories(userId, prompt);
-    
+
     const systemPrompt = `
       És o FitTrack AI Coach, um treinador de elite com acesso a ferramentas em tempo real.
       Responde de forma curta, direta e tática.
@@ -40,7 +40,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 3. Agentic Loop (Gemini + Function Calling)
     const reply = await runAgentLoop(prompt, systemPrompt, userId);
     return res.status(200).json({ reply });
-    
   } catch (error) {
     console.error('[Vercel API] Erro no Coach:', error);
     return res.status(500).json({ error: 'Falha nos servidores táticos.' });

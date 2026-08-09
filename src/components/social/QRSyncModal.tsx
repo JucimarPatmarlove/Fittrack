@@ -1,9 +1,10 @@
+import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
 // src/components/social/QRSyncModal.tsx
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { p2pSync, SyncData } from '../../services/p2pSync';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { C } from '../../data/constants';
+import { type SyncData, p2pSync } from '../../services/p2pSync';
 
 interface QRSyncModalProps {
   isOpen: boolean;
@@ -14,9 +15,15 @@ interface QRSyncModalProps {
 }
 
 export const QRSyncModal: React.FC<QRSyncModalProps> = ({
-  isOpen, onClose, mode, dataToSend, onDataReceived
+  isOpen,
+  onClose,
+  mode,
+  dataToSend,
+  onDataReceived,
 }) => {
-  const [step, setStep] = useState<'init' | 'show-code' | 'enter-code' | 'connecting' | 'connected' | 'error'>('init');
+  const [step, setStep] = useState<
+    'init' | 'show-code' | 'enter-code' | 'connecting' | 'connected' | 'error'
+  >('init');
   const [peerCode, setPeerCode] = useState('');
   const [enteredCode, setEnteredCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -61,16 +68,16 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
       setStep('error');
       return;
     }
-    
+
     try {
       const offer = JSON.parse(storedOffer);
       setStep('connecting');
       const answer = await p2pSync.acceptOffer(offer);
       localStorage.setItem(`p2p_answer_${code}`, JSON.stringify(answer));
-      
+
       // Notificar localmente (se for na mesma tab, o storage event cuida, mas enviamos CustomEvent para segurança)
       window.dispatchEvent(new CustomEvent('p2p-answer-ready', { detail: { code, answer } }));
-      
+
       p2pSync.onData((data) => {
         onDataReceived?.(data);
         setStep('connected');
@@ -120,7 +127,7 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
             setStep('connected');
             clearInterval(interval);
             setTimeout(() => onClose(), 1500);
-          } catch(e) {}
+          } catch (e) {}
         }
       }, 1000);
       return () => clearInterval(interval);
@@ -142,9 +149,14 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
-            background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(16px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            background: 'rgba(0,0,0,0.9)',
+            backdropFilter: 'blur(16px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: '24px',
           }}
         >
@@ -153,14 +165,23 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             style={{
-              maxWidth: '500px', width: '100%',
+              maxWidth: '500px',
+              width: '100%',
               background: 'rgba(255,255,255,0.03)',
               border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '24px', padding: '24px',
+              borderRadius: '24px',
+              padding: '24px',
               backdropFilter: 'blur(20px)',
             }}
           >
-            <h2 style={{ fontFamily: "'Bebas Neue'", fontSize: 24, color: C.accent, marginBottom: 16 }}>
+            <h2
+              style={{
+                fontFamily: "'Bebas Neue'",
+                fontSize: 24,
+                color: C.accent,
+                marginBottom: 16,
+              }}
+            >
               {mode === 'send' ? '📤 PARTILHAR TREINO' : '📥 RECEBER TREINO'}
             </h2>
 
@@ -173,7 +194,15 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
                 </p>
                 <button
                   onClick={mode === 'send' ? startSend : startReceive}
-                  style={{ background: C.accent, color: '#000', padding: 12, borderRadius: 8, fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
+                  style={{
+                    background: C.accent,
+                    color: '#000',
+                    padding: 12,
+                    borderRadius: 8,
+                    fontWeight: 'bold',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   {mode === 'send' ? 'Gerar Código P2P' : 'Introduzir Código'}
                 </button>
@@ -185,13 +214,41 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
                 <p style={{ fontSize: 14, color: C.muted, marginBottom: 8 }}>
                   Partilha este código com o outro dispositivo:
                 </p>
-                <div style={{ background: 'rgba(0,0,0,0.6)', padding: 16, borderRadius: 8, display: 'inline-block', marginBottom: 16, border: `1px solid ${C.accent}44` }}>
-                  <p style={{ color: C.accent, fontSize: 32, letterSpacing: 4, margin: 0, fontFamily: "'DM Mono'" }}>
+                <div
+                  style={{
+                    background: 'rgba(0,0,0,0.6)',
+                    padding: 16,
+                    borderRadius: 8,
+                    display: 'inline-block',
+                    marginBottom: 16,
+                    border: `1px solid ${C.accent}44`,
+                  }}
+                >
+                  <p
+                    style={{
+                      color: C.accent,
+                      fontSize: 32,
+                      letterSpacing: 4,
+                      margin: 0,
+                      fontFamily: "'DM Mono'",
+                    }}
+                  >
                     {peerCode}
                   </p>
                 </div>
                 <p style={{ fontSize: 12, color: C.muted }}>A aguardar conexão do parceiro...</p>
-                <div style={{ marginTop: 16, width: 24, height: 24, border: `2px solid ${C.border}`, borderTopColor: C.accent, borderRadius: '50%', animation: 'spin 1s linear infinite', display: 'inline-block' }} />
+                <div
+                  style={{
+                    marginTop: 16,
+                    width: 24,
+                    height: 24,
+                    border: `2px solid ${C.border}`,
+                    borderTopColor: C.accent,
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    display: 'inline-block',
+                  }}
+                />
               </div>
             )}
 
@@ -202,11 +259,30 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
                   placeholder="Ex: A1B-2C3"
                   value={enteredCode}
                   onChange={(e) => setEnteredCode(e.target.value.toUpperCase())}
-                  style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: `1px solid ${C.accent}`, borderRadius: 8, padding: 16, color: '#fff', fontSize: 20, textAlign: 'center', letterSpacing: 2, fontFamily: "'DM Mono'" }}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${C.accent}`,
+                    borderRadius: 8,
+                    padding: 16,
+                    color: '#fff',
+                    fontSize: 20,
+                    textAlign: 'center',
+                    letterSpacing: 2,
+                    fontFamily: "'DM Mono'",
+                  }}
                 />
                 <button
                   onClick={handleConnect}
-                  style={{ background: C.accent, color: '#000', padding: 12, borderRadius: 8, fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
+                  style={{
+                    background: C.accent,
+                    color: '#000',
+                    padding: 12,
+                    borderRadius: 8,
+                    fontWeight: 'bold',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   Conectar
                 </button>
@@ -215,7 +291,17 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
 
             {step === 'connecting' && (
               <div style={{ textAlign: 'center' }}>
-                <div style={{ margin: '0 auto 16px auto', width: 32, height: 32, border: `3px solid ${C.border}`, borderTopColor: C.accent, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <div
+                  style={{
+                    margin: '0 auto 16px auto',
+                    width: 32,
+                    height: 32,
+                    border: `3px solid ${C.border}`,
+                    borderTopColor: C.accent,
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                  }}
+                />
                 <p style={{ color: C.muted }}>A estabelecer ligação segura P2P...</p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </div>
@@ -231,13 +317,36 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
             {step === 'error' && (
               <div style={{ textAlign: 'center' }}>
                 <p style={{ color: C.red, marginBottom: 16 }}>{errorMsg}</p>
-                <button onClick={() => setStep('init')} style={{ background: 'rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 8, color: '#fff', border: 'none', cursor: 'pointer' }}>
+                <button
+                  onClick={() => setStep('init')}
+                  style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
                   Tentar novamente
                 </button>
               </div>
             )}
 
-            <button onClick={onClose} style={{ marginTop: 24, color: C.muted, background: 'none', border: 'none', fontSize: 14, width: '100%', cursor: 'pointer', fontFamily: "'Bebas Neue'", letterSpacing: 1 }}>
+            <button
+              onClick={onClose}
+              style={{
+                marginTop: 24,
+                color: C.muted,
+                background: 'none',
+                border: 'none',
+                fontSize: 14,
+                width: '100%',
+                cursor: 'pointer',
+                fontFamily: "'Bebas Neue'",
+                letterSpacing: 1,
+              }}
+            >
               FECHAR CANAL P2P
             </button>
           </motion.div>

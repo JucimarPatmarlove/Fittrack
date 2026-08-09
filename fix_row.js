@@ -3,8 +3,8 @@ import fs from 'fs';
 const content = fs.readFileSync('src/components/workout/WorkoutSetRow.tsx', 'utf-8');
 
 const newContent = content.replace(
-    /<div style=\{\{ display: "flex", gap: 4, width: "100%" \}\}>[\s\S]*?<\/div>[\s\S]*?<div style=\{\{ display: "flex", gap: 4 \}\}>[\s\S]*?<\/div>/m,
-    `{/* INPUT 1 */}
+  /<div style=\{\{ display: "flex", gap: 4, width: "100%" \}\}>[\s\S]*?<\/div>[\s\S]*?<div style=\{\{ display: "flex", gap: 4 \}\}>[\s\S]*?<\/div>/m,
+  `{/* INPUT 1 */}
         <div style={{ display: "flex", gap: 4, width: "100%" }}>
           {(s.type === 'timed' || s.type === 'mobility') ? (
             <div style={{ width: "100%", textAlign: "center", color: C.muted }}>-</div>
@@ -36,7 +36,7 @@ const newContent = content.replace(
           <input type="number" value={s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? ((s.duration || 0) / 60) : s.reps} onChange={e => upd(ei, si, s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? "duration" : "reps", s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? String(Number(e.target.value) * 60) : e.target.value)}
             style={{ background: s.isWarmup ? 'rgba(0,0,0,0.2)' : 'transparent', border: \`1px solid \${s.done ? theme.success + "66" : s.isWarmup ? theme.accent + "66" : theme.glassBorder}\`, borderRadius: 6, padding: "8px 5px", color: s.isWarmup ? theme.accent : theme.text, fontSize: 16, fontFamily: "'DM Mono'", width: "100%", textAlign: "center", minWidth: 0 }} />
           <button onClick={() => upd(ei, si, s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? "duration" : "reps", String(((s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? Math.floor((s.duration || 0) / 60) : (s.reps || 0)) + 1) * (s.type === 'cardio' || s.type === 'distance' || s.type === 'timed' || s.type === 'mobility' ? 60 : 1)))} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', borderRadius: 4, width: 24, cursor: 'pointer' }}>+</button>
-        </div>`
+        </div>`,
 );
 
 const updatedDeps = newContent.replace(
@@ -45,7 +45,7 @@ const updatedDeps = newContent.replace(
     prevProps.s.reps === nextProps.s.reps &&
     prevProps.s.addedWeight === nextProps.s.addedWeight &&
     prevProps.s.duration === nextProps.s.duration &&
-    prevProps.s.distance === nextProps.s.distance &&`
+    prevProps.s.distance === nextProps.s.distance &&`,
 );
 
 fs.writeFileSync('src/components/workout/WorkoutSetRow.tsx', updatedDeps);

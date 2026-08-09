@@ -29,15 +29,16 @@ export const usePlanStore = create<PlanState>()(
     (set, get) => ({
       currentPlan: null,
       history: [],
-      
-      setCurrentPlan: (plan) => set({ 
-          currentPlan: plan, 
-          history: [...get().history, plan].slice(-10) 
-      })
+
+      setCurrentPlan: (plan) =>
+        set({
+          currentPlan: plan,
+          history: [...get().history, plan].slice(-10),
+        }),
     }),
     {
       name: 'plan-store',
-      storage: createEncryptedStorage()
-    }
-  )
+      storage: createEncryptedStorage(),
+    },
+  ),
 );

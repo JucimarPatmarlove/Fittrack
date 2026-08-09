@@ -1,0 +1,209 @@
+Unused files (41)
+src/components/3d/SmartCamera.tsx                     
+src/components/challenges/ActiveChallenges.tsx        
+src/components/challenges/DeadHangWidget.tsx          
+src/components/dashboard/ActivityHeatmap.tsx          
+src/components/dashboard/ClinicalAnalytics.tsx        
+src/components/dashboard/CycleTracker.tsx             
+src/components/dashboard/MuscleRecoveryRing.tsx       
+src/components/dashboard/NutritionDashboardSection.tsx
+src/components/dashboard/PhaseCard.tsx                
+src/components/dashboard/RecoveryRoulette.tsx         
+src/components/dashboard/TrendWidget.tsx              
+src/components/dashboard/VirtualPet.tsx               
+src/components/dashboard/VTaperWidget.tsx             
+src/components/dashboard/WeekCalendar.tsx             
+src/components/social/ClubModal.tsx                   
+src/components/social/GymVibeWidget.tsx               
+src/components/stats/RecoveryRing.tsx                 
+src/components/ui/GlowInput.tsx                       
+src/components/WatchSyncIndicator.tsx                 
+src/components/workout/NextWorkoutSuggestion.tsx      
+src/hooks/useChallenges.ts                            
+src/hooks/usePoseCounter.ts                           
+src/hooks/useWorkerPoseDetection.ts                   
+src/jobs/weeklyReport.ts                              
+src/middleware/auth.ts                                
+src/middleware/rateLimiter.ts                         
+src/services/advancedFeatures.ts                      
+src/services/aiGenerator.ts                           
+src/services/tools/agentLoop.ts                       
+src/services/tools/braveSearch.ts                     
+src/services/tools/githubAudit.ts                     
+src/services/tools/supabaseQuery.ts                   
+src/services/tools/toolDefinitions.ts                 
+src/services/vectorMemory.ts                          
+src/services/workoutGenerator.ts                      
+src/stores/useRoutineStore.ts                         
+src/utils/bluetoothParser.ts                          
+src/utils/exerciseClassifier.ts                       
+src/utils/oneRMCalculator.ts                          
+src/workers/poseDetection.worker.ts                   
+src/workers/syncWorker.ts                             
+Unused dependencies (12)
+@google/generative-ai        package.json:29:6
+@mediapipe/camera_utils      package.json:30:6
+@mediapipe/pose              package.json:31:6
+@mediapipe/tasks-vision      package.json:32:6
+@pinecone-database/pinecone  package.json:34:6
+@upstash/ratelimit           package.json:40:6
+@upstash/redis               package.json:41:6
+lodash                       package.json:47:6
+react-hook-form              package.json:54:6
+resend                       package.json:57:6
+use-long-press               package.json:59:6
+vite-plugin-compression      package.json:60:6
+Unused devDependencies (13)
+@capacitor/android  package.json:66:6
+@capacitor/ios      package.json:68:6
+@commitlint/cli     package.json:69:6
+@tailwindcss/vite   package.json:73:6
+@types/cors         package.json:74:6
+@types/dompurify    package.json:75:6
+@types/express      package.json:76:6
+@types/node-cron    package.json:78:6
+@vercel/node        package.json:81:6
+cors                package.json:86:6
+express             package.json:91:6
+node-cron           package.json:95:6
+tailwindcss         package.json:97:6
+Unlisted dependencies (1)
+axios  scripts/downloadExerciseMedia.js:4:20
+Unused exports (71)
+ErrorBoundary                       class     src/components/ErrorBoundary.tsx:7:14                  
+Skeleton                                      src/components/ui/MotionComponents.tsx:22:14           
+SkeletonText                                  src/components/ui/MotionComponents.tsx:45:14           
+SkeletonCard                                  src/components/ui/MotionComponents.tsx:61:14           
+SkeletonBodyMap                               src/components/ui/MotionComponents.tsx:72:14           
+FadeIn                                        src/components/ui/MotionComponents.tsx:120:14          
+SlideUp                                       src/components/ui/MotionComponents.tsx:136:14          
+SlideIn                                       src/components/ui/MotionComponents.tsx:152:14          
+ScaleIn                                       src/components/ui/MotionComponents.tsx:169:14          
+ScrollReveal                                  src/components/ui/MotionComponents.tsx:248:14          
+AnimatedPanel                                 src/components/ui/MotionComponents.tsx:322:14          
+InteractiveButton                             src/components/ui/MotionComponents.tsx:381:14          
+InteractiveCard                               src/components/ui/MotionComponents.tsx:399:14          
+ProgressBar                                   src/components/ui/MotionComponents.tsx:425:14          
+usePrefersReducedMotion                       src/components/ui/MotionComponents.tsx:446:14          
+AccessibleMotion                              src/components/ui/MotionComponents.tsx:450:14          
+default                                       src/components/ui/MotionComponents.tsx:461:16          
+TOOLTIP_TEXTS                                 src/components/ui/Tooltip.tsx:6:14                     
+LabelWithTooltip                              src/components/ui/Tooltip.tsx:125:14                   
+WORKOUT_PLANS                                 src/data/constants.ts:42:14                            
+V2_LOAD_PCT                                   src/data/constants.ts:321:14                           
+exerciseCategoryMap                           src/data/exerciseClassifier.ts:8:14                    
+exerciseMediaMap                              src/data/exerciseMedia.ts:20:14                        
+calculate1RM                        function  src/data/utils.ts:6:17                                 
+estimateCaloriesBurned              function  src/data/utils.ts:11:17                                
+calculateRecovery                   function  src/data/utils.ts:17:17                                
+bmi                                 function  src/data/utils.ts:65:17                                
+bmiLabel                            function  src/data/utils.ts:69:17                                
+getSetLogsDecrypted                 function  src/db/encryptedDb.ts:79:23                            
+getWeightLogDecrypted               function  src/db/encryptedDb.ts:275:23                           
+getPersonalRecord                             src/db/encryptedDb.ts:315:3                            
+getAllPersonalRecords                         src/db/encryptedDb.ts:316:3                            
+getAllWorkouts                                src/db/encryptedDb.ts:317:3                            
+checkSchemaHealth                   function  src/db/migrations.ts:66:23                             
+getWorkoutSession         schemaDb  function  src/db/schema.ts:209:23                                
+getSetLogsByExercise      schemaDb  function  src/db/schema.ts:233:23                                
+getLatestRecoveryMetric   schemaDb  function  src/db/schema.ts:317:23                                
+useGhostMode                                  src/hooks/index.ts:6:10                                
+useFitnessData                                src/hooks/index.ts:7:10                                
+useStopwatch                        function  src/hooks/index.ts:174:17                              
+isSupabaseConfigured                function  src/lib/supabaseBrowser.ts:45:17                       
+default                                       src/screens/DeviceManager.tsx:304:16                   
+generateWorkout                     function  src/services/anthropicService.ts:69:23                 
+HIGH_IMPACT_REPLACEMENTS                      src/services/demographicEngine.ts:23:14                
+calculate1RM                        function  src/services/fitnessMechanics.ts:6:17                  
+calculateRecovery                   function  src/services/fitnessMechanics.ts:41:17                 
+calculateWorkoutXP                  function  src/services/gamificationEngine.ts:37:23               
+detectNewExercises                  function  src/services/gamificationEngine.ts:91:23               
+initGoogleDrive                     function  src/services/googleDrive.ts:23:23                      
+signOutFromGoogleDrive              function  src/services/googleDrive.ts:89:23                      
+HealthBridge                        class     src/services/healthBridge.ts:16:14                     
+calculateSessionStress                        src/services/injuryPrediction/index.ts:67:10           
+calculateACRatio                              src/services/injuryPrediction/index.ts:67:34           
+calculateRecoveryScore                        src/services/injuryPrediction/index.ts:67:52           
+estimateRecoveryTime                          src/services/injuryPrediction/index.ts:67:76           
+calculateSetStress                  function  src/services/injuryPrediction/stressCalculator.ts:50:17
+invalidateToken                     function  src/services/jwtEngine.ts:43:17                        
+translateGoal                       function  src/services/nutritionEngine.ts:125:17                 
+translateActivityLevel              function  src/services/nutritionEngine.ts:135:17                 
+logHRV                              function  src/services/recoveryEngine.ts:235:23                  
+logSleep                            function  src/services/recoveryEngine.ts:243:23                  
+logSoreness                         function  src/services/recoveryEngine.ts:255:23                  
+logMood                             function  src/services/recoveryEngine.ts:267:23                  
+playBeep                            function  src/utils/audio.ts:28:17                               
+getOrCreateInstallSalt              function  src/utils/cryptoEngine.ts:3:17                         
+getCurrentStreak                    function  src/utils/missedDaysDetector.ts:38:17                  
+DISCS                                         src/utils/plateCalculator.ts:1:14                      
+DISC_COLORS                                   src/utils/plateCalculator.ts:4:14                      
+ExerciseSchema                                src/utils/schemas.ts:74:14                             
+WorkoutSchema                                 src/utils/schemas.ts:81:14                             
+isSilentAudioActive                 function  src/utils/silentAudio.ts:82:17                         
+Unused exported types (56)
+ExerciseCategory       type       src/data/exerciseClassifier.ts:1:13                    
+ExerciseMedia          interface  src/data/exerciseMedia.ts:2:18                         
+AudioState             type       src/hooks/audioMachine.ts:4:13                         
+AudioEvent             type       src/hooks/audioMachine.ts:10:13                        
+CoachMessage           interface  src/hooks/useAudioCoach.ts:6:18                        
+FitnessMachineData     interface  src/hooks/useFitnessMachine.ts:12:18                   
+GhostSet               interface  src/hooks/useGhostMode.ts:3:18                         
+GhostState             interface  src/hooks/useGhostMode.ts:10:18                        
+MachineState           type       src/hooks/useMachine.ts:1:13                           
+BluetoothState         type       src/machines/bluetoothMachine.ts:3:13                  
+BluetoothEvent         type       src/machines/bluetoothMachine.ts:18:13                 
+CyclePhase             type       src/services/demographicEngine.ts:9:13                 
+DemographicFeatures    interface  src/services/demographicEngine.ts:11:18                
+WarmupSet              interface  src/services/fitnessMechanics.ts:19:18                 
+MuscleRecovery         interface  src/services/fitnessMechanics.ts:35:18                 
+LevelThreshold         interface  src/services/gamificationEngine.ts:6:18                
+XPEvent                interface  src/services/gamificationEngine.ts:23:18               
+GoogleDriveToken       interface  src/services/googleDrive.ts:12:18                      
+ExerciseRegionMapping  interface  src/services/injuryPrediction/exerciseRegionMap.ts:5:18
+InjuryEngineInput      interface  src/services/injuryPrediction/index.ts:14:18           
+SetEntry               interface  src/services/injuryPrediction/stressCalculator.ts:11:18
+SessionStress          interface  src/services/injuryPrediction/stressCalculator.ts:40:18
+InjuryRiskReport       interface  src/services/injuryPredictionEngine.ts:5:18            
+RiskFlag               interface  src/services/injuryPredictionEngine.ts:14:18           
+RotationResult         interface  src/services/keyRotationService.ts:20:18               
+TrainingPhase          type       src/services/macrocycleEngine.ts:3:13                  
+PhasePrescription      interface  src/services/macrocycleEngine.ts:5:18                  
+FitnessGoal            enum       src/services/nutritionEngine.ts:5:13                   
+ActivityLevel          enum       src/services/nutritionEngine.ts:12:13                  
+P2PMessage             interface  src/services/p2pSync.ts:11:18                          
+Challenge              interface  src/services/predictiveChallenges.ts:4:18              
+ReadinessSnapshot      interface  src/services/recoveryEngine.ts:5:18                    
+SensitiveStoreName     type       src/stores/encryptedPersist.ts:175:13                  
+DailyChecklist         interface  src/stores/useChallengeStore.ts:6:18                   
+Challenge90Data        interface  src/stores/useChallengeStore.ts:18:18                  
+SocialPost             interface  src/stores/useCommunityStore.ts:4:18                   
+PublicProfile          interface  src/stores/useCompeteStore.ts:18:18                    
+PublishedPR            interface  src/stores/useCompeteStore.ts:27:18                    
+PairedDevice           interface  src/stores/useDeviceStore.ts:5:18                      
+WorkoutSlot            type       src/stores/useDualWorkoutStore.ts:5:13                 
+ScheduledWorkout       interface  src/stores/useDualWorkoutStore.ts:7:18                 
+ExerciseEntry          interface  src/stores/useExerciseStore.ts:4:18                    
+PlanType               type       src/stores/usePlanStore.ts:6:13                        
+GeneratedPlan          interface  src/stores/usePlanStore.ts:8:18                        
+ChallengeStatus        type       src/stores/useSocialStore.ts:23:13                     
+Profile                interface  src/stores/useSocialStore.ts:25:18                     
+LeaderboardEntry       interface  src/stores/useSocialStore.ts:33:18                     
+SocialChallenge        interface  src/stores/useSocialStore.ts:46:18                     
+ClubMember             interface  src/stores/useSocialStore.ts:57:18                     
+Club                   interface  src/stores/useSocialStore.ts:63:18                     
+Vibe                   interface  src/stores/useVibeStore.ts:5:18                        
+ExerciseSet            interface  src/types.ts:73:18                                     
+ExerciseSession        interface  src/types.ts:81:18                                     
+MissedDayInfo          interface  src/utils/missedDaysDetector.ts:4:18                   
+ExercisePrescription   interface  src/utils/prescriptionEngine.ts:22:18                  
+ValidationResult       interface  src/utils/validation.ts:69:18                          
+Duplicate exports (3)
+ErrorBoundary|default      src/components/ErrorBoundary.tsx
+DeviceManager|default      src/screens/DeviceManager.tsx   
+HealthBridge|healthBridge  src/services/healthBridge.ts    
+Configuration hints (4)
+. (root)           knip.json  Add entry and/or refine project files (41 unused files)
+eslint             knip.json  Remove from ignoreDependencies                         
+eslint-plugin-*    knip.json  Remove from ignoreDependencies                         
+src/main.tsx       knip.json  Remove redundant entry pattern                         

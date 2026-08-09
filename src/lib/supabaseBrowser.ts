@@ -7,7 +7,7 @@
 // Quando as env vars não estão definidas, devolve null → mock mode.
 // ════════════════════════════════════════════════════════════════
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 let browserClient: SupabaseClient | null = null;
 
@@ -23,7 +23,9 @@ export function getSupabaseBrowser(): SupabaseClient | null {
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
   if (!url || !anonKey) {
-    console.info('[Supabase Browser] Env vars em falta (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY). Modo mock activo.');
+    console.info(
+      '[Supabase Browser] Env vars em falta (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY). Modo mock activo.',
+    );
     return null;
   }
 
@@ -54,14 +56,16 @@ export async function signInAnonymously(): Promise<string | null> {
   if (!supabase) return null;
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (session?.user) {
       return session.user.id;
     }
 
     const { data, error } = await supabase.auth.signInAnonymously();
     if (error) throw error;
-    
+
     return data.user?.id || null;
   } catch (error) {
     console.error('[Supabase Browser] Erro no login anónimo:', error);

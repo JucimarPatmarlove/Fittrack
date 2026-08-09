@@ -1,5 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { webcrypto } from 'crypto';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 function base64UrlEncode(buffer: Buffer): string {
   return buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
@@ -41,13 +41,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       new TextEncoder().encode(JWT_SHARED_SECRET),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['sign']
+      ['sign'],
     );
 
     const signatureBuffer = await webcrypto.subtle.sign(
       'HMAC',
       key,
-      new TextEncoder().encode(signingInput)
+      new TextEncoder().encode(signingInput),
     );
 
     const signatureB64 = base64UrlEncode(Buffer.from(signatureBuffer));

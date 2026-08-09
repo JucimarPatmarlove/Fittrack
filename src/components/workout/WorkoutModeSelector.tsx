@@ -1,6 +1,3 @@
-// @ts-nocheck
-// src/components/workout/WorkoutModeSelector.tsx
-import React from 'react';
 import { motion } from 'framer-motion';
 
 export type WorkoutMode = 'classic' | 'amrap' | 'emom' | 'mobility';

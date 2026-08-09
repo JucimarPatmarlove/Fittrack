@@ -1,9 +1,6 @@
 // @ts-nocheck
-import { describe, it, expect, vi } from 'vitest';
-import {
-  getCurrentLevel,
-  LEVEL_THRESHOLDS,
-} from '../gamificationEngine';
+import { describe, expect, it, vi } from 'vitest';
+import { LEVEL_THRESHOLDS, getCurrentLevel } from '../gamificationEngine';
 
 // Mock the DB module since tests run without IndexedDB
 vi.mock('../../db/schema', () => ({

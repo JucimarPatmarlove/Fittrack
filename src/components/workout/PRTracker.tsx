@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 import { C } from '../../data/constants';
 
 interface PRTrackerProps {
@@ -36,13 +36,25 @@ export function PRTracker({ exerciseName, weight, onClose }: PRTrackerProps) {
           alignItems: 'center',
           gap: 12,
           zIndex: 1000,
-          whiteSpace: 'nowrap'
+          whiteSpace: 'nowrap',
         }}
       >
         <span style={{ fontSize: 24 }}>🏆</span>
         <div>
-          <span style={{ display: 'block', fontSize: 14, fontWeight: 'bold', fontFamily: "'Bebas Neue'", letterSpacing: 1 }}>NOVO RECORD PESSOAL!</span>
-          <span style={{ display: 'block', fontSize: 12, fontWeight: 600 }}>{exerciseName} • {weight} kg (1RM)</span>
+          <span
+            style={{
+              display: 'block',
+              fontSize: 14,
+              fontWeight: 'bold',
+              fontFamily: "'Bebas Neue'",
+              letterSpacing: 1,
+            }}
+          >
+            NOVO RECORD PESSOAL!
+          </span>
+          <span style={{ display: 'block', fontSize: 12, fontWeight: 600 }}>
+            {exerciseName} • {weight} kg (1RM)
+          </span>
         </div>
       </motion.div>
     </AnimatePresence>

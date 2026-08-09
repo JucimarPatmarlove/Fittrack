@@ -10,14 +10,14 @@
  * isometrics: prancha, parede, etc.
  */
 export type ExerciseCategory =
-  | 'compound_multi'    // Supino, Agachamento, Peso Morto, Desenvolvimento
-  | 'compound_uni'      // Leg Press, Pulldown, Remada no cabo
-  | 'isolation_multi'   // Rosca, Tríceps testa, Elevação lateral
-  | 'isolation_uni'     // Face Pull, Concentração, Crossover
-  | 'bodyweight'        // Flexões, Barra Fixa, Prancha, Burpee
-  | 'mobility'          // Alongamentos, rotações articulares, yoga
-  | 'cardio_metabolic'  // Battle Ropes, Sled, Medicine Ball
-  | 'isometrics';       // Prancha cronometrada, Wall Sit
+  | 'compound_multi' // Supino, Agachamento, Peso Morto, Desenvolvimento
+  | 'compound_uni' // Leg Press, Pulldown, Remada no cabo
+  | 'isolation_multi' // Rosca, Tríceps testa, Elevação lateral
+  | 'isolation_uni' // Face Pull, Concentração, Crossover
+  | 'bodyweight' // Flexões, Barra Fixa, Prancha, Burpee
+  | 'mobility' // Alongamentos, rotações articulares, yoga
+  | 'cardio_metabolic' // Battle Ropes, Sled, Medicine Ball
+  | 'isometrics'; // Prancha cronometrada, Wall Sit
 
 /**
  * Objectivos de treino — usado para filtrar exercícios e recomendar prescrições.
@@ -27,10 +27,10 @@ export type Goal =
   | 'forca'
   | 'resistencia'
   | 'mobilidade'
-  | 'saude_articular'   // Reabilitação, longevidade (seniors)
+  | 'saude_articular' // Reabilitação, longevidade (seniors)
   | 'perda_de_peso'
   | 'v_taper_aesthetics'
-  | string;             // Compatibilidade com valores legados
+  | string; // Compatibilidade com valores legados
 
 /**
  * Nível do utilizador.
@@ -42,12 +42,12 @@ export type UserLevel = 'iniciante' | 'intermedio' | 'avancado' | string;
  * Usado pelo DemographicEngine e pelo WorkoutModeSelector.
  */
 export type Modality =
-  | 'musculacao'   // Treino clássico de força/hipertrofia
-  | 'crossfit'     // AMRAP, EMOM, WODs
-  | 'funcional'    // Kettlebell, TRX, circuitos
-  | 'longevidade'  // Séniores: baixo impacto articular, mobilidade
+  | 'musculacao' // Treino clássico de força/hipertrofia
+  | 'crossfit' // AMRAP, EMOM, WODs
+  | 'funcional' // Kettlebell, TRX, circuitos
+  | 'longevidade' // Séniores: baixo impacto articular, mobilidade
   | 'powerlifting' // Foco em SQ/BP/DL com alta carga
-  | 'mobilidade';  // Yoga, pilates, fluxos de mobilidade
+  | 'mobilidade'; // Yoga, pilates, fluxos de mobilidade
 
 /**
  * Nível de impacto articular.

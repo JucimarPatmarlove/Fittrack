@@ -2,54 +2,54 @@
 // Base de dados relacional IndexedDB para o FitTrack V7
 // Usa a biblioteca 'idb' (já instalada) como wrapper tipado sobre o IndexedDB nativo.
 
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { runMigrations, CURRENT_DB_VERSION } from './migrations';
+import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
+import { CURRENT_DB_VERSION, runMigrations } from './migrations';
 
 // ─── INTERFACES DOS MODELOS ──────────────────────────────────────────────────
 
 /** Sessão de treino (visão macro) */
 export interface WorkoutSession {
-  id: string;                // UUID gerado localmente
-  date: number;              // Timestamp (fácil para ordenar)
-  name: string;              // Ex: "Treino Push (Força)"
-  durationSeconds: number;   // Tempo total do treino
-  readinessScore: number;    // Fadiga neural antes de começar (0-100)
-  totalVolumeKg: number;     // Somatório do peso levantado
-  effortScore?: number;      // NOVO: Esforço normalizado para XP justo (Cardio/Bodyweight)
-  avgRPE?: number;           // RPE médio do treino
+  id: string; // UUID gerado localmente
+  date: number; // Timestamp (fácil para ordenar)
+  name: string; // Ex: "Treino Push (Força)"
+  durationSeconds: number; // Tempo total do treino
+  readinessScore: number; // Fadiga neural antes de começar (0-100)
+  totalVolumeKg: number; // Somatório do peso levantado
+  effortScore?: number; // NOVO: Esforço normalizado para XP justo (Cardio/Bodyweight)
+  avgRPE?: number; // RPE médio do treino
   isCompleted: boolean;
   sleepHours?: number;
-  stressLevel?: number;      // 1-10 auto-reportado
-  preWorkoutRPE?: number;    // Perceived readiness
+  stressLevel?: number; // 1-10 auto-reportado
+  preWorkoutRPE?: number; // Perceived readiness
 }
 
 /** Registo de séries (onde a IA vai buscar os dados reais) */
 export interface SetLog {
-  id: string;                // UUID
-  workoutId: string;         // Ligação à sessão
-  exerciseName: string;      // Ex: "Barbell Back Squat"
-  category: string;          // Ex: "compound_multi"
-  setNumber: number;         // Ex: 1, 2, 3...
-  weightKg: number;          // Carga utilizada
-  repsCompleted: number;     // Repetições reais feitas
-  rpe: number;               // Esforço sentido (1-10)
-  estimated1RM: number;      // Cálculo automático (peso * (1 + reps/30))
+  id: string; // UUID
+  workoutId: string; // Ligação à sessão
+  exerciseName: string; // Ex: "Barbell Back Squat"
+  category: string; // Ex: "compound_multi"
+  setNumber: number; // Ex: 1, 2, 3...
+  weightKg: number; // Carga utilizada
+  repsCompleted: number; // Repetições reais feitas
+  rpe: number; // Esforço sentido (1-10)
+  estimated1RM: number; // Cálculo automático (peso * (1 + reps/30))
   timestamp: number;
-  tempoSeconds?: number;     // Tempo sob tensão
-  rangeOfMotion?: number;    // % de ROM completo (MediaPipe)
-  barVelocity?: number;      // Velocidade média da barra (m/s)
-  encryptedFields?: string;  // Payload cifrado AES-GCM (substitui weightKg/repsCompleted/rpe/estimated1RM)
+  tempoSeconds?: number; // Tempo sob tensão
+  rangeOfMotion?: number; // % de ROM completo (MediaPipe)
+  barVelocity?: number; // Velocidade média da barra (m/s)
+  encryptedFields?: string; // Payload cifrado AES-GCM (substitui weightKg/repsCompleted/rpe/estimated1RM)
 }
 
 /** Cache de recordes pessoais (para leitura ultra-rápida na UI) */
 export interface PersonalRecord {
-  exerciseName: string;      // Primary Key
-  best1RM: number;           // Maior 1RM estimado de sempre
-  bestVolumeWeight: number;  // Maior carga levantada para 10+ reps
-  lastTrainedAt: number;     // Data da última vez que fez este exercício
-  encryptedFields?: string;  // Payload cifrado (usado também para Avaliações Físicas)
-  streakWeeks?: number;       // Semanas consecutivas com este exercício
-  totalSessions?: number;     // Total de sessões com este exercício
+  exerciseName: string; // Primary Key
+  best1RM: number; // Maior 1RM estimado de sempre
+  bestVolumeWeight: number; // Maior carga levantada para 10+ reps
+  lastTrainedAt: number; // Data da última vez que fez este exercício
+  encryptedFields?: string; // Payload cifrado (usado também para Avaliações Físicas)
+  streakWeeks?: number; // Semanas consecutivas com este exercício
+  totalSessions?: number; // Total de sessões com este exercício
 }
 
 /** NOVO: Métricas de recuperação (HRV, sono, fadiga) */
@@ -176,7 +176,7 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
         const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
         prStore.createIndex('by-lastTrained', 'lastTrainedAt');
       }
-      
+
       await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION);
     },
   });
@@ -235,7 +235,10 @@ export async function getSetLogsByExercise(exerciseName: string): Promise<SetLog
   return db.getAllFromIndex('setLogs', 'by-exerciseName', exerciseName);
 }
 
-export async function getRecentSetLogsByExercise(exerciseName: string, limit = 50): Promise<SetLog[]> {
+export async function getRecentSetLogsByExercise(
+  exerciseName: string,
+  limit = 50,
+): Promise<SetLog[]> {
   const db = await getDB();
   const tx = db.transaction('setLogs', 'readonly');
   const index = tx.store.index('by-exercise-timestamp');
@@ -296,7 +299,7 @@ export async function addRecoveryMetric(metric: Omit<RecoveryMetric, 'id'>): Pro
 export async function getRecoveryMetricsByDateRange(
   startDate: number,
   endDate: number,
-  type?: RecoveryMetric['type']
+  type?: RecoveryMetric['type'],
 ): Promise<RecoveryMetric[]> {
   const db = await getDB();
   if (type) {
@@ -311,7 +314,9 @@ export async function getRecoveryMetricsByDateRange(
   return index.getAll(range);
 }
 
-export async function getLatestRecoveryMetric(type: RecoveryMetric['type']): Promise<RecoveryMetric | undefined> {
+export async function getLatestRecoveryMetric(
+  type: RecoveryMetric['type'],
+): Promise<RecoveryMetric | undefined> {
   const db = await getDB();
   const tx = db.transaction('recoveryMetrics', 'readonly');
   const index = tx.store.index('by-type');

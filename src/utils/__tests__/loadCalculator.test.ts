@@ -2,8 +2,8 @@
 // Testes unitários para o calculador de carga (calculateSuggestedWeight)
 // e a fórmula de Epley implícita na prescriptionEngine.
 
-import { describe, it, expect } from 'vitest';
-import { calculateSuggestedWeight, LoadCalculationInput } from '../loadCalculator';
+import { describe, expect, it } from 'vitest';
+import { type LoadCalculationInput, calculateSuggestedWeight } from '../loadCalculator';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -23,7 +23,6 @@ function makeInput(overrides: Partial<LoadCalculationInput> = {}): LoadCalculati
 // ─── SUITE: calculateSuggestedWeight ─────────────────────────────────────────
 
 describe('loadCalculator — calculateSuggestedWeight', () => {
-
   // ── Base cases ──────────────────────────────────────────────────────────────
 
   it('deve retornar 0 para exercício de peso corporal', () => {
@@ -72,13 +71,17 @@ describe('loadCalculator — calculateSuggestedWeight', () => {
 
   it('objetivo força deve dar peso maior que hipertrofia', () => {
     const strength = calculateSuggestedWeight(makeInput({ goal: 'forca', targetReps: 5 }));
-    const hypertrophy = calculateSuggestedWeight(makeInput({ goal: 'hipertrofia', targetReps: 10 }));
+    const hypertrophy = calculateSuggestedWeight(
+      makeInput({ goal: 'hipertrofia', targetReps: 10 }),
+    );
     expect(strength).toBeGreaterThan(hypertrophy);
   });
 
   it('objetivo resistência deve dar peso menor que hipertrofia', () => {
     const endurance = calculateSuggestedWeight(makeInput({ goal: 'resistencia', targetReps: 15 }));
-    const hypertrophy = calculateSuggestedWeight(makeInput({ goal: 'hipertrofia', targetReps: 10 }));
+    const hypertrophy = calculateSuggestedWeight(
+      makeInput({ goal: 'hipertrofia', targetReps: 10 }),
+    );
     expect(endurance).toBeLessThan(hypertrophy);
   });
 
@@ -96,8 +99,12 @@ describe('loadCalculator — calculateSuggestedWeight', () => {
   // ── Categorias de exercício ───────────────────────────────────────────────────
 
   it('exercício composto deve ter peso maior que isolamento', () => {
-    const compound = calculateSuggestedWeight(makeInput({ category: 'compound_multi', oneRM: 100 }));
-    const isolation = calculateSuggestedWeight(makeInput({ category: 'isolation_multi', oneRM: 100 }));
+    const compound = calculateSuggestedWeight(
+      makeInput({ category: 'compound_multi', oneRM: 100 }),
+    );
+    const isolation = calculateSuggestedWeight(
+      makeInput({ category: 'isolation_multi', oneRM: 100 }),
+    );
     expect(compound).toBeGreaterThan(isolation);
   });
 
@@ -120,13 +127,15 @@ describe('loadCalculator — calculateSuggestedWeight', () => {
   });
 
   it('deve calcular peso razoável para Barbell Squat (1RM=150kg, força)', () => {
-    const result = calculateSuggestedWeight(makeInput({
-      oneRM: 150,
-      targetReps: 4,
-      category: 'compound_multi',
-      userLevel: 'avancado',
-      goal: 'forca',
-    }));
+    const result = calculateSuggestedWeight(
+      makeInput({
+        oneRM: 150,
+        targetReps: 4,
+        category: 'compound_multi',
+        userLevel: 'avancado',
+        goal: 'forca',
+      }),
+    );
     // 150kg * 90% (4 reps) * 1.05 (avancado) * 1.1 (força) ≈ 156kg
     expect(result).toBeGreaterThan(120);
     expect(result).toBeLessThan(175);

@@ -21,24 +21,20 @@ export interface DemographicFeatures {
 
 // Mapa de substituição para exercícios de alto impacto (para idosos com dor >= 7)
 export const HIGH_IMPACT_REPLACEMENTS: Record<string, string> = {
-  'Agachamento': 'Agachamento na Caixa',
+  Agachamento: 'Agachamento na Caixa',
   'Agachamento Livre': 'Agachamento na Caixa',
-  'Saltos': 'Elevação de Joelhos',
-  'Burpees': 'Agachamento Lento',
+  Saltos: 'Elevação de Joelhos',
+  Burpees: 'Agachamento Lento',
   'Jumping Jacks': 'Marcha no Lugar',
   'Corda de Saltar': 'Step Lateral',
   'Box Jump': 'Step Up na Caixa',
-  'Lunge': 'Split Squat Assistido',
-  'Afundo': 'Leg Press',
-  'Corrida': 'Caminhada Rápida',
+  Lunge: 'Split Squat Assistido',
+  Afundo: 'Leg Press',
+  Corrida: 'Caminhada Rápida',
 };
 
 export const DemographicEngine = {
-  getProfileType(
-    age: number,
-    gender: string,
-    wantsCycleSyncing: boolean
-  ): DemographicProfile {
+  getProfileType(age: number, gender: string, wantsCycleSyncing: boolean): DemographicProfile {
     if (age <= 14) return 'youth_gamified';
     if (age >= 60) return 'senior_joint_focus';
     if (gender === 'female' && wantsCycleSyncing) return 'female_cycle_synced';

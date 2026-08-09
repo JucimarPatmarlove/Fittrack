@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('verifica a gravação de progressão no store cifrado', async ({ page }) => {
   // Configuração inicial: aceder à app e desbloquear
   await page.goto('/');
   await page.fill('input[placeholder="PIN"]', '1234');
-  
+
   // Tentar desbloquear. Se for a primeira vez, será "ENCRIPTAR DISCO"
   const unlockBtn = page.locator('button', { hasText: /DESBLOQUEAR|ENCRIPTAR DISCO/ });
   await unlockBtn.click();
@@ -66,7 +66,7 @@ test('verifica a gravação de progressão no store cifrado', async ({ page }) =
 
   // Como o dado está cifrado com AES-GCM, deve ser uma string longa Base64, e não JSON puro
   if (encryptedStoreData) {
-      expect(typeof encryptedStoreData).toBe('string');
-      expect(encryptedStoreData).not.toContain('"history"'); // Não deve ser JSON em plaintext
+    expect(typeof encryptedStoreData).toBe('string');
+    expect(encryptedStoreData).not.toContain('"history"'); // Não deve ser JSON em plaintext
   }
 });

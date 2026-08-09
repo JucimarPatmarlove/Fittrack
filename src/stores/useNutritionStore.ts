@@ -1,36 +1,43 @@
 // @ts-nocheck
 import { create } from 'zustand';
-import { DailyMealLog, HydrationLog, WeightLog, MealItem } from '../db/schema';
-import { 
-  getDailyMealLogDecrypted, 
-  saveDailyMealLog, 
-  getHydrationLogDecrypted, 
-  saveHydrationLog, 
-  getWeightLogDecrypted, 
+import {
+  getAllWeightLogsDecrypted,
+  getDailyMealLogDecrypted,
+  getHydrationLogDecrypted,
+  saveDailyMealLog,
+  saveHydrationLog,
   saveWeightLog,
-  getAllWeightLogsDecrypted
 } from '../db/encryptedDb';
+import type { DailyMealLog, HydrationLog, MealItem, WeightLog } from '../db/schema';
 
 interface NutritionState {
   currentMealLog: DailyMealLog | null;
   currentHydration: HydrationLog | null;
   weightHistory: WeightLog[];
   isLoading: boolean;
-  
+
   // Novas propriedades pedidas pelo Dashboard
   profile: any;
   meals: DailyMealLog[];
   hydration: HydrationLog[];
   currentDate: string;
-  
+
   // Actions
   loadNutritionData: (date: string) => Promise<void>;
-  addMeal: (date: string, mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', meal: MealItem) => Promise<void>;
-  removeMeal: (date: string, mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', mealId: string) => Promise<void>;
+  addMeal: (
+    date: string,
+    mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+    meal: MealItem,
+  ) => Promise<void>;
+  removeMeal: (
+    date: string,
+    mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+    mealId: string,
+  ) => Promise<void>;
   updateHydration: (date: string, ml: number) => Promise<void>;
   addWeightLog: (date: string, weight: number) => Promise<void>;
   loadAllWeightLogs: () => Promise<void>;
-  
+
   // Aliases e Novas Actions pedidas pelo Dashboard
   setCurrentDate: (date: string) => void;
   setWeight: (weight: number) => Promise<void>;
@@ -42,19 +49,26 @@ const createEmptyMealLog = (date: string): DailyMealLog => ({
   breakfast: [],
   lunch: [],
   snack: [],
-  dinner: []
+  dinner: [],
 });
 
 const getProfileSafe = () => {
   try {
     const p = JSON.parse(localStorage.getItem('fittrack_profile') || '{}');
     return {
-      weight: 75, height: 175, age: 30, gender: "male",
-      goal: "maintain", activityLevel: "moderate",
-      targetCalories: 2300, targetProtein: 140, targetCarb: 270, targetFat: 68,
-      ...p
+      weight: 75,
+      height: 175,
+      age: 30,
+      gender: 'male',
+      goal: 'maintain',
+      activityLevel: 'moderate',
+      targetCalories: 2300,
+      targetProtein: 140,
+      targetCarb: 270,
+      targetFat: 68,
+      ...p,
     };
-  } catch(e) {
+  } catch (e) {
     return { weight: 75, targetCalories: 2300, targetProtein: 140, targetCarb: 270, targetFat: 68 };
   }
 };
@@ -64,7 +78,7 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
   currentHydration: null,
   weightHistory: [],
   isLoading: false,
-  
+
   profile: getProfileSafe(),
   meals: [],
   hydration: [],
@@ -77,18 +91,18 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     try {
       const [mealLog, hydrationLog] = await Promise.all([
         getDailyMealLogDecrypted(date),
-        getHydrationLogDecrypted(date)
+        getHydrationLogDecrypted(date),
       ]);
-      
+
       const loadedMeal = mealLog || createEmptyMealLog(date);
       const loadedHydration = hydrationLog || { date, mlConsumed: 0 };
-      
-      set({ 
+
+      set({
         currentMealLog: loadedMeal,
         currentHydration: loadedHydration,
         meals: [loadedMeal],
         hydration: [loadedHydration],
-        isLoading: false
+        isLoading: false,
       });
     } catch (err) {
       console.error('[NutritionStore] Erro ao carregar dados:', err);
@@ -96,41 +110,49 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     }
   },
 
-  addMeal: async (date: string, mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', meal: MealItem) => {
+  addMeal: async (
+    date: string,
+    mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+    meal: MealItem,
+  ) => {
     const state = get();
     let mealLog = state.currentMealLog;
-    
+
     if (!mealLog || mealLog.date !== date) {
-      mealLog = await getDailyMealLogDecrypted(date) || createEmptyMealLog(date);
+      mealLog = (await getDailyMealLogDecrypted(date)) || createEmptyMealLog(date);
     }
-    
+
     const updatedLog = {
       ...mealLog,
-      [mealType]: [...mealLog[mealType], meal]
+      [mealType]: [...mealLog[mealType], meal],
     };
-    
+
     await saveDailyMealLog(updatedLog);
-    
+
     if (state.currentMealLog?.date === date) {
       set({ currentMealLog: updatedLog, meals: [updatedLog] });
     }
   },
 
-  removeMeal: async (date: string, mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', mealId: string) => {
+  removeMeal: async (
+    date: string,
+    mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+    mealId: string,
+  ) => {
     const state = get();
     let mealLog = state.currentMealLog;
-    
+
     if (!mealLog || mealLog.date !== date) {
-      mealLog = await getDailyMealLogDecrypted(date) || createEmptyMealLog(date);
+      mealLog = (await getDailyMealLogDecrypted(date)) || createEmptyMealLog(date);
     }
-    
+
     const updatedLog = {
       ...mealLog,
-      [mealType]: mealLog[mealType].filter((m: MealItem) => m.id !== mealId)
+      [mealType]: mealLog[mealType].filter((m: MealItem) => m.id !== mealId),
     };
-    
+
     await saveDailyMealLog(updatedLog);
-    
+
     if (state.currentMealLog?.date === date) {
       set({ currentMealLog: updatedLog, meals: [updatedLog] });
     }
@@ -139,18 +161,18 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
   updateHydration: async (date: string, ml: number) => {
     const state = get();
     let hydrationLog = state.currentHydration;
-    
+
     if (!hydrationLog || hydrationLog.date !== date) {
-      hydrationLog = await getHydrationLogDecrypted(date) || { date, mlConsumed: 0 };
+      hydrationLog = (await getHydrationLogDecrypted(date)) || { date, mlConsumed: 0 };
     }
-    
+
     const updatedLog = {
       ...hydrationLog,
-      mlConsumed: hydrationLog.mlConsumed + ml
+      mlConsumed: hydrationLog.mlConsumed + ml,
     };
-    
+
     await saveHydrationLog(updatedLog);
-    
+
     if (state.currentHydration?.date === date) {
       set({ currentHydration: updatedLog, hydration: [updatedLog] });
     }
@@ -181,7 +203,7 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     const updatedProfile = { ...currentProfile, weight };
     localStorage.setItem('fittrack_profile', JSON.stringify(updatedProfile));
     set({ profile: updatedProfile });
-    
+
     await get().addWeightLog(get().currentDate, weight);
-  }
+  },
 }));

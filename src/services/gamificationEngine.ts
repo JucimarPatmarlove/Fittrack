@@ -1,7 +1,7 @@
 // @ts-nocheck
 // src/services/gamificationEngine.ts
 import { getDB } from '../db/schema';
-import type { WorkoutSession, SetLog, PersonalRecord } from '../db/schema';
+import type { SetLog } from '../db/schema';
 
 export interface LevelThreshold {
   level: number;
@@ -42,15 +42,16 @@ export async function calculateWorkoutXP(workoutId: string): Promise<XPEvent[]> 
 
   if (!session || sets.length === 0) return events;
 
-  const baseXP = Math.floor(session.durationSeconds / 60) * 1; 
+  const baseXP = Math.floor(session.durationSeconds / 60) * 1;
   events.push({ amount: baseXP, reason: 'Tempo de treino' });
 
   // Fallback to the old logic if effortScore is missing (legacy workouts)
-  const effortScore = session.effortScore ?? sets.reduce((sum, s) => sum + (s.weightKg * s.repsCompleted), 0);
-  const effortXP = Math.floor(effortScore / 100) * 5; 
+  const effortScore =
+    session.effortScore ?? sets.reduce((sum, s) => sum + s.weightKg * s.repsCompleted, 0);
+  const effortXP = Math.floor(effortScore / 100) * 5;
   if (effortXP > 0) events.push({ amount: effortXP, reason: 'Esforço de Treino (Effort Score)' });
 
-  const hardSets = sets.filter(s => s.rpe >= 8).length;
+  const hardSets = sets.filter((s) => s.rpe >= 8).length;
   if (hardSets > 0) events.push({ amount: hardSets * 2, reason: 'Séries difíceis (RPE 8+)' });
 
   if (session.isCompleted) {
@@ -90,13 +91,13 @@ async function detectPRs(sets: SetLog[]): Promise<number> {
 export async function detectNewExercises(workoutId: string): Promise<string[]> {
   const db = await getDB();
   const sets = await db.getAllFromIndex('setLogs', 'by-workoutId', workoutId);
-  const uniqueExercises = new Set(sets.map(s => s.exerciseName));
+  const uniqueExercises = new Set(sets.map((s) => s.exerciseName));
   const newExercises: string[] = [];
 
   for (const exercise of uniqueExercises) {
     const range = IDBKeyRange.bound([exercise, 0], [exercise, Date.now()]);
     const previousLogs = await db.getAllFromIndex('setLogs', 'by-exercise-timestamp', range);
-    const hasPrevious = previousLogs.some(l => l.workoutId !== workoutId);
+    const hasPrevious = previousLogs.some((l) => l.workoutId !== workoutId);
     if (!hasPrevious) {
       newExercises.push(exercise);
     }
@@ -105,7 +106,10 @@ export async function detectNewExercises(workoutId: string): Promise<string[]> {
   return newExercises;
 }
 
-export async function syncUserStats(currentXP: number, workoutId: string): Promise<{
+export async function syncUserStats(
+  currentXP: number,
+  workoutId: string,
+): Promise<{
   newTotalXP: number;
   levelUp: boolean;
   events: XPEvent[];
@@ -115,7 +119,7 @@ export async function syncUserStats(currentXP: number, workoutId: string): Promi
   const events = await calculateWorkoutXP(workoutId);
   const gainedXP = events.reduce((sum, e) => sum + e.amount, 0);
   const newTotalXP = currentXP + gainedXP;
-  
+
   const newLevelInfo = getCurrentLevel(newTotalXP);
   const levelUp = newLevelInfo.level > currentLevelInfo.level;
 

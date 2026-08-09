@@ -1,7 +1,7 @@
 // src/components/ui/BackupRestoreModal.tsx
 // Modal de restauro automático de backup extraído do App.tsx.
 
-import React from 'react';
+import type React from 'react';
 import { C } from '../../data/constants';
 
 interface BackupRestoreModalProps {
@@ -48,8 +48,8 @@ export const BackupRestoreModal: React.FC<BackupRestoreModalProps> = ({
       </h2>
       <p style={{ fontSize: 14, color: C.text, marginBottom: 16 }}>
         Encontrámos um backup mais recente na tua Google Drive (
-        {new Date(createdTime).toLocaleString()}).
-        Desejas sincronizar agora e restaurar os teus dados de treino?
+        {new Date(createdTime).toLocaleString()}). Desejas sincronizar agora e restaurar os teus
+        dados de treino?
       </p>
       <div style={{ display: 'flex', gap: 12 }}>
         <button

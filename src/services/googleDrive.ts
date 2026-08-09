@@ -31,7 +31,9 @@ export async function initGoogleDrive() {
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-    await new Promise((resolve) => { script.onload = resolve; });
+    await new Promise((resolve) => {
+      script.onload = resolve;
+    });
   }
 
   // Carregar a API do Google Drive (gapi)
@@ -42,7 +44,9 @@ export async function initGoogleDrive() {
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-    await new Promise((resolve) => { script.onload = resolve; });
+    await new Promise((resolve) => {
+      script.onload = resolve;
+    });
   }
 
   await new Promise((resolve) => {
@@ -58,11 +62,14 @@ export async function initGoogleDrive() {
     scope: SCOPES,
     callback: (tokenResponse: any) => {
       if (tokenResponse.error) throw new Error(tokenResponse.error);
-      localStorage.setItem('google_drive_token', JSON.stringify({
-        access_token: tokenResponse.access_token,
-        expires_in: tokenResponse.expires_in,
-        expiry_date: Date.now() + tokenResponse.expires_in * 1000,
-      }));
+      localStorage.setItem(
+        'google_drive_token',
+        JSON.stringify({
+          access_token: tokenResponse.access_token,
+          expires_in: tokenResponse.expires_in,
+          expiry_date: Date.now() + tokenResponse.expires_in * 1000,
+        }),
+      );
     },
   });
   gisInited = true;
@@ -117,11 +124,14 @@ export async function uploadBackup(blob: Blob, filename: string): Promise<string
   form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
   form.append('file', blob);
 
-  const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-  });
+  const response = await fetch(
+    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    },
+  );
   if (!response.ok) throw new Error(`Upload falhou: ${response.statusText}`);
   const data = await response.json();
   return data.id;

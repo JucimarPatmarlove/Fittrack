@@ -1,8 +1,8 @@
 // src/components/recovery/SorenessMap.tsx
 
-import React from 'react';
 import { Activity } from 'lucide-react';
-import { BodyRegion } from '../../types/injury';
+import type React from 'react';
+import type { BodyRegion } from '../../types/injury';
 
 interface SorenessMapProps {
   soreness: Record<string, number>;
@@ -43,7 +43,7 @@ export const SorenessMap: React.FC<SorenessMapProps> = ({
 
   const getPainRadius = (level: number) => {
     if (level === 0) return 4;
-    return 4 + (level / 2); // Cresce conforme a dor
+    return 4 + level / 2; // Cresce conforme a dor
   };
 
   return (
@@ -65,12 +65,65 @@ export const SorenessMap: React.FC<SorenessMapProps> = ({
       <div className="relative w-full max-w-[280px] h-[350px] mx-auto">
         <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl">
           {/* Silhueta Cibernética Dark */}
-          <ellipse cx="50" cy="8" rx="8" ry="10" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
-          <rect x="40" y="18" width="20" height="30" rx="4" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
-          <rect x="28" y="20" width="8" height="30" rx="3" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
-          <rect x="64" y="20" width="8" height="30" rx="3" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
-          <rect x="40" y="50" width="9" height="35" rx="3" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
-          <rect x="51" y="50" width="9" height="35" rx="3" fill="#1a222c" stroke="#2d3748" strokeWidth="0.5" />
+          <ellipse
+            cx="50"
+            cy="8"
+            rx="8"
+            ry="10"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
+          <rect
+            x="40"
+            y="18"
+            width="20"
+            height="30"
+            rx="4"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
+          <rect
+            x="28"
+            y="20"
+            width="8"
+            height="30"
+            rx="3"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
+          <rect
+            x="64"
+            y="20"
+            width="8"
+            height="30"
+            rx="3"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
+          <rect
+            x="40"
+            y="50"
+            width="9"
+            height="35"
+            rx="3"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
+          <rect
+            x="51"
+            y="50"
+            width="9"
+            height="35"
+            rx="3"
+            fill="#1a222c"
+            stroke="#2d3748"
+            strokeWidth="0.5"
+          />
 
           {/* Pontos de Dor Interativos */}
           {Object.entries(REGION_COORDS).map(([region, coords]) => {
@@ -82,7 +135,7 @@ export const SorenessMap: React.FC<SorenessMapProps> = ({
               <g key={region} onClick={() => onRegionClick(region)} className="cursor-pointer">
                 {/* Zona de Hitbox invisível para facilitar o toque no telemóvel */}
                 <circle cx={coords.x} cy={coords.y} r="8" fill="transparent" />
-                
+
                 {/* Indicador Visual */}
                 <circle
                   cx={coords.x}
@@ -93,7 +146,7 @@ export const SorenessMap: React.FC<SorenessMapProps> = ({
                   className={level >= 7 ? 'animate-pulse' : 'transition-all duration-300'}
                   style={{ filter: level > 0 ? `drop-shadow(0 0 4px ${color})` : 'none' }}
                 />
-                
+
                 {/* Label de número se tiver dor */}
                 {level > 0 && (
                   <text
@@ -120,13 +173,18 @@ export const SorenessMap: React.FC<SorenessMapProps> = ({
           <p className="text-xs text-gray-400 font-semibold mb-2 uppercase">Zonas Afetadas:</p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(soreness).map(([region, level]) => (
-              <div 
-                key={region} 
+              <div
+                key={region}
                 onClick={() => onClearRegion(region)}
                 className="flex items-center gap-2 bg-[#0f141a] px-3 py-1.5 rounded-full border border-gray-800 cursor-pointer hover:border-red-900 transition-colors"
               >
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: getPainColor(level) }} />
-                <span className="text-xs text-gray-300 capitalize">{region.replace('_', ' ')}: {level}/10</span>
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: getPainColor(level) }}
+                />
+                <span className="text-xs text-gray-300 capitalize">
+                  {region.replace('_', ' ')}: {level}/10
+                </span>
                 <span className="text-gray-600 ml-1">×</span>
               </div>
             ))}

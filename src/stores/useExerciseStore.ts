@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { get, set } from 'idb-keyval';
+import { create } from 'zustand';
 // Define um tipo genérico para os exercícios de forma a evitar ciclos de dependência
 export interface ExerciseEntry {
   name: string;
@@ -12,7 +12,7 @@ export interface ExerciseEntry {
 }
 
 // Sobe este número sempre que alterares o ficheiro exercises.json
-const CURRENT_DB_VERSION = 1; 
+const CURRENT_DB_VERSION = 1;
 
 interface ExerciseState {
   exercises: Record<string, ExerciseEntry>;
@@ -39,12 +39,12 @@ export const useExerciseStore = create<ExerciseState>((setZustand, getZustand) =
       // Se não houver dados OU a versão estiver desatualizada, faz fetch
       if (!data || cachedVersion !== CURRENT_DB_VERSION) {
         console.log('[ExerciseStore] A descarregar nova base de dados de exercícios...');
-        
+
         const response = await fetch('/data/exercises.json');
         if (!response.ok) throw new Error('Falha ao aceder ao JSON de exercícios');
-        
+
         data = await response.json();
-        
+
         // Guarda na cache local assíncrona
         await set('fittrack_exercises_data', data);
         await set('fittrack_db_version', CURRENT_DB_VERSION);
@@ -55,5 +55,5 @@ export const useExerciseStore = create<ExerciseState>((setZustand, getZustand) =
       console.error('[ExerciseStore] Erro crítico:', err);
       setZustand({ error: err.message, isLoading: false });
     }
-  }
+  },
 }));

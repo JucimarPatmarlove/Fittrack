@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import type React from 'react';
+import { useState } from 'react';
 import { C } from '../../data/constants';
-import { deriveKey, decryptData } from '../../utils/cryptoEngine';
-import { rotateMasterKey, RotationProgress } from '../../services/keyRotationService';
-import { migrateLocalStorageToEncrypted, SENSITIVE_STORE_NAMES } from '../../stores/encryptedPersist';
+import { type RotationProgress, rotateMasterKey } from '../../services/keyRotationService';
+import {
+  SENSITIVE_STORE_NAMES,
+  migrateLocalStorageToEncrypted,
+} from '../../stores/encryptedPersist';
+import { decryptData, deriveKey } from '../../utils/cryptoEngine';
 
 interface LockScreenProps {
   onUnlock: (key: CryptoKey) => void;
@@ -50,10 +54,10 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
       }
 
       await migrateLocalStorageToEncrypted(key, [...SENSITIVE_STORE_NAMES]);
-      
+
       // Marca persistente — sobrevive à migração de encriptação (nunca mais pede "primeiro uso")
       localStorage.setItem('fittrack_initialized', Date.now().toString());
-      
+
       sessionStorage.setItem('fittrack_session_unlocked', 'true');
 
       onUnlock(key);
@@ -101,10 +105,32 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
   // ── UI: Ecrã de Desbloqueio ─────────────────────────────────────────────────
   if (mode === 'unlock') {
     return (
-      <div style={{ minHeight: '100vh', background: C.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ maxWidth: 320, width: '100%', textAlign: 'center' }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: C.bg,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 20,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          style={{ maxWidth: 320, width: '100%', textAlign: 'center' }}
+        >
           <span style={{ fontSize: 48, display: 'block', marginBottom: 16 }}>🔒</span>
-          <h1 style={{ fontFamily: "'Bebas Neue'", fontSize: 32, letterSpacing: 2, color: C.accent, marginBottom: 8 }}>
+          <h1
+            style={{
+              fontFamily: "'Bebas Neue'",
+              fontSize: 32,
+              letterSpacing: 2,
+              color: C.accent,
+              marginBottom: 8,
+            }}
+          >
             {isFirstTime ? 'CONFIGURAR PIN' : 'DESBLOQUEAR'}
           </h1>
           <p style={{ color: C.muted, fontSize: 13, marginBottom: 24, lineHeight: 1.5 }}>
@@ -114,18 +140,20 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
           </p>
 
           {isFirstTime && (
-            <div style={{
-              background: 'rgba(232,74,74,0.1)',
-              border: '1px solid rgba(232,74,74,0.3)',
-              borderRadius: 10,
-              padding: 12,
-              marginBottom: 20,
-              textAlign: 'left'
-            }}>
+            <div
+              style={{
+                background: 'rgba(232,74,74,0.1)',
+                border: '1px solid rgba(232,74,74,0.3)',
+                borderRadius: 10,
+                padding: 12,
+                marginBottom: 20,
+                textAlign: 'left',
+              }}
+            >
               <p style={{ color: '#fca5a5', fontSize: 11, lineHeight: 1.5, margin: 0 }}>
-                ⚠️ <strong style={{ color: '#fca5a5' }}>Atenção:</strong> Não existe forma de recuperar o PIN.
-                Se o perderes, todos os teus dados ficarão inacessíveis permanentemente.
-                Recomendamos guardar o PIN num gestor de passwords.
+                ⚠️ <strong style={{ color: '#fca5a5' }}>Atenção:</strong> Não existe forma de
+                recuperar o PIN. Se o perderes, todos os teus dados ficarão inacessíveis
+                permanentemente. Recomendamos guardar o PIN num gestor de passwords.
               </p>
             </div>
           )}
@@ -184,7 +212,11 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
           {!isFirstTime && (
             <button
               id="btn-change-pin"
-              onClick={() => { setMode('change-pin'); setError(''); setPin(''); }}
+              onClick={() => {
+                setMode('change-pin');
+                setError('');
+                setPin('');
+              }}
               style={{
                 marginTop: 20,
                 background: 'transparent',
@@ -206,7 +238,17 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
 
   // ── UI: Ecrã de Mudança de PIN ──────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: C.bg,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+      }}
+    >
       <motion.div
         key="change-pin"
         initial={{ opacity: 0, x: 20 }}
@@ -214,11 +256,20 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
         style={{ maxWidth: 320, width: '100%', textAlign: 'center' }}
       >
         <span style={{ fontSize: 48, display: 'block', marginBottom: 16 }}>🔑</span>
-        <h1 style={{ fontFamily: "'Bebas Neue'", fontSize: 28, letterSpacing: 2, color: C.accent, marginBottom: 8 }}>
+        <h1
+          style={{
+            fontFamily: "'Bebas Neue'",
+            fontSize: 28,
+            letterSpacing: 2,
+            color: C.accent,
+            marginBottom: 8,
+          }}
+        >
           MUDAR PIN
         </h1>
         <p style={{ color: C.muted, fontSize: 12, marginBottom: 24, lineHeight: 1.5 }}>
-          O processo re-cifra todos os teus dados com o novo PIN.<br />
+          O processo re-cifra todos os teus dados com o novo PIN.
+          <br />
           Não percas o novo PIN — não existe recuperação.
         </p>
 
@@ -237,14 +288,26 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
               }}
             >
               <span style={{ fontSize: 32, display: 'block', marginBottom: 8 }}>✅</span>
-              <p style={{ color: '#38b000', fontWeight: 'bold', margin: 0 }}>PIN alterado com sucesso!</p>
-              <p style={{ color: C.muted, fontSize: 11, marginTop: 4 }}>Todos os dados foram re-cifrados.</p>
+              <p style={{ color: '#38b000', fontWeight: 'bold', margin: 0 }}>
+                PIN alterado com sucesso!
+              </p>
+              <p style={{ color: C.muted, fontSize: 11, marginTop: 4 }}>
+                Todos os dados foram re-cifrados.
+              </p>
             </motion.div>
           ) : (
             <form key="form" onSubmit={handleRotation}>
               {/* PIN antigo */}
               <div style={{ marginBottom: 12, textAlign: 'left' }}>
-                <label style={{ fontSize: 11, color: C.muted, letterSpacing: 1, display: 'block', marginBottom: 6 }}>
+                <label
+                  style={{
+                    fontSize: 11,
+                    color: C.muted,
+                    letterSpacing: 1,
+                    display: 'block',
+                    marginBottom: 6,
+                  }}
+                >
                   PIN ACTUAL
                 </label>
                 <input
@@ -274,7 +337,15 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
 
               {/* Novo PIN */}
               <div style={{ marginBottom: 12, textAlign: 'left' }}>
-                <label style={{ fontSize: 11, color: C.muted, letterSpacing: 1, display: 'block', marginBottom: 6 }}>
+                <label
+                  style={{
+                    fontSize: 11,
+                    color: C.muted,
+                    letterSpacing: 1,
+                    display: 'block',
+                    marginBottom: 6,
+                  }}
+                >
                   NOVO PIN
                 </label>
                 <input
@@ -304,7 +375,15 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
 
               {/* Confirmar PIN */}
               <div style={{ marginBottom: 20, textAlign: 'left' }}>
-                <label style={{ fontSize: 11, color: C.muted, letterSpacing: 1, display: 'block', marginBottom: 6 }}>
+                <label
+                  style={{
+                    fontSize: 11,
+                    color: C.muted,
+                    letterSpacing: 1,
+                    display: 'block',
+                    marginBottom: 6,
+                  }}
+                >
                   CONFIRMAR NOVO PIN
                 </label>
                 <input
@@ -331,7 +410,9 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
                   }}
                 />
                 {confirmPin && confirmPin !== newPin && (
-                  <p style={{ color: '#e84a4a', fontSize: 11, marginTop: 4 }}>Os PINs não coincidem</p>
+                  <p style={{ color: '#e84a4a', fontSize: 11, marginTop: 4 }}>
+                    Os PINs não coincidem
+                  </p>
                 )}
               </div>
 
@@ -342,8 +423,17 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
                   animate={{ opacity: 1 }}
                   style={{ marginBottom: 16 }}
                 >
-                  <p style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>{rotationProgress.message}</p>
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                  <p style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>
+                    {rotationProgress.message}
+                  </p>
+                  <div
+                    style={{
+                      height: 4,
+                      background: 'rgba(255,255,255,0.05)',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                    }}
+                  >
                     <motion.div
                       animate={{ width: `${rotationProgress.progress || 0}%` }}
                       transition={{ type: 'spring', stiffness: 50 }}
@@ -362,7 +452,9 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
               <button
                 id="btn-confirm-rotation"
                 type="submit"
-                disabled={loading || oldPin.length < 4 || newPin.length < 4 || newPin !== confirmPin}
+                disabled={
+                  loading || oldPin.length < 4 || newPin.length < 4 || newPin !== confirmPin
+                }
                 style={{
                   width: '100%',
                   background: loading ? 'rgba(232,200,74,0.3)' : C.accent,
@@ -374,7 +466,10 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
                   fontSize: 18,
                   letterSpacing: 2,
                   cursor: loading || newPin !== confirmPin ? 'not-allowed' : 'pointer',
-                  opacity: loading || oldPin.length < 4 || newPin.length < 4 || newPin !== confirmPin ? 0.5 : 1,
+                  opacity:
+                    loading || oldPin.length < 4 || newPin.length < 4 || newPin !== confirmPin
+                      ? 0.5
+                      : 1,
                   transition: 'all 0.2s',
                 }}
               >
@@ -386,7 +481,14 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
 
         <button
           id="btn-back-to-unlock"
-          onClick={() => { setMode('unlock'); setError(''); setOldPin(''); setNewPin(''); setConfirmPin(''); setRotationSuccess(false); }}
+          onClick={() => {
+            setMode('unlock');
+            setError('');
+            setOldPin('');
+            setNewPin('');
+            setConfirmPin('');
+            setRotationSuccess(false);
+          }}
           style={{
             marginTop: 16,
             background: 'transparent',

@@ -1,9 +1,9 @@
+import { motion } from 'framer-motion';
 // @ts-nocheck
 // src/components/dashboard/CycleTracker.tsx
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { type CyclePhase, DemographicEngine } from '../../services/demographicEngine';
 import { GlassCard } from '../ui/GlassCard';
-import { DemographicEngine, CyclePhase } from '../../services/demographicEngine';
 
 const PHASE_CONFIG: Record<
   CyclePhase,
@@ -36,7 +36,7 @@ const PHASE_CONFIG: Record<
 };
 
 export function CycleTracker() {
-  const savedDay = parseInt(localStorage.getItem('fit_cycle_day') || '1', 10);
+  const savedDay = Number.parseInt(localStorage.getItem('fit_cycle_day') || '1', 10);
   const [cycleDay, setCycleDay] = useState(savedDay);
   const phase = DemographicEngine.getCyclePhaseFromDay(cycleDay);
   const intensityFactor = DemographicEngine.getCycleIntensityFactor(phase);
@@ -123,9 +123,7 @@ export function CycleTracker() {
             marginBottom: 6,
           }}
         >
-          <span style={{ fontSize: 11, color: '#55626e' }}>
-            Dia do ciclo
-          </span>
+          <span style={{ fontSize: 11, color: '#55626e' }}>Dia do ciclo</span>
           <span
             style={{
               fontFamily: "'DM Mono', monospace",
@@ -160,7 +158,10 @@ export function CycleTracker() {
         >
           <div style={{ flex: 5, background: '#ef4444', opacity: 0.6 }} title="Menstrual (1-5)" />
           <div style={{ flex: 8, background: '#22c55e', opacity: 0.6 }} title="Folicular (6-13)" />
-          <div style={{ flex: 2, background: '#f97316', opacity: 0.6 }} title="Ovulatória (14-15)" />
+          <div
+            style={{ flex: 2, background: '#f97316', opacity: 0.6 }}
+            title="Ovulatória (14-15)"
+          />
           <div style={{ flex: 13, background: '#a78bfa', opacity: 0.6 }} title="Lútea (16-28)" />
         </div>
         <div
@@ -190,9 +191,7 @@ export function CycleTracker() {
           padding: '8px 12px',
         }}
       >
-        <p style={{ fontSize: 12, color: '#eceae4', lineHeight: 1.5 }}>
-          💡 {config.tip}
-        </p>
+        <p style={{ fontSize: 12, color: '#eceae4', lineHeight: 1.5 }}>💡 {config.tip}</p>
       </motion.div>
     </GlassCard>
   );

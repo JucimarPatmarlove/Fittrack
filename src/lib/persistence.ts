@@ -1,4 +1,4 @@
-import { get, set, del } from 'idb-keyval';
+import { del, get, set } from 'idb-keyval';
 
 /**
  * Adaptador assíncrono para Zustand (ou outras libs)
@@ -28,5 +28,5 @@ export const idbStorage = {
     } catch (e) {
       console.warn(`[idbStorage] Erro ao apagar ${name}`, e);
     }
-  }
+  },
 };

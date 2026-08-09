@@ -1,25 +1,25 @@
 // @ts-nocheck
 // src/utils/loadCalculator.ts
-import { ExerciseCategory, Goal, UserLevel } from '../types/exercise';
+import type { ExerciseCategory, Goal, UserLevel } from '../types/exercise';
 
 export interface LoadCalculationInput {
-  oneRM: number;                   // 1RM estimado (kg)
-  targetReps: number;             // reps alvo (ex: 8)
+  oneRM: number; // 1RM estimado (kg)
+  targetReps: number; // reps alvo (ex: 8)
   category: ExerciseCategory;
   userLevel: UserLevel;
   age: number;
   goal: Goal;
-  injuryModifier?: number;        // 0.5 a 1.0 (default 1.0)
+  injuryModifier?: number; // 0.5 a 1.0 (default 1.0)
 }
 
 // Percentagem base (%1RM) por categoria e número de reps (calculamos uma função linear)
 // Valores de referência para 10 reps:
 const BASE_PERCENTAGE_10_REPS: Record<ExerciseCategory, number> = {
-  compound_multi: 70,      // 70% 1RM para 10 reps
-  compound_uni: 80,        // 80% 1RM
-  isolation_multi: 55,     // 55% 1RM
-  isolation_uni: 75,       // 75% 1RM
-  bodyweight: 0,           // bodyweight usa outra lógica
+  compound_multi: 70, // 70% 1RM para 10 reps
+  compound_uni: 80, // 80% 1RM
+  isolation_multi: 55, // 55% 1RM
+  isolation_uni: 75, // 75% 1RM
+  bodyweight: 0, // bodyweight usa outra lógica
 };
 
 // Ajuste por nível
@@ -34,7 +34,7 @@ const AGE_FACTOR = 0.85;
 
 // Ajuste por objetivo (multiplicador adicional sobre o factor base)
 const GOAL_FACTOR: Record<string, number> = {
-  forca: 1.1,      // mais peso
+  forca: 1.1, // mais peso
   hipertrofia: 1.0,
   resistencia: 0.85,
 };
@@ -43,7 +43,8 @@ function getSafeLevelFactor(level: UserLevel): number {
   const lvl = String(level || '').toLowerCase();
   if (LEVEL_FACTOR[lvl] !== undefined) return LEVEL_FACTOR[lvl];
   if (lvl.includes('begin') || lvl.includes('iniciante')) return LEVEL_FACTOR.iniciante;
-  if (lvl.includes('adv') || lvl.includes('avancado') || lvl.includes('pro')) return LEVEL_FACTOR.avancado;
+  if (lvl.includes('adv') || lvl.includes('avancado') || lvl.includes('pro'))
+    return LEVEL_FACTOR.avancado;
   return LEVEL_FACTOR.intermedio;
 }
 
@@ -51,7 +52,8 @@ function getSafeGoalFactor(goal: Goal): number {
   const g = String(goal || '').toLowerCase();
   if (GOAL_FACTOR[g] !== undefined) return GOAL_FACTOR[g];
   if (g.includes('forc') || g.includes('forç')) return GOAL_FACTOR.forca;
-  if (g.includes('resist') || g.includes('condicionamento') || g.includes('perda')) return GOAL_FACTOR.resistencia;
+  if (g.includes('resist') || g.includes('condicionamento') || g.includes('perda'))
+    return GOAL_FACTOR.resistencia;
   return GOAL_FACTOR.hipertrofia;
 }
 

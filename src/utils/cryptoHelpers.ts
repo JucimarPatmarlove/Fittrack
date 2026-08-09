@@ -3,12 +3,12 @@
 // Reutiliza as funções AES-GCM do cryptoEngine.ts existente,
 // adicionando serialização/deserialização JSON automática.
 
-import { encryptData as encryptString, decryptData as decryptString } from './cryptoEngine';
+import { decryptData as decryptString, encryptData as encryptString } from './cryptoEngine';
 
 /**
  * Cifra um objecto JavaScript com AES-GCM.
  * Serializa para JSON, depois cifra com a chave fornecida.
- * 
+ *
  * @param data Objecto a cifrar
  * @param key CryptoKey derivada do PIN do utilizador
  * @returns String Base64 com IV + ciphertext
@@ -20,7 +20,7 @@ export async function encryptJSON(data: any, key: CryptoKey): Promise<string> {
 
 /**
  * Decifra uma string Base64 para um objecto JavaScript.
- * 
+ *
  * @param encryptedBase64 String Base64 cifrada
  * @param key CryptoKey derivada do PIN do utilizador
  * @returns Objecto JavaScript original

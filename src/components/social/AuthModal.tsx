@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useSocialStore } from '../../stores/useSocialStore';
 import { C } from '../../data/constants';
+import { useSocialStore } from '../../stores/useSocialStore';
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -15,14 +15,24 @@ const inputStyle: React.CSSProperties = {
 };
 
 const SIGNIN_TEXT = 'Entra na tua conta para veres leaderboards, duelos e clubes.';
-const SIGNUP_TEXT = 'Cria uma conta pública — o teu username e as marcas que publicares ficam visíveis a outros utilizadores.';
-const SUBMIT_LABEL: Record<'signin' | 'signup', string> = { signin: 'ENTRAR', signup: 'CRIAR CONTA' };
+const SIGNUP_TEXT =
+  'Cria uma conta pública — o teu username e as marcas que publicares ficam visíveis a outros utilizadores.';
+const SUBMIT_LABEL: Record<'signin' | 'signup', string> = {
+  signin: 'ENTRAR',
+  signup: 'CRIAR CONTA',
+};
 const TOGGLE_LABEL: Record<'signin' | 'signup', string> = {
   signin: 'Ainda não tens conta? Regista-te',
   signup: 'Já tens conta? Entra',
 };
 
-function isSubmitDisabled(mode: 'signin' | 'signup', authLoading: boolean, email: string, password: string, username: string): boolean {
+function isSubmitDisabled(
+  mode: 'signin' | 'signup',
+  authLoading: boolean,
+  email: string,
+  password: string,
+  username: string,
+): boolean {
   if (authLoading || !email || !password) return true;
   return mode === 'signup' && !username;
 }
@@ -43,9 +53,12 @@ export const AuthModal = () => {
       await signIn(email, password);
       return;
     }
-    const clean = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    const clean = username
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_');
     if (clean.length < 3 || clean.length > 24) {
-      alert("O username deve ter entre 3 e 24 caracteres.");
+      alert('O username deve ter entre 3 e 24 caracteres.');
       return;
     }
     await signUp(email, password, clean);
@@ -81,9 +94,7 @@ export const AuthModal = () => {
         style={inputStyle}
       />
 
-      {authError && (
-        <p style={{ fontSize: 12, color: C.red, marginBottom: 8 }}>{authError}</p>
-      )}
+      {authError && <p style={{ fontSize: 12, color: C.red, marginBottom: 8 }}>{authError}</p>}
 
       <button
         onClick={handleSubmit}
@@ -105,7 +116,15 @@ export const AuthModal = () => {
 
       <button
         onClick={() => setMode(isSignIn ? 'signup' : 'signin')}
-        style={{ width: '100%', marginTop: 10, background: 'transparent', border: 'none', color: C.muted, fontSize: 12, cursor: 'pointer' }}
+        style={{
+          width: '100%',
+          marginTop: 10,
+          background: 'transparent',
+          border: 'none',
+          color: C.muted,
+          fontSize: 12,
+          cursor: 'pointer',
+        }}
       >
         {TOGGLE_LABEL[mode]}
       </button>

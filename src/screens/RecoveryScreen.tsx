@@ -1,23 +1,25 @@
 // @ts-nocheck
 // src/screens/RecoveryScreen.tsx
 
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { GlobalBackground } from '../components/ui/GlobalBackground';
-import { SleepInput } from '../components/recovery/SleepInput';
-import { SorenessMap } from '../components/recovery/SorenessMap';
+import { useEffect, useState } from 'react';
 import { HRVInput } from '../components/recovery/HRVInput';
 import { MoodTracker } from '../components/recovery/MoodTracker';
-import { useInjuryStore } from '../stores/useInjuryStore';
-import { RecoveryInput } from '../types/injury';
+import { SleepInput } from '../components/recovery/SleepInput';
+import { SorenessMap } from '../components/recovery/SorenessMap';
+import { GlobalBackground } from '../components/ui/GlobalBackground';
 import { calculateRecoveryScore } from '../services/injuryPrediction/recoveryTracker';
+import { useInjuryStore } from '../stores/useInjuryStore';
+import type { RecoveryInput } from '../types/injury';
 
 export default function RecoveryScreen() {
   const { recoveryData, setRecoveryData } = useInjuryStore();
-  
+
   const [hours, setHours] = useState(recoveryData?.sleepHours ?? 7);
   const [quality, setQuality] = useState(recoveryData?.sleepQuality ?? 6);
-  const [soreness, setSoreness] = useState<Record<string, number>>(recoveryData?.muscleSoreness ?? {});
+  const [soreness, setSoreness] = useState<Record<string, number>>(
+    recoveryData?.muscleSoreness ?? {},
+  );
   const [hrv, setHrv] = useState<number | undefined>(recoveryData?.hrv);
   const [restingHR, setRestingHR] = useState<number | undefined>(recoveryData?.restingHR);
   const [mood, setMood] = useState(recoveryData?.mood ?? 7);
@@ -41,10 +43,10 @@ export default function RecoveryScreen() {
   }, [hours, quality, soreness, hrv, restingHR, mood, stressLevel]);
 
   const handleRegionClick = (region: string) => {
-    setSoreness(prev => {
+    setSoreness((prev) => {
       const current = prev[region] || 0;
       const next = current >= 10 ? 0 : current + 2;
-      
+
       if (next === 0) {
         const copy = { ...prev };
         delete copy[region];
@@ -55,7 +57,7 @@ export default function RecoveryScreen() {
   };
 
   const handleClearRegion = (region: string) => {
-    setSoreness(prev => {
+    setSoreness((prev) => {
       const copy = { ...prev };
       delete copy[region];
       return copy;
@@ -93,10 +95,13 @@ export default function RecoveryScreen() {
             </h1>
             <p className="text-gray-400 text-sm">Atualiza o teu estado biológico diário</p>
           </div>
-          
+
           {score !== null && (
             <div className="flex flex-col items-center justify-center bg-[#131920] w-14 h-14 rounded-full border border-gray-800 shadow-lg">
-              <span className="font-bold text-lg leading-none" style={{ color: getScoreColor(score) }}>
+              <span
+                className="font-bold text-lg leading-none"
+                style={{ color: getScoreColor(score) }}
+              >
                 {score}
               </span>
               <span className="text-[9px] text-gray-500 font-bold">SCORE</span>
@@ -104,7 +109,11 @@ export default function RecoveryScreen() {
           )}
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <SleepInput
             hours={hours}
             quality={quality}
@@ -113,7 +122,11 @@ export default function RecoveryScreen() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
           <SorenessMap
             soreness={soreness}
             onRegionClick={handleRegionClick}
@@ -121,7 +134,11 @@ export default function RecoveryScreen() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
           <MoodTracker
             mood={mood}
             stressLevel={stressLevel}
@@ -130,7 +147,11 @@ export default function RecoveryScreen() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
           <HRVInput
             hrv={hrv}
             restingHR={restingHR}
@@ -139,7 +160,12 @@ export default function RecoveryScreen() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.4 }} className="mt-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+          className="mt-8"
+        >
           <button
             onClick={handleSave}
             disabled={saved}

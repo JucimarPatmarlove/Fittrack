@@ -6,23 +6,23 @@
 // Campos de índice (id, workoutId, exerciseName, timestamp) ficam em claro
 // para permitir queries eficientes.
 
+import { getMasterKey } from '../utils/cryptoEngine';
+import { decryptJSON, encryptJSON } from '../utils/cryptoHelpers';
 import {
-  SetLog,
-  WorkoutSession,
-  PersonalRecord,
-  addSetLog as rawAddSetLog,
-  addWorkoutSession as rawAddWorkoutSession,
-  getSetLogsByWorkout as rawGetSetLogsByWorkout,
-  getRecentSetLogsByExercise as rawGetRecentSetLogsByExercise,
-  upsertPersonalRecord as rawUpsertPersonalRecord,
-  getPersonalRecord,
+  type PersonalRecord,
+  type SetLog,
+  type WorkoutSession,
+  generateId,
+  getAllUniqueExercises as getAllExercisesFromHistory,
   getAllPersonalRecords,
   getAllWorkouts,
-  getAllUniqueExercises as getAllExercisesFromHistory,
-  generateId,
+  getPersonalRecord,
+  addSetLog as rawAddSetLog,
+  addWorkoutSession as rawAddWorkoutSession,
+  getRecentSetLogsByExercise as rawGetRecentSetLogsByExercise,
+  getSetLogsByWorkout as rawGetSetLogsByWorkout,
+  upsertPersonalRecord as rawUpsertPersonalRecord,
 } from './schema';
-import { getMasterKey } from '../utils/cryptoEngine';
-import { encryptJSON, decryptJSON } from '../utils/cryptoHelpers';
 
 // ─── CAMPOS SENSÍVEIS ────────────────────────────────────────────────────────
 
@@ -62,7 +62,7 @@ export async function saveSetLog(setLog: Omit<SetLog, 'id'>): Promise<string> {
   // Gravar com campos sensíveis zerados e o payload cifrado
   const encryptedSetLog: Omit<SetLog, 'id'> = {
     ...setLog,
-    weightKg: 0,        // Zerado — dados reais no encryptedFields
+    weightKg: 0, // Zerado — dados reais no encryptedFields
     repsCompleted: 0,
     rpe: 0,
     estimated1RM: 0,
@@ -110,7 +110,10 @@ export async function getSetLogsDecrypted(workoutId: string): Promise<SetLog[]> 
  * Lê e decifra os SetLogs recentes de um exercício.
  * Usado pelo trendAnalyzer para analisar tendências.
  */
-export async function getRecentSetLogsDecrypted(exerciseName: string, limit = 50): Promise<SetLog[]> {
+export async function getRecentSetLogsDecrypted(
+  exerciseName: string,
+  limit = 50,
+): Promise<SetLog[]> {
   const key = getMasterKey();
   const rawLogs = await rawGetRecentSetLogsByExercise(exerciseName, limit);
 
@@ -159,7 +162,7 @@ export async function updatePersonalRecord(
   exerciseName: string,
   estimated1RM: number,
   weightKg: number,
-  repsCompleted: number
+  repsCompleted: number,
 ): Promise<void> {
   const pr: PersonalRecord = {
     exerciseName,
@@ -174,16 +177,16 @@ export async function updatePersonalRecord(
 // ─── OPERAÇÕES CIFRADAS: Nutrição e Saúde ──────────────────────────────────────
 
 import {
-  DailyMealLog,
-  HydrationLog,
-  WeightLog,
-  getDailyMealLog as rawGetDailyMealLog,
-  upsertDailyMealLog as rawUpsertDailyMealLog,
-  getHydrationLog as rawGetHydrationLog,
-  upsertHydrationLog as rawUpsertHydrationLog,
-  getWeightLog as rawGetWeightLog,
-  upsertWeightLog as rawUpsertWeightLog,
+  type DailyMealLog,
+  type HydrationLog,
+  type WeightLog,
   getAllWeightLogs as rawGetAllWeightLogs,
+  getDailyMealLog as rawGetDailyMealLog,
+  getHydrationLog as rawGetHydrationLog,
+  getWeightLog as rawGetWeightLog,
+  upsertDailyMealLog as rawUpsertDailyMealLog,
+  upsertHydrationLog as rawUpsertHydrationLog,
+  upsertWeightLog as rawUpsertWeightLog,
 } from './schema';
 
 export async function saveDailyMealLog(log: Omit<DailyMealLog, 'encryptedFields'>): Promise<void> {
@@ -215,7 +218,10 @@ export async function getDailyMealLogDecrypted(date: string): Promise<DailyMealL
   if (!key || !rawLog.encryptedFields) return rawLog;
 
   try {
-    const sensitive = await decryptJSON<Omit<DailyMealLog, 'date' | 'encryptedFields'>>(rawLog.encryptedFields, key);
+    const sensitive = await decryptJSON<Omit<DailyMealLog, 'date' | 'encryptedFields'>>(
+      rawLog.encryptedFields,
+      key,
+    );
     return { ...rawLog, ...sensitive };
   } catch (e) {
     console.warn('[EncryptedDB] Falha ao decifrar DailyMealLog:', rawLog.date, e);
@@ -284,7 +290,7 @@ export async function getWeightLogDecrypted(date: string): Promise<WeightLog | u
 export async function getAllWeightLogsDecrypted(): Promise<WeightLog[]> {
   const key = getMasterKey();
   const rawLogs = await rawGetAllWeightLogs();
-  
+
   if (!key) return rawLogs;
 
   const decrypted: WeightLog[] = [];

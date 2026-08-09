@@ -1,7 +1,7 @@
 // src/components/recovery/HRVInput.tsx
 
-import React from 'react';
 import { Heart } from 'lucide-react';
+import type React from 'react';
 
 interface HRVInputProps {
   hrv?: number;
@@ -23,7 +23,8 @@ export const HRVInput: React.FC<HRVInputProps> = ({
           <Heart className="w-5 h-5 text-[#e8c84a]" />
         </div>
         <h3 className="font-['Bebas_Neue'] text-xl tracking-wide text-white m-0">
-          MÉTRICAS CARDÍACAS <span className="text-xs text-gray-500 font-sans tracking-normal">(Opcional)</span>
+          MÉTRICAS CARDÍACAS{' '}
+          <span className="text-xs text-gray-500 font-sans tracking-normal">(Opcional)</span>
         </h3>
       </div>
 
@@ -38,7 +39,7 @@ export const HRVInput: React.FC<HRVInputProps> = ({
               placeholder="Ex: 55"
               value={hrv || ''}
               onChange={(e) => {
-                const val = parseInt(e.target.value);
+                const val = Number.parseInt(e.target.value);
                 onHRVChange(isNaN(val) ? undefined : val);
               }}
               className="w-full bg-[#0f141a] border border-gray-800 rounded-lg p-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#e8c84a] transition-colors"
@@ -56,7 +57,7 @@ export const HRVInput: React.FC<HRVInputProps> = ({
               placeholder="Ex: 50"
               value={restingHR || ''}
               onChange={(e) => {
-                const val = parseInt(e.target.value);
+                const val = Number.parseInt(e.target.value);
                 onRestingHRChange(isNaN(val) ? undefined : val);
               }}
               className="w-full bg-[#0f141a] border border-gray-800 rounded-lg p-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#e8c84a] transition-colors"
@@ -64,7 +65,7 @@ export const HRVInput: React.FC<HRVInputProps> = ({
           </div>
         </div>
       </div>
-      
+
       <p className="text-[10px] text-gray-500 mt-3 font-mono">
         {'>'} Deixa em branco se não tiveres um smartwatch/anel.
       </p>

@@ -5,9 +5,8 @@
 // Cifra/decifra com a masterKey actual.
 // ════════════════════════════════════════════════════════════════
 
-import { encryptData, decryptData, getMasterKey } from '../utils/cryptoEngine';
 import { getDB } from '../db/schema';
-import { SENSITIVE_STORE_NAMES } from '../stores/encryptedPersist';
+import { decryptData, encryptData, getMasterKey } from '../utils/cryptoEngine';
 
 /**
  * Exporta todo o estado do utilizador para um Blob cifrado.
@@ -27,7 +26,7 @@ export async function exportEncryptedBackup(): Promise<Blob> {
   // Como as stores SENSITIVE_STORE_NAMES estão no IndexedDB agora,
   // precisamos aceder ao fittrack_zustand_encrypted
   const zustandState: Record<string, any> = {};
-  
+
   // Como SENSITIVE_STORE_NAMES migrou para IDB, vamos ler diretamente de lá
   await new Promise<void>((resolve, reject) => {
     const req = indexedDB.open('FitTrack_V7_ZustandStore', 1);
@@ -38,15 +37,15 @@ export async function exportEncryptedBackup(): Promise<Blob> {
         const store = tx.objectStore('fittrack_zustand_encrypted');
         const getAllReq = store.getAll();
         const getKeysReq = store.getAllKeys();
-        
+
         getAllReq.onsuccess = () => {
           getKeysReq.onsuccess = () => {
             const keys = getKeysReq.result;
             const values = getAllReq.result;
             keys.forEach((k: string, i: number) => {
-               zustandState[k] = values[i]; // valor já está cifrado no IDB, mas queremos o plaintext para o backup global cifrar tudo junto?
-               // Na verdade, se já está cifrado no IDB (Zustand), podemos guardar cifrado dentro do backup cifrado (dupla cifra),
-               // ou guardar assim mesmo. O mais fácil é exportar o valor bruto do IDB e restaurá-lo bruto.
+              zustandState[k] = values[i]; // valor já está cifrado no IDB, mas queremos o plaintext para o backup global cifrar tudo junto?
+              // Na verdade, se já está cifrado no IDB (Zustand), podemos guardar cifrado dentro do backup cifrado (dupla cifra),
+              // ou guardar assim mesmo. O mais fácil é exportar o valor bruto do IDB e restaurá-lo bruto.
             });
             resolve();
           };
@@ -139,9 +138,13 @@ export async function importEncryptedBackup(encryptedBlob: Blob): Promise<void> 
  * Verifica de forma silenciosa se existe um backup mais recente no Google Drive
  * do que a última atividade registada localmente.
  */
-export async function checkForNewerBackup(): Promise<{ id: string; name: string; createdTime: string } | null> {
+export async function checkForNewerBackup(): Promise<{
+  id: string;
+  name: string;
+  createdTime: string;
+} | null> {
   const { getStoredToken, listBackups } = await import('./googleDrive');
-  
+
   // 1. Verifica silenciosamente se há token (sem forçar login)
   const token = getStoredToken();
   if (!token) return null;
@@ -158,10 +161,12 @@ export async function checkForNewerBackup(): Promise<{ id: string; name: string;
     const db = await getDB();
     const workouts = await db.getAll('workouts');
     let lastLocalTime = 0;
-    
+
     if (workouts.length > 0) {
       // Procurar o treino mais recente
-      const sortedWorkouts = workouts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const sortedWorkouts = workouts.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
       lastLocalTime = new Date(sortedWorkouts[0].date).getTime();
     } else {
       // Se não há treinos, ver se existe um perfil ativo

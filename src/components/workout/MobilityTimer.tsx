@@ -1,8 +1,8 @@
+import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
 // src/components/workout/MobilityTimer.tsx
 // Temporizador de "tempo sob tensão" para o modo Mobilidade
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   exerciseName: string;
@@ -71,9 +71,7 @@ export function MobilityTimer({ exerciseName, defaultSeconds = 30 }: Props) {
           >
             🧘 TEMPO SOB TENSÃO
           </p>
-          <p style={{ fontSize: 14, color: '#eceae4', fontWeight: 600 }}>
-            {exerciseName}
-          </p>
+          <p style={{ fontSize: 14, color: '#eceae4', fontWeight: 600 }}>{exerciseName}</p>
         </div>
 
         {/* Duração em segundos */}
@@ -133,8 +131,18 @@ export function MobilityTimer({ exerciseName, defaultSeconds = 30 }: Props) {
       {/* Círculo de progresso */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
         <div style={{ position: 'relative', width: 100, height: 100 }}>
-          <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
-            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(167,139,250,0.15)" strokeWidth="8" />
+          <svg
+            viewBox="0 0 100 100"
+            style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="rgba(167,139,250,0.15)"
+              strokeWidth="8"
+            />
             <circle
               cx="50"
               cy="50"
@@ -192,9 +200,7 @@ export function MobilityTimer({ exerciseName, defaultSeconds = 30 }: Props) {
           disabled={completed}
           style={{
             flex: 2,
-            background: isRunning
-              ? 'rgba(239, 68, 68, 0.2)'
-              : 'rgba(167, 139, 250, 0.25)',
+            background: isRunning ? 'rgba(239, 68, 68, 0.2)' : 'rgba(167, 139, 250, 0.25)',
             border: `1px solid ${isRunning ? '#ef4444' : '#a78bfa'}`,
             borderRadius: 10,
             padding: 12,

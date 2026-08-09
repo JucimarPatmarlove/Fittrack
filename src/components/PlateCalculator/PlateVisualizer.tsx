@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { motion } from "framer-motion";
-import { PlateResult } from "../../utils/plateCalculator";
+import { motion } from 'framer-motion';
+import type { PlateResult } from '../../utils/plateCalculator';
 
 interface Props {
   plates: PlateResult[];
@@ -38,7 +38,7 @@ export function PlateVisualizer({ plates, barWeight }: Props) {
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ duration: 0.2, delay: i * 0.03 }}
-        />
+        />,
       );
       currentX += DISC_WIDTH;
     }
@@ -46,7 +46,7 @@ export function PlateVisualizer({ plates, barWeight }: Props) {
 
   // Espelha para o outro lado
   const mirror = discElements.map((el, idx) => {
-    const originalX = parseFloat(el.props.x);
+    const originalX = Number.parseFloat(el.props.x);
     const mirroredX = BAR_WIDTH - originalX - DISC_WIDTH;
     return (
       <rect
@@ -71,14 +71,7 @@ export function PlateVisualizer({ plates, barWeight }: Props) {
       preserveAspectRatio="xMidYMid meet"
     >
       {/* Barra */}
-      <rect
-        x="10"
-        y={BAR_HEIGHT / 2 - 4}
-        width={BAR_WIDTH + 20}
-        height={8}
-        fill="#aaa"
-        rx={4}
-      />
+      <rect x="10" y={BAR_HEIGHT / 2 - 4} width={BAR_WIDTH + 20} height={8} fill="#aaa" rx={4} />
       {/* Zona central (pegada) */}
       <rect
         x={BAR_WIDTH / 2 - 20}

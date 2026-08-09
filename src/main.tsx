@@ -1,20 +1,23 @@
+import * as Sentry from '@sentry/react';
+import posthog from 'posthog-js';
+import { PostHogProvider } from 'posthog-js/react';
+import { initTelemetry, initWebVitals, initializeErrorTracking } from './utils/telemetry';
 // @ts-nocheck
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import * as Sentry from '@sentry/react'
-import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-import './index.css'
-import App from './App'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+// ── INIT TELEMETRY E MONITORIZAÇÃO ────────────────────────
+initTelemetry();
+initializeErrorTracking();
+initWebVitals();
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.MODE,
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
+    integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
     // Tracing
     tracesSampleRate: 1.0, // Capture 100% of the transactions
     // Session Replay
@@ -33,17 +36,20 @@ if (import.meta.env.VITE_POSTHOG_KEY) {
 
 // Limpar Service Workers problemáticos que possam causar tela branca
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(reg => {
-      reg.unregister().then(() => {
-        console.info('[SW] Service Worker removido para evitar cache obsoleto')
-      })
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => {
+      registrations.forEach((reg) => {
+        reg.unregister().then(() => {
+          console.info('[SW] Service Worker removido para evitar cache obsoleto');
+        });
+      });
     })
-  }).catch(() => {})
+    .catch(() => {});
 }
 
 // Renderizar PRIMEIRO — a app NUNCA deve ficar em branco
-const root = document.getElementById('root')
+const root = document.getElementById('root');
 if (root) {
   try {
     createRoot(root).render(
@@ -52,16 +58,16 @@ if (root) {
           <App />
         </PostHogProvider>
       </StrictMode>,
-    )
+    );
 
     // Esconder Splash Screen Nativa (com animação)
     setTimeout(() => {
-      const splash = document.getElementById('fittrack-splash')
+      const splash = document.getElementById('fittrack-splash');
       if (splash) {
-        splash.classList.add('hidden')
-        setTimeout(() => splash.remove(), 600) // Limpar do DOM após fade
+        splash.classList.add('hidden');
+        setTimeout(() => splash.remove(), 600); // Limpar do DOM após fade
       }
-    }, 150)
+    }, 150);
   } catch (err) {
     // Fallback absoluto: se o React crashar, mostra o erro
     root.innerHTML = `
@@ -75,14 +81,15 @@ if (root) {
           </button>
         </div>
       </div>
-    `
+    `;
   }
 }
 
 // 2. Registo Silencioso do Service Worker (Resiliência Offline)
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
       .then((registration) => {
         console.log('[Service Worker] Blindagem Offline ativada com sucesso.', registration.scope);
       })

@@ -16,44 +16,47 @@ export const useMilestonesStore = create<MilestonesState>()(
     (set, get) => ({
       prs: {},
       milestones: {},
-      setPR: (exerciseName, weight) => set((state) => ({
-        prs: { ...state.prs, [exerciseName]: weight }
-      })),
+      setPR: (exerciseName, weight) =>
+        set((state) => ({
+          prs: { ...state.prs, [exerciseName]: weight },
+        })),
       getPR: (exerciseName) => get().prs[exerciseName] || 0,
       unlockMilestone: (id) => {
         if (!get().milestones[id]) {
           set((state) => ({
-            milestones: { ...state.milestones, [id]: Date.now() }
+            milestones: { ...state.milestones, [id]: Date.now() },
           }));
         }
-      }
+      },
     }),
     {
       name: 'milestones-store',
-      storage: createEncryptedStorage()
-    }
-  )
+      storage: createEncryptedStorage(),
+    },
+  ),
 );
 
 export function calculateStreak(history: WorkoutSession[]): number {
   if (!history || history.length === 0) return 0;
-  
-  const dates = history.map(w => new Date(w.date).toISOString().split('T')[0]);
-  const uniqueDates = [...new Set(dates)].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-  
+
+  const dates = history.map((w) => new Date(w.date).toISOString().split('T')[0]);
+  const uniqueDates = [...new Set(dates)].sort(
+    (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+  );
+
   if (uniqueDates.length === 0) return 0;
-  
+
   let streak = 0;
   const currentDate = new Date();
-  
+
   // check if there's a workout today or yesterday
   const todayStr = currentDate.toISOString().split('T')[0];
   const yesterdayStr = new Date(currentDate.getTime() - 86400000).toISOString().split('T')[0];
-  
+
   if (uniqueDates[0] !== todayStr && uniqueDates[0] !== yesterdayStr) {
     return 0; // broken streak
   }
-  
+
   let checkDate = new Date(uniqueDates[0]);
   for (let i = 0; i < uniqueDates.length; i++) {
     const dStr = checkDate.toISOString().split('T')[0];
@@ -64,6 +67,6 @@ export function calculateStreak(history: WorkoutSession[]): number {
       break;
     }
   }
-  
+
   return streak;
 }

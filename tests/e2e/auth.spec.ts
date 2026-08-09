@@ -1,7 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Zero Trust Auth Flow', () => {
-  test('deve solicitar token efémero ao servidor e não conter segredos no cliente', async ({ page }) => {
+  test('deve solicitar token efémero ao servidor e não conter segredos no cliente', async ({
+    page,
+  }) => {
     let tokenRequested = false;
 
     // Interceptar o endpoint para garantir que a arquitetura Zero Trust está a ser respeitada
@@ -9,7 +11,7 @@ test.describe('Zero Trust Auth Flow', () => {
       tokenRequested = true;
       const request = route.request();
       expect(request.method()).toBe('POST');
-      
+
       const postData = JSON.parse(request.postData() || '{}');
       expect(postData.nonce).toBeDefined();
       expect(postData.timestamp).toBeDefined();
@@ -17,7 +19,7 @@ test.describe('Zero Trust Auth Flow', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ token: 'mocked-jwt-token-12345' })
+        body: JSON.stringify({ token: 'mocked-jwt-token-12345' }),
       });
     });
 
@@ -28,13 +30,13 @@ test.describe('Zero Trust Auth Flow', () => {
 
     // Como o token só é pedido on-demand, disparamos a função programaticamente no contexto da página
     const token = await page.evaluate(async () => {
-       try {
-         // Importação dinâmica para contornar contexto do Playwright e aceder diretamente ao engine
-         const mod = await import('/src/services/jwtEngine.ts' as any);
-         return await mod.generateShortLivedToken();
-       } catch (e) {
-         return 'erro_na_importacao';
-       }
+      try {
+        // Importação dinâmica para contornar contexto do Playwright e aceder diretamente ao engine
+        const mod = await import('/src/services/jwtEngine.ts' as any);
+        return await mod.generateShortLivedToken();
+      } catch (e) {
+        return 'erro_na_importacao';
+      }
     });
 
     expect(tokenRequested).toBe(true);

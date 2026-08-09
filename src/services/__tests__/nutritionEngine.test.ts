@@ -3,9 +3,9 @@
 // Testes unitários para calculateMacros() — Equação de Mifflin-St Jeor
 // Cobre diferentes perfis (male, female, lose_weight, gain_muscle) e edge cases.
 
-import { describe, it, expect } from 'vitest';
-import { calculateMacros, FitnessGoal, ActivityLevel } from '../nutritionEngine';
-import { UserProfile } from '../../types';
+import { describe, expect, it } from 'vitest';
+import type { UserProfile } from '../../types';
+import { calculateMacros } from '../nutritionEngine';
 
 const baseProfile: UserProfile = {
   name: 'Test User',
@@ -18,9 +18,7 @@ const baseProfile: UserProfile = {
 };
 
 describe('nutritionEngine — calculateMacros', () => {
-
   describe('Mifflin-St Jeor BMR Calculation', () => {
-
     it('calcula BMR correctamente para homem (male)', () => {
       const result = calculateMacros({ ...baseProfile, gender: 'male' });
       // BMR male = 10*80 + 6.25*178 - 5*28 + 5 = 800 + 1112.5 - 140 + 5 = 1777.5
@@ -30,7 +28,13 @@ describe('nutritionEngine — calculateMacros', () => {
     });
 
     it('calcula BMR correctamente para mulher (female)', () => {
-      const result = calculateMacros({ ...baseProfile, gender: 'female', weight: 60, height: 165, age: 25 });
+      const result = calculateMacros({
+        ...baseProfile,
+        gender: 'female',
+        weight: 60,
+        height: 165,
+        age: 25,
+      });
       // BMR female = 10*60 + 6.25*165 - 5*25 - 161 = 600 + 1031.25 - 125 - 161 = 1345.25
       // TDEE = 1345.25 * 1.55 = 2085 (rounded)
       // Hipertrofia = 2085 + 400 = 2485
@@ -47,7 +51,6 @@ describe('nutritionEngine — calculateMacros', () => {
   });
 
   describe('Goal-based calorie adjustments', () => {
-
     it('aplica déficit calórico para perda_peso', () => {
       const result = calculateMacros({ ...baseProfile, goal: 'perda_peso' });
       // TDEE = 2755 (male, 80kg, 178cm, 28y, moderate)
@@ -94,7 +97,14 @@ describe('nutritionEngine — calculateMacros', () => {
         height: 150,
         age: 60,
         gender: 'female',
-        anamnesis: { activityLevel: 'sedentario', medicalConditions: [], weeklyFrequencyTarget: 0, goalPriorities: [], targetZone: '', motivationScore: 0 },
+        anamnesis: {
+          activityLevel: 'sedentario',
+          medicalConditions: [],
+          weeklyFrequencyTarget: 0,
+          goalPriorities: [],
+          targetZone: '',
+          motivationScore: 0,
+        },
       });
       // BMR female = 10*40 + 6.25*150 - 5*60 - 161 = 400 + 937.5 - 300 - 161 = 876.5
       // TDEE = 876.5 * 1.2 = 1052 (rounded)
@@ -104,7 +114,6 @@ describe('nutritionEngine — calculateMacros', () => {
   });
 
   describe('Macro split ratios', () => {
-
     it('aplica ratio 30/45/25 para hipertrofia (GAIN_MUSCLE)', () => {
       const result = calculateMacros({ ...baseProfile, goal: 'hipertrofia' });
       // targetCalories = 3155
@@ -140,12 +149,18 @@ describe('nutritionEngine — calculateMacros', () => {
   });
 
   describe('Activity level multipliers', () => {
-
     it('aplica multiplicador sedentário (1.2) via anamnese', () => {
       const result = calculateMacros({
         ...baseProfile,
         goal: 'hipertrofia',
-        anamnesis: { activityLevel: 'sedentario', medicalConditions: [], weeklyFrequencyTarget: 0, goalPriorities: [], targetZone: '', motivationScore: 0 },
+        anamnesis: {
+          activityLevel: 'sedentario',
+          medicalConditions: [],
+          weeklyFrequencyTarget: 0,
+          goalPriorities: [],
+          targetZone: '',
+          motivationScore: 0,
+        },
       });
       // BMR = 1777.5, TDEE = 1777.5 * 1.2 = 2133, + 400 = 2533
       expect(result.targetCalories).toBe(2533);
@@ -155,7 +170,14 @@ describe('nutritionEngine — calculateMacros', () => {
       const result = calculateMacros({
         ...baseProfile,
         goal: 'hipertrofia',
-        anamnesis: { activityLevel: 'praticante_regular', medicalConditions: [], weeklyFrequencyTarget: 0, goalPriorities: [], targetZone: '', motivationScore: 0 },
+        anamnesis: {
+          activityLevel: 'praticante_regular',
+          medicalConditions: [],
+          weeklyFrequencyTarget: 0,
+          goalPriorities: [],
+          targetZone: '',
+          motivationScore: 0,
+        },
       });
       // BMR = 1777.5, TDEE = 1777.5 * 1.725 = 3066, + 400 = 3466
       expect(result.targetCalories).toBe(3466);
@@ -163,9 +185,13 @@ describe('nutritionEngine — calculateMacros', () => {
   });
 
   describe('Edge cases e defaults', () => {
-
     it('aplica defaults quando campos estão vazios', () => {
-      const result = calculateMacros({ name: 'Atleta', goal: 'hipertrofia', level: 'beginner', weight: 0 } as UserProfile);
+      const result = calculateMacros({
+        name: 'Atleta',
+        goal: 'hipertrofia',
+        level: 'beginner',
+        weight: 0,
+      } as UserProfile);
       // weight=0 usa default=70, height default=170, age default=30, gender default=other
       // BMR other = 10*70 + 6.25*170 - 5*30 - 78 = 700 + 1062.5 - 150 - 78 = 1534.5
       // TDEE = 1534.5 * 1.55 = 2378 (rounded)
@@ -195,7 +221,8 @@ describe('nutritionEngine — calculateMacros', () => {
 
     it('macros somam aproximadamente as calorias target (±5%)', () => {
       const result = calculateMacros(baseProfile);
-      const caloriesFromMacros = (result.targetProtein! * 4) + (result.targetCarb! * 4) + (result.targetFat! * 9);
+      const caloriesFromMacros =
+        result.targetProtein! * 4 + result.targetCarb! * 4 + result.targetFat! * 9;
       const tolerance = result.targetCalories! * 0.05;
       expect(Math.abs(caloriesFromMacros - result.targetCalories!)).toBeLessThanOrEqual(tolerance);
     });

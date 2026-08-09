@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const storesDir = path.resolve(__dirname, '../src/stores');
 
-const files = fs.readdirSync(storesDir).filter(f => f.endsWith('.ts') && !f.includes('.test'));
+const files = fs.readdirSync(storesDir).filter((f) => f.endsWith('.ts') && !f.includes('.test'));
 
 console.log('📦 Zustand Stores - Auditoria de Persistência\n');
 for (const file of files) {

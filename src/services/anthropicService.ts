@@ -10,12 +10,12 @@
 // O SDK @anthropic-ai/sdk NÃO é importado no cliente.
 // ════════════════════════════════════════════════════════════════
 
-import { WorkoutSession } from "../db/schema";;
-import { getCachedWorkout, cacheWorkout } from "../ai/cacheLayer";
-import { OfflineWorkoutEngine } from "./offlineWorkoutEngine";
-import { useEffortStore } from "../stores/useEffortStore";
-import { generateShortLivedToken } from "./jwtEngine";
-import { MacrocycleEngine } from "./macrocycleEngine";
+import { cacheWorkout, getCachedWorkout } from '../ai/cacheLayer';
+import type { WorkoutSession } from '../db/schema';
+import { useEffortStore } from '../stores/useEffortStore';
+import { generateShortLivedToken } from './jwtEngine';
+import { MacrocycleEngine } from './macrocycleEngine';
+import { OfflineWorkoutEngine } from './offlineWorkoutEngine';
 
 // ── URL do Proxy BFF (configurável via variável de ambiente) ──
 // Em dev: o Vite proxy redireciona /api/* → localhost:3001 (ver vite.config.js)
@@ -25,33 +25,40 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 // ── Helper: Chamada segura ao proxy com JWT ──
 async function callProxy(endpoint: string, payload: any): Promise<any> {
   const url = `${API_URL}${endpoint}`;
-  
+
   // Gerar JWT de curta duração (60s) para autenticar o pedido
   const token = await generateShortLivedToken();
-  
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: { message: response.statusText } }));
+    const errorData = await response
+      .json()
+      .catch(() => ({ error: { message: response.statusText } }));
     let errorMessage = errorData.error?.message || `Proxy error: ${response.status}`;
-    
-      // Interceptar problemas de timestamp específicos do server.ts
-      if (errorMessage.includes('expirado') || errorMessage.includes('dessincronizado') || errorMessage.includes('clock')) {
-        errorMessage = '⚠️ O relógio do teu dispositivo está desfasado da hora global.\n\n' +
-          '🔧 Como resolver:\n' +
-          '  • Android: Definições → Sistema → Data e Hora → "Automático"\n' +
-          '  • iOS:   Definições → Geral → Data e Hora → "Definir Automaticamente"\n' +
-          '  • PC:    Ativar sincronização de hora nas definições do sistema operativo\n\n' +
-          'Após corrigir, reinicia a aplicação para o AI Coach voltar a funcionar.';
-      }
-    
+
+    // Interceptar problemas de timestamp específicos do server.ts
+    if (
+      errorMessage.includes('expirado') ||
+      errorMessage.includes('dessincronizado') ||
+      errorMessage.includes('clock')
+    ) {
+      errorMessage =
+        '⚠️ O relógio do teu dispositivo está desfasado da hora global.\n\n' +
+        '🔧 Como resolver:\n' +
+        '  • Android: Definições → Sistema → Data e Hora → "Automático"\n' +
+        '  • iOS:   Definições → Geral → Data e Hora → "Definir Automaticamente"\n' +
+        '  • PC:    Ativar sincronização de hora nas definições do sistema operativo\n\n' +
+        'Após corrigir, reinicia a aplicação para o AI Coach voltar a funcionar.';
+    }
+
     throw new Error(errorMessage);
   }
 
@@ -100,10 +107,10 @@ ${JSON.stringify(recentHistory)}
 
     try {
       const data = await callProxy('/api/claude', {
-        model: "claude-3-haiku-20240307",
+        model: 'claude-3-haiku-20240307',
         max_tokens: 300,
         system: systemPrompt,
-        messages: [{ role: "user", content: prompt }]
+        messages: [{ role: 'user', content: prompt }],
       });
 
       return data.content[0].text;
@@ -117,7 +124,11 @@ ${JSON.stringify(recentHistory)}
    * Gera um treino preditivo com IA.
    * Tenta primeiro o cache local, depois o proxy BFF, e por fim o motor offline.
    */
-  async generateWorkout(profile: any, recoveryTokens: any[], history: WorkoutSession[]): Promise<any> {
+  async generateWorkout(
+    profile: any,
+    recoveryTokens: any[],
+    history: WorkoutSession[],
+  ): Promise<any> {
     const fallbackWorkout = OfflineWorkoutEngine.generateSingleWorkout(profile, history);
 
     const contextHash = `workout_${profile.goal}_${profile.level}_${new Date().toISOString().split('T')[0]}_${history.length}`;
@@ -143,7 +154,7 @@ ${JSON.stringify(recentHistory)}
       await cacheWorkout(contextHash, normalizedWorkout);
       return normalizedWorkout;
     } catch (e) {
-      console.error("Falha a gerar treino AI Preditivo:", e);
+      console.error('Falha a gerar treino AI Preditivo:', e);
       return fallbackWorkout;
     }
   },
@@ -153,7 +164,7 @@ ${JSON.stringify(recentHistory)}
    * A lógica de construção do prompt permanece no frontend
    * (é complexa e depende de muitos estados locais do Zustand).
    */
-  async generateWeeklyPlan(profile: any, philosophy: string = 'classic'): Promise<any> {
+  async generateWeeklyPlan(profile: any, philosophy = 'classic'): Promise<any> {
     let typeRequirements = '';
 
     if (philosophy === 'powerbuilding') {
@@ -162,9 +173,13 @@ ${JSON.stringify(recentHistory)}
         const histStr = localStorage.getItem('fit_history');
         if (histStr) {
           const hist = JSON.parse(histStr);
-          workoutsThisWeek = hist.filter((w: any) => new Date(w.date).getTime() > Date.now() - 7 * 24 * 3600 * 1000).length;
+          workoutsThisWeek = hist.filter(
+            (w: any) => new Date(w.date).getTime() > Date.now() - 7 * 24 * 3600 * 1000,
+          ).length;
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) {
+        /* ignore */
+      }
       const isStrengthDay = workoutsThisWeek % 2 === 0;
 
       typeRequirements = isStrengthDay
@@ -181,10 +196,14 @@ ${JSON.stringify(recentHistory)}
     const effortLastWeek = useEffortStore.getState().getTotalEffortLastWeek();
     const isOvertraining = effortLastWeek > 850;
 
-    const dayPrefs = profile.dayPreferences ? Object.entries(profile.dayPreferences)
-      .filter(([day, focus]) => profile.trainingDays?.includes(day) && focus && focus !== 'Padrão')
-      .map(([day, focus]) => `- ${day}: Treinar com foco em "${focus}"`)
-      .join('\n') : '';
+    const dayPrefs = profile.dayPreferences
+      ? Object.entries(profile.dayPreferences)
+          .filter(
+            ([day, focus]) => profile.trainingDays?.includes(day) && focus && focus !== 'Padrão',
+          )
+          .map(([day, focus]) => `- ${day}: Treinar com foco em "${focus}"`)
+          .join('\n')
+      : '';
 
     const weeksActive = profile.weeksActive ?? 0;
     const phase = MacrocycleEngine.getCurrentPhase(weeksActive);
@@ -236,15 +255,15 @@ Formato JSON (sem markdown nem backticks):
 
     try {
       const data = await callProxy('/api/claude', {
-        model: "claude-3-5-sonnet-20241022",
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 1200,
-        system: "Output STRICT JSON only. Be precise, athletic and clinical.",
+        system: 'Output STRICT JSON only. Be precise, athletic and clinical.',
         temperature: 0.3,
-        messages: [{ role: "user", content: prompt }]
+        messages: [{ role: 'user', content: prompt }],
       });
 
       if (!data.content?.[0]?.text) {
-        throw new Error("Resposta da IA com formato inesperado: " + JSON.stringify(data));
+        throw new Error('Resposta da IA com formato inesperado: ' + JSON.stringify(data));
       }
 
       let text = data.content[0].text;
@@ -253,19 +272,19 @@ Formato JSON (sem markdown nem backticks):
       if (firstBrace !== -1 && lastBrace !== -1) {
         text = text.substring(firstBrace, lastBrace + 1);
       } else {
-        throw new Error("Não encontrei JSON na resposta: " + text);
+        throw new Error('Não encontrei JSON na resposta: ' + text);
       }
 
       return JSON.parse(text);
     } catch (e: any) {
-      console.warn("Falha a gerar plano semanal. A usar OfflineWorkoutEngine.", e);
+      console.warn('Falha a gerar plano semanal. A usar OfflineWorkoutEngine.', e);
       const fallbackPlanWrapper = OfflineWorkoutEngine.generateWeeklyPlan(profile, philosophy);
       return {
         name: fallbackPlanWrapper.name,
         description: fallbackPlanWrapper.description,
         reasoning: fallbackPlanWrapper.description,
-        plan: fallbackPlanWrapper.workouts
+        plan: fallbackPlanWrapper.workouts,
       };
     }
-  }
+  },
 };

@@ -4,13 +4,16 @@
 // com o motor de ajuste dinâmico interdiário e o sistema de readiness existente.
 
 import { create } from 'zustand';
-import { healthKit, HealthKitData } from '../services/healthKitService';
-import { healthBridge as HealthBridge, UnifiedHealthMetrics } from '../services/healthBridge';
-import { calculateDailyAdjustments, DailyAdjustment, BiometricContext } from '../utils/dailyAdjustment';
+import { getDB } from '../db/schema';
+import { healthBridge as HealthBridge, type UnifiedHealthMetrics } from '../services/healthBridge';
 import { getEnhancedReadinessScore } from '../services/neuralFatigue';
 import { getMasterKey } from '../utils/cryptoEngine';
-import { encryptJSON, decryptJSON } from '../utils/cryptoHelpers';
-import { getDB } from '../db/schema';
+import { decryptJSON, encryptJSON } from '../utils/cryptoHelpers';
+import {
+  type BiometricContext,
+  type DailyAdjustment,
+  calculateDailyAdjustments,
+} from '../utils/dailyAdjustment';
 
 const CACHE_TTL = 60 * 60 * 1000; // 1 hora
 
@@ -90,16 +93,31 @@ export const useHealthStore = create<HealthState>((set, get) => ({
     if (!biometrics) {
       await loadFromEncryptedStorage();
       const updated = get();
-      if (updated.biometrics && updated.lastSyncTimestamp && (now - updated.lastSyncTimestamp) < CACHE_TTL) {
+      if (
+        updated.biometrics &&
+        updated.lastSyncTimestamp &&
+        now - updated.lastSyncTimestamp < CACHE_TTL
+      ) {
         const result = await getEnhancedReadinessScore(history);
-        set({ readinessScore: result.score, readinessLabel: result.label, readinessColor: result.color, clinicalNotes: result.clinicalNotes, isSyncing: false });
+        set({
+          readinessScore: result.score,
+          readinessLabel: result.label,
+          readinessColor: result.color,
+          clinicalNotes: result.clinicalNotes,
+          isSyncing: false,
+        });
         return;
       }
     }
 
-    if (!forceRefresh && biometrics && lastSyncTimestamp && (now - lastSyncTimestamp) < CACHE_TTL) {
+    if (!forceRefresh && biometrics && lastSyncTimestamp && now - lastSyncTimestamp < CACHE_TTL) {
       const result = await getEnhancedReadinessScore(history);
-      set({ readinessScore: result.score, readinessLabel: result.label, readinessColor: result.color, clinicalNotes: result.clinicalNotes });
+      set({
+        readinessScore: result.score,
+        readinessLabel: result.label,
+        readinessColor: result.color,
+        clinicalNotes: result.clinicalNotes,
+      });
       return;
     }
 
@@ -126,16 +144,19 @@ export const useHealthStore = create<HealthState>((set, get) => ({
       // Persistir encriptado
       const key = getMasterKey();
       if (key) {
-        const encrypted = await encryptJSON({
-          biometrics: freshBiometrics,
-          readinessScore: result.score,
-          readinessLabel: result.label,
-          readinessColor: result.color,
-          clinicalNotes: result.clinicalNotes,
-          lastSyncTimestamp: now,
-          healthKitData: get().healthKitData,
-          dailyAdjustment: get().dailyAdjustment,
-        }, key);
+        const encrypted = await encryptJSON(
+          {
+            biometrics: freshBiometrics,
+            readinessScore: result.score,
+            readinessLabel: result.label,
+            readinessColor: result.color,
+            clinicalNotes: result.clinicalNotes,
+            lastSyncTimestamp: now,
+            healthKitData: get().healthKitData,
+            dailyAdjustment: get().dailyAdjustment,
+          },
+          key,
+        );
 
         const db = await getDB();
         await db.put('personalRecords', {
@@ -177,18 +198,22 @@ export const useHealthStore = create<HealthState>((set, get) => ({
             ...(yesterdayMeal.snack || []),
             ...(yesterdayMeal.dinner || []),
           ];
-          yesterdayConsumed = allItems.reduce((sum: number, item: any) => sum + (item.calories || 0), 0);
+          yesterdayConsumed = allItems.reduce(
+            (sum: number, item: any) => sum + (item.calories || 0),
+            0,
+          );
         }
       }
 
       // Calorias gastas ontem (do array de history do workouts)
       let yesterdayBurned = 0;
       if (Array.isArray(history)) {
-        const yesterdayWorkouts = history.filter((w: any) =>
-          w.date === yesterdayStr || w.startTime?.startsWith(yesterdayStr)
+        const yesterdayWorkouts = history.filter(
+          (w: any) => w.date === yesterdayStr || w.startTime?.startsWith(yesterdayStr),
         );
         yesterdayBurned = yesterdayWorkouts.reduce(
-          (sum: number, w: any) => sum + (w.totalCalories || w.caloriesBurned || 0), 0
+          (sum: number, w: any) => sum + (w.totalCalories || w.caloriesBurned || 0),
+          0,
         );
       }
 
@@ -219,16 +244,19 @@ export const useHealthStore = create<HealthState>((set, get) => ({
         const key = getMasterKey();
         if (key) {
           const state = get();
-          const encrypted = await encryptJSON({
-            biometrics: state.biometrics,
-            readinessScore: state.readinessScore,
-            readinessLabel: state.readinessLabel,
-            readinessColor: state.readinessColor,
-            clinicalNotes: state.clinicalNotes,
-            lastSyncTimestamp: Date.now(),
-            healthKitData: healthData,
-            dailyAdjustment: adjustment,
-          }, key);
+          const encrypted = await encryptJSON(
+            {
+              biometrics: state.biometrics,
+              readinessScore: state.readinessScore,
+              readinessLabel: state.readinessLabel,
+              readinessColor: state.readinessColor,
+              clinicalNotes: state.clinicalNotes,
+              lastSyncTimestamp: Date.now(),
+              healthKitData: healthData,
+              dailyAdjustment: adjustment,
+            },
+            key,
+          );
 
           const db = await getDB();
           await db.put('personalRecords', {
@@ -242,7 +270,6 @@ export const useHealthStore = create<HealthState>((set, get) => ({
       } catch {
         // Encriptação falhou — dados permanecem em memória
       }
-
     } catch (error) {
       console.error('[HealthStore] HealthKit sync failed:', error);
       set({ isSyncing: false });

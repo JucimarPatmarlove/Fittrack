@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { C } from '../../data/constants';
-import { Hazard } from '../../hooks/useWalkingCoach';
+import type { Hazard } from '../../hooks/useWalkingCoach';
 
 interface GPSPoint {
   lat: number;
@@ -31,13 +31,13 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
     // Collect all points that need to be in the viewport
     const allPoints: GPSPoint[] = [...path];
     if (ghostPosition) allPoints.push(ghostPosition);
-    hazards.forEach(hz => allPoints.push({ lat: hz.lat, lng: hz.lng }));
+    hazards.forEach((hz) => allPoints.push({ lat: hz.lat, lng: hz.lng }));
 
     const draw = () => {
       // Ajustar resolução
       const rect = container.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      
+
       if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
@@ -50,17 +50,25 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
       for (let x = 0; x < rect.width; x += 20) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, rect.height); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, rect.height);
+        ctx.stroke();
       }
       for (let y = 0; y < rect.height; y += 20) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(rect.width, y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(rect.width, y);
+        ctx.stroke();
       }
 
       if (allPoints.length > 0) {
         const first = allPoints[0]!;
-        let minLat = first.lat, maxLat = first.lat;
-        let minLng = first.lng, maxLng = first.lng;
-        allPoints.forEach(p => {
+        let minLat = first.lat,
+          maxLat = first.lat;
+        let minLng = first.lng,
+          maxLng = first.lng;
+        allPoints.forEach((p) => {
           if (p.lat < minLat) minLat = p.lat;
           if (p.lat > maxLat) maxLat = p.lat;
           if (p.lng < minLng) minLng = p.lng;
@@ -69,7 +77,7 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
 
         const latRange = Math.max(maxLat - minLat, 0.0001);
         const lngRange = Math.max(maxLng - minLng, 0.0001);
-        
+
         const paddingX = rect.width * 0.15;
         const paddingY = rect.height * 0.15;
         const usableW = rect.width - paddingX * 2;
@@ -85,7 +93,7 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
           for (let i = 1; i < path.length; i++) {
             ctx.lineTo(mapX(path[i]!.lng), mapY(path[i]!.lat));
           }
-          
+
           ctx.strokeStyle = C.accent;
           ctx.lineWidth = 4;
           ctx.lineCap = 'round';
@@ -125,14 +133,14 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
         }
 
         // ── 📍 Hazard Markers ──
-        hazards.forEach(hz => {
+        hazards.forEach((hz) => {
           const hx = mapX(hz.lng);
           const hy = mapY(hz.lat);
 
           const colors: Record<string, { fill: string; glow: string }> = {
             danger: { fill: '#f97316', glow: 'rgba(249, 115, 22, 0.6)' },
-            water:  { fill: '#3b82f6', glow: 'rgba(59, 130, 246, 0.6)' },
-            info:   { fill: '#22c55e', glow: 'rgba(34, 197, 94, 0.6)' },
+            water: { fill: '#3b82f6', glow: 'rgba(59, 130, 246, 0.6)' },
+            info: { fill: '#22c55e', glow: 'rgba(34, 197, 94, 0.6)' },
           };
           const color = colors[hz.type] ?? colors['info']!;
 
@@ -140,14 +148,14 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
           ctx.save();
           ctx.translate(hx, hy);
           ctx.rotate(Math.PI / 4);
-          
+
           // Glow
           ctx.shadowBlur = 10;
           ctx.shadowColor = color.glow;
           ctx.fillStyle = color.fill;
           ctx.fillRect(-5, -5, 10, 10);
           ctx.shadowBlur = 0;
-          
+
           ctx.restore();
 
           // Emoji label
@@ -167,7 +175,7 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
           const pulseRadius = 10 + Math.sin(time * 3) * 4;
           ctx.beginPath();
           ctx.arc(endX, endY, pulseRadius, 0, 2 * Math.PI);
-          ctx.fillStyle = `rgba(204, 255, 0, ${0.2 + Math.sin(time*3)*0.1})`;
+          ctx.fillStyle = `rgba(204, 255, 0, ${0.2 + Math.sin(time * 3) * 0.1})`;
           ctx.fill();
 
           ctx.beginPath();
@@ -189,18 +197,29 @@ export function WalkingMap({ path, isActive, ghostPosition, hazards = [] }: Walk
   }, [path, isActive, ghostPosition, hazards]);
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative', background: '#080b0f' }}>
-      
+    <div
+      ref={containerRef}
+      style={{ width: '100%', height: '100%', position: 'relative', background: '#080b0f' }}
+    >
       {!isActive && path.length === 0 ? (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,11,15,0.8)', zIndex: 10, color: C.muted, fontSize: 12 }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(8,11,15,0.8)',
+            zIndex: 10,
+            color: C.muted,
+            fontSize: 12,
+          }}
+        >
           AGUARDAR SINAL GPS...
         </div>
       ) : null}
 
-      <canvas 
-        ref={canvasRef} 
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      />
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
     </div>
   );
 }

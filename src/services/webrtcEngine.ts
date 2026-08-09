@@ -1,6 +1,6 @@
-import { WorkoutSession } from '../db/schema';
+import type { WorkoutSession } from '../db/schema';
 
-export type WebRTCMessage = 
+export type WebRTCMessage =
   | { type: 'PING'; payload: { time: number } }
   | { type: 'SYNC_WORKOUT'; payload: WorkoutSession };
 
@@ -13,7 +13,7 @@ export class WebRTCEngine {
   constructor() {
     // Usamos stun servers públicos da Google apenas para descobrir IPs locais na rede Wi-Fi
     this.peerConnection = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     });
 
     this.peerConnection.onconnectionstatechange = () => {
@@ -53,7 +53,7 @@ export class WebRTCEngine {
   // ─── MÁQUINA B: RECEBE OFERTA E GERA RESPOSTA ───────────────────────────
   public async acceptOfferAndCreateAnswer(compressedOffer: string): Promise<string> {
     const decoded = atob(compressedOffer);
-    if (!decoded) throw new Error("Falha na descompressão do Token P2P (Offer)");
+    if (!decoded) throw new Error('Falha na descompressão do Token P2P (Offer)');
     const offer = JSON.parse(decoded);
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
@@ -76,7 +76,7 @@ export class WebRTCEngine {
   // ─── MÁQUINA A: ACEITA A RESPOSTA PARA ABRIR TÚNEL ──────────────────────
   public async acceptAnswer(compressedAnswer: string): Promise<void> {
     const decoded = atob(compressedAnswer);
-    if (!decoded) throw new Error("Falha na descompressão do Token P2P (Answer)");
+    if (!decoded) throw new Error('Falha na descompressão do Token P2P (Answer)');
     const answer = JSON.parse(decoded);
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
   }

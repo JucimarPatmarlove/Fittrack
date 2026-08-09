@@ -1,5 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { aiRateLimiter, protectApi } from '../src/middleware/auth';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -31,6 +31,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ reply: result.response.text() });
   } catch (e: any) {
     console.error('[Vercel API] Erro no /api/claude:', e);
-    return res.status(500).json({ error: { message: e.message || 'Ocorreu um erro ao processar o pedido.' } });
+    return res
+      .status(500)
+      .json({ error: { message: e.message || 'Ocorreu um erro ao processar o pedido.' } });
   }
 }

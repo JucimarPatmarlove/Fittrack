@@ -7,82 +7,82 @@ const IMG_DIR = path.resolve(__dirname, '../public/assets/exercises/images');
 
 // Complete list of exercises from exerciseMediaMap
 const exercises = [
-    "barbell_bench_press",
-    "barbell_incline_bench_press",
-    "dumbbell_bench_press",
-    "dumbbell_incline_bench_press",
-    "decline_bench_press",
-    "close_grip_bench_press",
-    "cable_crossover",
-    "dumbbell_pullover",
-    "barbell_bent_over_row",
-    "dumbbell_row",
-    "single_arm_dumbbell_row",
-    "cable_lat_pulldown_wide_grip",
-    "close_grip_pulldown",
-    "pull_up",
-    "chin_up",
-    "seated_cable_row",
-    "t_bar_row",
-    "rack_pull",
-    "barbell_back_squat",
-    "front_squat",
-    "goblet_squat",
-    "barbell_deadlift",
-    "romanian_deadlift",
-    "sumo_deadlift",
-    "machine_leg_press",
-    "leg_extension",
-    "lying_leg_curl",
-    "seated_leg_curl",
-    "hip_thrust",
-    "lunge",
-    "bulgarian_split_squat",
-    "standing_calf_raise",
-    "seated_calf_raise",
-    "box_jump",
-    "barbell_overhead_press",
-    "dumbbell_shoulder_press",
-    "arnold_press",
-    "dumbbell_lateral_raise",
-    "front_raise",
-    "face_pull",
-    "upright_row",
-    "reverse_pec_deck",
-    "barbell_shrug",
-    "barbell_bicep_curl",
-    "alternating_dumbbell_curl",
-    "hammer_curl",
-    "concentration_curl",
-    "preacher_curl",
-    "cable_rope_tricep_pushdown",
-    "skull_crusher",
-    "triceps_pushdown",
-    "overhead_triceps_extension",
-    "diamond_push_up",
-    "bench_dip",
-    "plank",
-    "side_plank",
-    "crunch",
-    "cable_crunch",
-    "hanging_leg_raise",
-    "russian_twist",
-    "pallof_press",
-    "lying_leg_raise",
-    "push_up",
-    "burpee",
-    "dips",
-    "kettlebell_swing",
-    "power_clean",
-    "jump_squat",
-    "box_step_up",
-    "clean_and_jerk",
+  'barbell_bench_press',
+  'barbell_incline_bench_press',
+  'dumbbell_bench_press',
+  'dumbbell_incline_bench_press',
+  'decline_bench_press',
+  'close_grip_bench_press',
+  'cable_crossover',
+  'dumbbell_pullover',
+  'barbell_bent_over_row',
+  'dumbbell_row',
+  'single_arm_dumbbell_row',
+  'cable_lat_pulldown_wide_grip',
+  'close_grip_pulldown',
+  'pull_up',
+  'chin_up',
+  'seated_cable_row',
+  't_bar_row',
+  'rack_pull',
+  'barbell_back_squat',
+  'front_squat',
+  'goblet_squat',
+  'barbell_deadlift',
+  'romanian_deadlift',
+  'sumo_deadlift',
+  'machine_leg_press',
+  'leg_extension',
+  'lying_leg_curl',
+  'seated_leg_curl',
+  'hip_thrust',
+  'lunge',
+  'bulgarian_split_squat',
+  'standing_calf_raise',
+  'seated_calf_raise',
+  'box_jump',
+  'barbell_overhead_press',
+  'dumbbell_shoulder_press',
+  'arnold_press',
+  'dumbbell_lateral_raise',
+  'front_raise',
+  'face_pull',
+  'upright_row',
+  'reverse_pec_deck',
+  'barbell_shrug',
+  'barbell_bicep_curl',
+  'alternating_dumbbell_curl',
+  'hammer_curl',
+  'concentration_curl',
+  'preacher_curl',
+  'cable_rope_tricep_pushdown',
+  'skull_crusher',
+  'triceps_pushdown',
+  'overhead_triceps_extension',
+  'diamond_push_up',
+  'bench_dip',
+  'plank',
+  'side_plank',
+  'crunch',
+  'cable_crunch',
+  'hanging_leg_raise',
+  'russian_twist',
+  'pallof_press',
+  'lying_leg_raise',
+  'push_up',
+  'burpee',
+  'dips',
+  'kettlebell_swing',
+  'power_clean',
+  'jump_squat',
+  'box_step_up',
+  'clean_and_jerk',
 ];
 
 // Create directory if it doesn't exist
 if (!fs.existsSync(IMG_DIR)) {
-    fs.mkdirSync(IMG_DIR, { recursive: true });
-    console.log(`📁 Created directory: ${IMG_DIR}`);
+  fs.mkdirSync(IMG_DIR, { recursive: true });
+  console.log(`📁 Created directory: ${IMG_DIR}`);
 }
 
 // SVG template function
@@ -105,15 +105,15 @@ const svgTemplate = (name) => `<svg width="400" height="300" xmlns="http://www.w
 let created = 0;
 let skipped = 0;
 
-exercises.forEach(name => {
-    const filePath = path.join(IMG_DIR, `${name}.svg`);
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, svgTemplate(name));
-        created++;
-        console.log(`✅ Created: ${name}.svg`);
-    } else {
-        skipped++;
-    }
+exercises.forEach((name) => {
+  const filePath = path.join(IMG_DIR, `${name}.svg`);
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, svgTemplate(name));
+    created++;
+    console.log(`✅ Created: ${name}.svg`);
+  } else {
+    skipped++;
+  }
 });
 
 console.log(`\n✨ SVG Placeholder Generation Complete!`);

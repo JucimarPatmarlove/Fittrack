@@ -1,7 +1,7 @@
 // src/components/injury/BodyMap.tsx
 
-import React from 'react';
-import { StressReading, BodyRegion } from '../../types/injury';
+import type React from 'react';
+import type { BodyRegion, StressReading } from '../../types/injury';
 
 interface BodyMapProps {
   flaggedRegions: StressReading[];
@@ -10,7 +10,10 @@ interface BodyMapProps {
 }
 
 // Coordenadas aproximadas para cada região num SVG de corpo humano
-const REGION_COORDS: Record<BodyRegion, { x: number; y: number; side: 'left' | 'right' | 'center' }> = {
+const REGION_COORDS: Record<
+  BodyRegion,
+  { x: number; y: number; side: 'left' | 'right' | 'center' }
+> = {
   ombro_esquerdo: { x: 35, y: 22, side: 'left' },
   ombro_direito: { x: 65, y: 22, side: 'right' },
   cotovelo_esquerdo: { x: 30, y: 35, side: 'left' },
@@ -29,9 +32,9 @@ const REGION_COORDS: Record<BodyRegion, { x: number; y: number; side: 'left' | '
 };
 
 const RISK_COLORS = {
-  low: '#22c55e',      // green-500
+  low: '#22c55e', // green-500
   moderate: '#eab308', // yellow-500
-  high: '#f97316',     // orange-500
+  high: '#f97316', // orange-500
   critical: '#dc2626', // red-600
 };
 
@@ -42,31 +45,85 @@ const RISK_PULSE = {
   critical: true,
 };
 
-export const BodyMap: React.FC<BodyMapProps> = ({ flaggedRegions, onRegionClick, compact = false }) => {
+export const BodyMap: React.FC<BodyMapProps> = ({
+  flaggedRegions,
+  onRegionClick,
+  compact = false,
+}) => {
   const getRegionStatus = (region: BodyRegion): StressReading | undefined => {
-    return flaggedRegions.find(r => r.region === region);
+    return flaggedRegions.find((r) => r.region === region);
   };
 
   return (
     <div className={`relative ${compact ? 'w-[100px] h-[140px]' : 'w-[200px] h-[280px]'}`}>
       <svg viewBox="0 0 100 100" className="w-full h-full">
         {/* Silhueta do corpo - versão simplificada cibernética */}
-        <ellipse cx="50" cy="8" rx="8" ry="10" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Cabeça */}
-        <rect x="40" y="18" width="20" height="30" rx="4" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Tronco */}
-        <rect x="28" y="20" width="8" height="30" rx="3" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Braço E */}
-        <rect x="64" y="20" width="8" height="30" rx="3" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Braço D */}
-        <rect x="40" y="50" width="9" height="35" rx="3" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Perna E */}
-        <rect x="51" y="50" width="9" height="35" rx="3" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" /> {/* Perna D */}
-        
+        <ellipse cx="50" cy="8" rx="8" ry="10" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" />{' '}
+        {/* Cabeça */}
+        <rect
+          x="40"
+          y="18"
+          width="20"
+          height="30"
+          rx="4"
+          fill="#f3f4f6"
+          stroke="#d1d5db"
+          strokeWidth="1"
+        />{' '}
+        {/* Tronco */}
+        <rect
+          x="28"
+          y="20"
+          width="8"
+          height="30"
+          rx="3"
+          fill="#f3f4f6"
+          stroke="#d1d5db"
+          strokeWidth="1"
+        />{' '}
+        {/* Braço E */}
+        <rect
+          x="64"
+          y="20"
+          width="8"
+          height="30"
+          rx="3"
+          fill="#f3f4f6"
+          stroke="#d1d5db"
+          strokeWidth="1"
+        />{' '}
+        {/* Braço D */}
+        <rect
+          x="40"
+          y="50"
+          width="9"
+          height="35"
+          rx="3"
+          fill="#f3f4f6"
+          stroke="#d1d5db"
+          strokeWidth="1"
+        />{' '}
+        {/* Perna E */}
+        <rect
+          x="51"
+          y="50"
+          width="9"
+          height="35"
+          rx="3"
+          fill="#f3f4f6"
+          stroke="#d1d5db"
+          strokeWidth="1"
+        />{' '}
+        {/* Perna D */}
         {/* Pontos de risco */}
         {Object.entries(REGION_COORDS).map(([region, coords]) => {
           const status = getRegionStatus(region as BodyRegion);
           if (!status) return null;
-          
+
           const color = RISK_COLORS[status.riskLevel];
           const shouldPulse = RISK_PULSE[status.riskLevel];
           const radius = compact ? 3 : 5;
-          
+
           return (
             <g key={region}>
               <circle
@@ -95,7 +152,7 @@ export const BodyMap: React.FC<BodyMapProps> = ({ flaggedRegions, onRegionClick,
           );
         })}
       </svg>
-      
+
       {/* Legenda compacta */}
       {compact && flaggedRegions.length > 0 && (
         <div className="absolute -bottom-1 left-0 right-0 flex justify-center gap-1">

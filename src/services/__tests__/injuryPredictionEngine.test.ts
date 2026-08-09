@@ -1,7 +1,6 @@
 // @ts-nocheck
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { generateInjuryRiskReport, preWorkoutSafetyCheck } from '../injuryPredictionEngine';
-import * as schema from '../../db/schema';
 
 vi.mock('../../db/schema', () => {
   // Minimal IndexedDB mock for injuryPredictionEngine

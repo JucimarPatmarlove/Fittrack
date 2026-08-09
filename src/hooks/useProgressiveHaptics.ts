@@ -1,5 +1,5 @@
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type HapticLevel = 'LIGHT' | 'MEDIUM' | 'HEAVY';
 
@@ -48,7 +48,7 @@ function createBeepSound(
   audioCtx: AudioContext,
   frequency: number,
   duration: number,
-  startTime: number
+  startTime: number,
 ): void {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();

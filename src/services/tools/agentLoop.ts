@@ -15,10 +15,10 @@
 // ════════════════════════════════════════════════════════════════
 
 import { GoogleGenerativeAI, type Part } from '@google/generative-ai';
-import { COACH_TOOLS } from './toolDefinitions';
 import { executeBraveSearch } from './braveSearch';
-import { executeSupabaseMetrics } from './supabaseQuery';
 import { executeGitHubAudit } from './githubAudit';
+import { executeSupabaseMetrics } from './supabaseQuery';
+import { COACH_TOOLS } from './toolDefinitions';
 
 const MAX_TOOL_ITERATIONS = 3;
 
@@ -28,7 +28,7 @@ const MAX_TOOL_ITERATIONS = 3;
 async function executeTool(
   toolName: string,
   args: Record<string, unknown>,
-  userId: string
+  userId: string,
 ): Promise<string> {
   console.log(`[Agent] 🔧 Executando ferramenta: ${toolName}`, JSON.stringify(args));
 
@@ -68,7 +68,7 @@ async function executeTool(
 export async function runAgentLoop(
   prompt: string,
   systemInstruction: string,
-  userId: string
+  userId: string,
 ): Promise<string> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -93,7 +93,9 @@ export async function runAgentLoop(
       break;
     }
 
-    console.log(`[Agent] Iteração ${i + 1}/${MAX_TOOL_ITERATIONS}: ${functionCalls.length} ferramenta(s) a executar`);
+    console.log(
+      `[Agent] Iteração ${i + 1}/${MAX_TOOL_ITERATIONS}: ${functionCalls.length} ferramenta(s) a executar`,
+    );
 
     // Executar todas as ferramentas pedidas nesta iteração
     const toolResults: Part[] = [];
@@ -102,7 +104,7 @@ export async function runAgentLoop(
       const result = await executeTool(
         call.name,
         (call.args || {}) as Record<string, unknown>,
-        userId
+        userId,
       );
 
       toolResults.push({

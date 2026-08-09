@@ -31,18 +31,20 @@ export const useVibeStore = create<VibeState>()(
           id: Math.random().toString(36).substring(2, 9),
           timestamp: Date.now(),
           song: sanitizeText(vibeData.song),
-          url: vibeData.url ? sanitizeUrl(vibeData.url) : null
+          url: vibeData.url ? sanitizeUrl(vibeData.url) : null,
         };
         set((state) => ({ vibes: [newVibe, ...state.vibes] }));
       },
       getRecentVibes: (hours = 2) => {
         const cutoff = Date.now() - hours * 60 * 60 * 1000;
-        return get().vibes.filter(v => v.isPublic && v.timestamp >= cutoff).sort((a, b) => b.timestamp - a.timestamp);
+        return get()
+          .vibes.filter((v) => v.isPublic && v.timestamp >= cutoff)
+          .sort((a, b) => b.timestamp - a.timestamp);
       },
       clearOldVibes: () => {
         const cutoff = Date.now() - 4 * 60 * 60 * 1000; // 4 hours
         set((state) => ({
-          vibes: state.vibes.filter(v => v.timestamp >= cutoff)
+          vibes: state.vibes.filter((v) => v.timestamp >= cutoff),
         }));
       },
       importVibesFromJSON: async (file: File) => {
@@ -54,13 +56,15 @@ export const useVibeStore = create<VibeState>()(
               if (Array.isArray(importedVibes)) {
                 // Merge and deduplicate by id
                 set((state) => {
-                  const existingIds = new Set(state.vibes.map(v => v.id));
-                  const newVibes = importedVibes.filter(v => !existingIds.has(v.id));
-                  return { vibes: [...newVibes, ...state.vibes].sort((a, b) => b.timestamp - a.timestamp) };
+                  const existingIds = new Set(state.vibes.map((v) => v.id));
+                  const newVibes = importedVibes.filter((v) => !existingIds.has(v.id));
+                  return {
+                    vibes: [...newVibes, ...state.vibes].sort((a, b) => b.timestamp - a.timestamp),
+                  };
                 });
                 resolve();
               } else {
-                reject(new Error("Formato JSON inválido"));
+                reject(new Error('Formato JSON inválido'));
               }
             } catch (err) {
               reject(err);
@@ -78,10 +82,10 @@ export const useVibeStore = create<VibeState>()(
         a.download = `gymvibes_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-      }
+      },
     }),
     {
-      name: 'ft_vibes'
-    }
-  )
+      name: 'ft_vibes',
+    },
+  ),
 );

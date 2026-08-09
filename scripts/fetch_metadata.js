@@ -1,7 +1,6 @@
-import fs from 'fs';
-
 async function test() {
-  const url = 'https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/data/exercises.json';
+  const url =
+    'https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/data/exercises.json';
   console.log('Fetching', url);
   const res = await fetch(url);
   const data = await res.json();

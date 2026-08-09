@@ -1,8 +1,8 @@
 // src/services/injuryPrediction/stressCalculator.ts
 
-import { BodyRegion, MuscleGroup } from '../../types/injury';
-import { EXERCISE_REGION_MAP } from './exerciseRegionMap';
+import type { BodyRegion, MuscleGroup } from '../../types/injury';
 import { calculateSetEffort } from '../../utils/xpCalculator';
+import { EXERCISE_REGION_MAP } from './exerciseRegionMap';
 
 // ── Input types for the stress calculator ────────────────────────────────────
 // These mirror the runtime workout shape from useFitnessData / WorkoutSession.
@@ -15,8 +15,8 @@ export interface SetEntry {
   rpe?: number;
   done?: boolean;
   addedWeight?: number;
-  duration?: number;   // seconds
-  distance?: number;   // km
+  duration?: number; // seconds
+  distance?: number; // km
 }
 
 export interface ExerciseEntry {
@@ -50,7 +50,7 @@ export interface SessionStress {
 export function calculateSetStress(
   set: SetEntry,
   exerciseName: string,
-  userBodyweight: number = 75
+  userBodyweight = 75,
 ): { region: BodyRegion; muscle: MuscleGroup; stress: number }[] {
   const mapping = EXERCISE_REGION_MAP[exerciseName];
   if (!mapping) return [];
@@ -59,14 +59,14 @@ export function calculateSetStress(
   const baseEffort = calculateSetEffort(set, userBodyweight);
 
   // Aplicar multiplicador do exercício e RPE
-  const rpeMultiplier = set.rpe ? (set.rpe / 5) : 1.6; // se RPE 8 -> 1.6x stress, RPE 10 -> 2x stress
+  const rpeMultiplier = set.rpe ? set.rpe / 5 : 1.6; // se RPE 8 -> 1.6x stress, RPE 10 -> 2x stress
   const stressPerUnit = baseEffort * mapping.stressMultiplier * rpeMultiplier;
 
   // Distribuir stress pelas regiões
   const results: { region: BodyRegion; muscle: MuscleGroup; stress: number }[] = [];
-  
-  mapping.primaryJoints.forEach(joint => {
-    mapping.primaryMuscles.forEach(muscle => {
+
+  mapping.primaryJoints.forEach((joint) => {
+    mapping.primaryMuscles.forEach((muscle) => {
       results.push({
         region: joint,
         muscle,
@@ -83,7 +83,7 @@ export function calculateSetStress(
  */
 export function calculateSessionStress(
   workout: WorkoutHistoryEntry,
-  userBodyweight: number = 75
+  userBodyweight = 75,
 ): SessionStress[] {
   const stresses: SessionStress[] = [];
 
@@ -114,38 +114,39 @@ export function calculateSessionStress(
 export function calculateACRatio(
   history: WorkoutHistoryEntry[],
   region: BodyRegion,
-  userBodyweight: number = 75,
-  referenceDate: string = new Date().toISOString()
+  userBodyweight = 75,
+  referenceDate: string = new Date().toISOString(),
 ): { acute: number; chronic: number; ratio: number } {
   const refDate = new Date(referenceDate);
   const acuteCutoff = new Date(refDate);
   acuteCutoff.setDate(acuteCutoff.getDate() - ACUTE_WINDOW_DAYS);
-  
+
   const chronicCutoff = new Date(refDate);
   chronicCutoff.setDate(chronicCutoff.getDate() - CHRONIC_WINDOW_DAYS);
 
   // Extrair stress da região do histórico
   const regionStresses: { date: Date; stress: number }[] = [];
-  
-  history.forEach(workout => {
+
+  history.forEach((workout) => {
     const workoutDate = new Date(workout.date);
     const sessionStresses = calculateSessionStress(workout, userBodyweight);
-    
+
     sessionStresses
-      .filter(s => s.region === region)
-      .forEach(s => {
+      .filter((s) => s.region === region)
+      .forEach((s) => {
         regionStresses.push({ date: workoutDate, stress: s.stressValue });
       });
   });
 
   // Calcular cargas aguda e crónica
   const acuteLoad = regionStresses
-    .filter(s => s.date >= acuteCutoff && s.date <= refDate)
+    .filter((s) => s.date >= acuteCutoff && s.date <= refDate)
     .reduce((sum, s) => sum + s.stress, 0);
 
-  const chronicLoad = regionStresses
-    .filter(s => s.date >= chronicCutoff && s.date <= refDate)
-    .reduce((sum, s) => sum + s.stress, 0) / 4; // Média semanal
+  const chronicLoad =
+    regionStresses
+      .filter((s) => s.date >= chronicCutoff && s.date <= refDate)
+      .reduce((sum, s) => sum + s.stress, 0) / 4; // Média semanal
 
   const ratio = chronicLoad > 0 ? acuteLoad / chronicLoad : 0;
 

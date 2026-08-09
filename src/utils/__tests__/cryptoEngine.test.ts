@@ -1,13 +1,13 @@
 // src/utils/__tests__/cryptoEngine.test.ts
 // Testes unitários para as funções de criptografia AES-GCM
-// 
+//
 // NOTA: deriveKey() usa Web Worker (PBKDF2) e não pode ser testada directamente.
 // Em vez disso, usamos crypto.subtle.generateKey() para criar uma chave de teste,
 // o que nos permite validar encryptData/decryptData de forma isolada.
 
-import { describe, it, expect, beforeAll } from 'vitest';
-import { encryptData, decryptData } from '../cryptoEngine';
-import { encryptJSON, decryptJSON } from '../cryptoHelpers';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { decryptData, encryptData } from '../cryptoEngine';
+import { decryptJSON, encryptJSON } from '../cryptoHelpers';
 
 // ─── Helpers de teste ──────────────────────────────────────────────────────────
 
@@ -19,7 +19,7 @@ async function generateTestKey(): Promise<CryptoKey> {
   return crypto.subtle.generateKey(
     { name: 'AES-GCM', length: 256 },
     false, // non-extractable
-    ['encrypt', 'decrypt']
+    ['encrypt', 'decrypt'],
   );
 }
 
@@ -64,16 +64,12 @@ describe('cryptoEngine — encryptData / decryptData', () => {
   it('deve lançar erro ao decifrar com chave errada', async () => {
     const wrongKey = await generateTestKey();
     const encrypted = await encryptData(testKey, 'dados secretos');
-    await expect(decryptData(wrongKey, encrypted)).rejects.toThrow(
-      'Invalid PIN or corrupted data'
-    );
+    await expect(decryptData(wrongKey, encrypted)).rejects.toThrow('Invalid PIN or corrupted data');
   });
 
   it('deve lançar erro ao decifrar dados corrompidos', async () => {
     const corrupted = 'aGVsbG8gd29ybGQ='; // base64 aleatório, não é ciphertext válido
-    await expect(decryptData(testKey, corrupted)).rejects.toThrow(
-      'Invalid PIN or corrupted data'
-    );
+    await expect(decryptData(testKey, corrupted)).rejects.toThrow('Invalid PIN or corrupted data');
   });
 
   it('deve cifrar strings vazias', async () => {

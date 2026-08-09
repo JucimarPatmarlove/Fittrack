@@ -1,7 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
 // src/components/dashboard/VirtualPet.tsx
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { GlassCard } from '../ui/GlassCard';
 
 const PET_STAGES: {
@@ -53,14 +53,21 @@ export function VirtualPet({ xp }: Props) {
         {/* Mascote animado */}
         <motion.div
           animate={{ y: [0, -4, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2, ease: 'easeInOut' }}
           style={{ fontSize: 44, lineHeight: 1, userSelect: 'none' }}
         >
           {stage.emoji}
         </motion.div>
 
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 4,
+            }}
+          >
             <div>
               <p
                 style={{
@@ -103,7 +110,15 @@ export function VirtualPet({ xp }: Props) {
           </div>
 
           {/* Barra XP */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#55626e', marginBottom: 4 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: 10,
+              color: '#55626e',
+              marginBottom: 4,
+            }}
+          >
             <span>XP</span>
             <span style={{ fontFamily: "'DM Mono', monospace", color: stage.bg }}>
               {xpInLevel} / 100

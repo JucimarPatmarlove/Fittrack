@@ -13,20 +13,20 @@
 import { getDB } from '../db/schema';
 import { deriveKey } from '../utils/cryptoEngine';
 import { setMasterKey } from '../utils/cryptoEngine';
-import { encryptJSON, decryptJSON } from '../utils/cryptoHelpers';
+import { decryptJSON, encryptJSON } from '../utils/cryptoHelpers';
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
 export interface RotationResult {
   success: boolean;
-  rotatedCount: number;  // Número de SetLogs re-cifrados
-  skippedCount: number;  // SetLogs sem encryptedFields (modo dev)
+  rotatedCount: number; // Número de SetLogs re-cifrados
+  skippedCount: number; // SetLogs sem encryptedFields (modo dev)
   message: string;
 }
 
 export interface RotationProgress {
   phase: 'validating' | 'deriving' | 'rotating' | 'done' | 'error';
-  progress?: number;  // 0–100
+  progress?: number; // 0–100
   message: string;
 }
 
@@ -55,9 +55,8 @@ interface SensitiveSetFields {
 export async function rotateMasterKey(
   oldPin: string,
   newPin: string,
-  onProgress?: ProgressCallback
+  onProgress?: ProgressCallback,
 ): Promise<RotationResult> {
-
   const report = (phase: RotationProgress['phase'], message: string, progress?: number) => {
     onProgress?.({ phase, message, progress });
   };
@@ -83,12 +82,11 @@ export async function rotateMasterKey(
   let newKey: CryptoKey;
 
   try {
-    [oldKey, newKey] = await Promise.all([
-      deriveKey(oldPin),
-      deriveKey(newPin),
-    ]);
+    [oldKey, newKey] = await Promise.all([deriveKey(oldPin), deriveKey(newPin)]);
   } catch (err) {
-    throw new Error(`Falha na derivação de chave: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
+    throw new Error(
+      `Falha na derivação de chave: ${err instanceof Error ? err.message : 'Erro desconhecido'}`,
+    );
   }
 
   // ── PASSO 3: Validação prévia com o PIN antigo ────────────────────────────
@@ -159,17 +157,16 @@ export async function rotateMasterKey(
     }
 
     await tx.done;
-
   } catch (err) {
     // A transacção reverte automaticamente quando lançamos um erro
     const errMsg = err instanceof Error ? err.message : 'Erro desconhecido';
-    
+
     // Se é erro de PIN inválido durante a re-cifragem (não deverá acontecer,
     // pois já validámos acima, mas por segurança):
     if (errMsg.includes('Invalid PIN') || errMsg.includes('corrupted')) {
       throw new Error('PIN antigo inválido. Os dados não foram alterados.');
     }
-    
+
     throw new Error(`Falha na rotação de chave: ${errMsg}. Os dados originais foram preservados.`);
   }
 

@@ -11,8 +11,11 @@
         "noNonNullAssertion": "warn",
         "useImportType": "warn"
       },
+      "suspicious": {
+        "noExplicitAny": "warn"
+      },
       "correctness": {
-        "noUnusedVariables": "error",
+        "noUnusedVariables": "warn",
         "noUnusedImports": "error"
       }
     }

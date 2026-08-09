@@ -1,7 +1,7 @@
 // src/components/recovery/MoodTracker.tsx
 
-import React from 'react';
 import { Brain } from 'lucide-react';
+import type React from 'react';
 
 interface MoodTrackerProps {
   mood: number;
@@ -40,7 +40,7 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({
           max="10"
           step="1"
           value={mood}
-          onChange={(e) => onMoodChange(parseInt(e.target.value))}
+          onChange={(e) => onMoodChange(Number.parseInt(e.target.value))}
           className="w-full accent-[#e8c84a] h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer"
         />
         <div className="flex justify-between text-xs text-gray-600 mt-2 font-mono">
@@ -62,7 +62,7 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({
           max="10"
           step="1"
           value={stressLevel}
-          onChange={(e) => onStressChange(parseInt(e.target.value))}
+          onChange={(e) => onStressChange(Number.parseInt(e.target.value))}
           className="w-full accent-red-500 h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer"
         />
         <div className="flex justify-between text-xs text-gray-600 mt-2 font-mono">

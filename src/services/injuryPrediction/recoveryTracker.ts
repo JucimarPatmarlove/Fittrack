@@ -1,6 +1,6 @@
 // src/services/injuryPrediction/recoveryTracker.ts
 
-import { StressReading, RecoveryInput } from '../../types/injury';
+import type { RecoveryInput, StressReading } from '../../types/injury';
 
 /**
  * Calcula um Recovery Score (0-100) baseado em múltiplos inputs
@@ -22,7 +22,8 @@ export function calculateRecoveryScore(input: RecoveryInput): number {
   const sorenessKeys = Object.keys(muscleSoreness);
   let sorenessScore = 10;
   if (sorenessKeys.length > 0) {
-    const avgSoreness = Object.values(muscleSoreness).reduce((a, b) => a + b, 0) / sorenessKeys.length;
+    const avgSoreness =
+      Object.values(muscleSoreness).reduce((a, b) => a + b, 0) / sorenessKeys.length;
     sorenessScore = (10 - avgSoreness) * 2;
   } else {
     sorenessScore = 20; // 20 pontos máximos se não houver dores registadas
@@ -38,17 +39,14 @@ export function calculateRecoveryScore(input: RecoveryInput): number {
 /**
  * Estima tempo de recuperação necessário para uma região (em horas)
  */
-export function estimateRecoveryTime(
-  stressReading: StressReading,
-  recoveryScore: number
-): number {
+export function estimateRecoveryTime(stressReading: StressReading, recoveryScore: number): number {
   const baseRecovery = 24; // 24h base
-  
+
   // Multiplicadores
   const stressMultiplier = stressReading.acuteStress / 500; // Normalizado para a escala de XP/Esforço
   const recoveryMultiplier = (100 - recoveryScore) / 50; // Menos recuperação = mais tempo
-  
+
   const hours = baseRecovery * (1 + stressMultiplier) * (1 + recoveryMultiplier);
-  
+
   return Math.round(hours);
 }

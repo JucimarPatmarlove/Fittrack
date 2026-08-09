@@ -1,7 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { webcrypto } from 'crypto';
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Conexão ao Upstash
 const redis = new Redis({
@@ -12,7 +12,7 @@ const redis = new Redis({
 // Algoritmo Sliding Window: 10 requests a cada 60 segundos
 const ratelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(10, "60 s"),
+  limiter: Ratelimit.slidingWindow(10, '60 s'),
   analytics: true,
 });
 
@@ -29,8 +29,8 @@ export const aiRateLimiter = async (req: VercelRequest, res: VercelResponse): Pr
 
     if (!success) {
       console.warn(`[Upstash] Bloqueio tático ativado. IP: ${identifier} excedeu a quota.`);
-      res.status(429).json({ 
-        error: "Demasiados pedidos. Descansa 1 minuto e tenta novamente." 
+      res.status(429).json({
+        error: 'Demasiados pedidos. Descansa 1 minuto e tenta novamente.',
       });
       return false;
     }
@@ -70,7 +70,7 @@ export async function verifyJWT(token: string) {
       new TextEncoder().encode(JWT_SHARED_SECRET),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['verify']
+      ['verify'],
     );
 
     const signingInput = `${headerB64}.${payloadB64}`;
@@ -79,7 +79,7 @@ export async function verifyJWT(token: string) {
       'HMAC',
       key,
       signature,
-      new TextEncoder().encode(signingInput)
+      new TextEncoder().encode(signingInput),
     );
 
     if (!isValid) {
@@ -87,7 +87,7 @@ export async function verifyJWT(token: string) {
     }
 
     const payload = JSON.parse(base64UrlDecode(payloadB64).toString('utf-8'));
-    
+
     // Validar expiração
     if (payload.exp && Date.now() >= payload.exp * 1000) {
       return { valid: false, error: 'Token expirado' };
@@ -95,9 +95,9 @@ export async function verifyJWT(token: string) {
 
     // Proteger contra Replay Attacks com Upstash Redis (Nonces)
     if (payload.nonce) {
-      const isNew = await redis.set(`nonce_${payload.nonce}`, "1", { ex: 300, nx: true });
+      const isNew = await redis.set(`nonce_${payload.nonce}`, '1', { ex: 300, nx: true });
       if (!isNew) {
-         return { valid: false, error: 'Replay attack detetado (Nonce reutilizado)' };
+        return { valid: false, error: 'Replay attack detetado (Nonce reutilizado)' };
       }
     }
 
@@ -125,6 +125,6 @@ export async function protectApi(req: VercelRequest, res: VercelResponse): Promi
     res.status(403).json({ error: `Acesso bloqueado: ${error}` });
     return false;
   }
-  
+
   return true;
 }

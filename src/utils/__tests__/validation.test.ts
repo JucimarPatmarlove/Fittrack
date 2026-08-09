@@ -1,19 +1,18 @@
 // src/utils/__tests__/validation.test.ts
 // Testes para os schemas Zod de validação de formulários (nutrição, exercícios, perfil).
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  MealItemSchema,
   ExerciseSetSchema,
+  MealItemSchema,
   ProfileFieldsSchema,
   WaterInputSchema,
-  validateMealItem,
   validateExerciseSet,
+  validateMealItem,
   validateProfileFields,
 } from '../validation';
 
 describe('validation — MealItemSchema', () => {
-
   it('aceita um item de refeição válido', () => {
     const result = MealItemSchema.safeParse({
       name: 'Peito de Frango',
@@ -93,7 +92,6 @@ describe('validation — MealItemSchema', () => {
 });
 
 describe('validation — ExerciseSetSchema', () => {
-
   it('aceita um set válido', () => {
     const result = ExerciseSetSchema.safeParse({ weight: 80, reps: 10, rpe: 8 });
     expect(result.success).toBe(true);
@@ -141,7 +139,6 @@ describe('validation — ExerciseSetSchema', () => {
 });
 
 describe('validation — ProfileFieldsSchema', () => {
-
   it('aceita campos válidos', () => {
     const result = ProfileFieldsSchema.safeParse({ weight: 80, height: 178, age: 28 });
     expect(result.success).toBe(true);
@@ -184,7 +181,6 @@ describe('validation — ProfileFieldsSchema', () => {
 });
 
 describe('validation — WaterInputSchema', () => {
-
   it('aceita 250ml', () => {
     const result = WaterInputSchema.safeParse(250);
     expect(result.success).toBe(true);
@@ -207,7 +203,6 @@ describe('validation — WaterInputSchema', () => {
 });
 
 describe('validation — helper functions', () => {
-
   describe('validateMealItem', () => {
     it('retorna success com data para input válido', () => {
       const result = validateMealItem({ name: 'Ovo', calories: 78, protein: 6, carb: 1, fat: 5 });

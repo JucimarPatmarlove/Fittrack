@@ -1,37 +1,38 @@
 // @ts-nocheck
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import type { WorkoutSession } from '../db/schema';
+import { type Challenge, PredictiveChallenges } from '../services/predictiveChallenges';
 import { useLS } from './index';
-import { PredictiveChallenges, Challenge } from '../services/predictiveChallenges';
-import { WorkoutSession } from "../db/schema";;
 
 export function useChallenges(history: WorkoutSession[]) {
-    const [challenges, setChallenges] = useLS<Challenge[]>('fit_challenges', []);
+  const [challenges, setChallenges] = useLS<Challenge[]>('fit_challenges', []);
 
-    // Atualiza lógica ou expira desafios
-    useEffect(() => {
-        const now = new Date().getTime();
-        let changed = false;
-        
-        const updated = challenges.map(c => {
-            if (c.status === 'active' && new Date(c.deadline).getTime() < now) {
-                changed = true;
-                return { ...c, status: 'failed' as const };
-            }
-            return c;
-        });
+  // Atualiza lógica ou expira desafios
+  useEffect(() => {
+    const now = new Date().getTime();
+    let changed = false;
 
-        // Se tiver passado mtos dias ou nao houver, gerar um
-        const activeCount = updated.filter(c => c.status === 'active').length;
-        if (activeCount === 0 && history.length >= 3) { // Precisa de algum histórico
-            const newCs = PredictiveChallenges.generateChallenges(history);
-            if (newCs.length > 0) {
-                updated.push(...newCs);
-                changed = true;
-            }
-        }
+    const updated = challenges.map((c) => {
+      if (c.status === 'active' && new Date(c.deadline).getTime() < now) {
+        changed = true;
+        return { ...c, status: 'failed' as const };
+      }
+      return c;
+    });
 
-        if (changed) setChallenges(updated);
-    }, [history, challenges, setChallenges]);
+    // Se tiver passado mtos dias ou nao houver, gerar um
+    const activeCount = updated.filter((c) => c.status === 'active').length;
+    if (activeCount === 0 && history.length >= 3) {
+      // Precisa de algum histórico
+      const newCs = PredictiveChallenges.generateChallenges(history);
+      if (newCs.length > 0) {
+        updated.push(...newCs);
+        changed = true;
+      }
+    }
 
-    return { challenges, setChallenges };
+    if (changed) setChallenges(updated);
+  }, [history, challenges, setChallenges]);
+
+  return { challenges, setChallenges };
 }

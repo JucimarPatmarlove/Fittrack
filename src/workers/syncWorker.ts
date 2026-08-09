@@ -87,7 +87,7 @@ self.onmessage = async (event: MessageEvent) => {
 
   if (type === 'enqueue') {
     const compressedPayload = await compressData(payload?.data || {});
-    
+
     const entry: SyncEntry = {
       id: crypto.randomUUID(),
       type: payload?.type || 'generic',
@@ -95,29 +95,29 @@ self.onmessage = async (event: MessageEvent) => {
       timestamp: Date.now(),
       pending: true,
     };
-    
+
     // Evitar que a queue passe dos 1000 itens (aprox 5-10MB comprimidos)
     if (queue.length > 1000) {
-       const oldest = queue.shift();
-       if (oldest) await removeFromIndexedDB(oldest.id);
+      const oldest = queue.shift();
+      if (oldest) await removeFromIndexedDB(oldest.id);
     }
-    
+
     queue.push(entry);
     await saveToIndexedDB(entry);
     self.postMessage({ type: 'queued', id: entry.id });
   }
 
   if (type === 'sync') {
-    const pendingItems = queue.filter(e => e.pending);
+    const pendingItems = queue.filter((e) => e.pending);
     // Prioritizar treinos
-    pendingItems.sort((a) => a.type === 'workout' ? -1 : 1);
-    
+    pendingItems.sort((a) => (a.type === 'workout' ? -1 : 1));
+
     const chunkSize = 10;
     const syncedIds: string[] = [];
-    
+
     for (let i = 0; i < pendingItems.length; i += chunkSize) {
       const chunk = pendingItems.slice(i, i + chunkSize);
-      
+
       for (const entry of chunk) {
         try {
           // Aqui seria fetch para o teu backend
@@ -129,10 +129,10 @@ self.onmessage = async (event: MessageEvent) => {
         }
       }
       // Libertar a event loop do Worker entre chunks
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     }
-    
-    queue = queue.filter(e => !syncedIds.includes(e.id));
+
+    queue = queue.filter((e) => !syncedIds.includes(e.id));
     self.postMessage({ type: 'synced', ids: syncedIds, remaining: queue.length });
   }
 

@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { GradientButton } from '../components/ui/GradientButton';
 import { exportEncryptedBackup, importEncryptedBackup } from '../services/backupService';
-import { uploadBackup, listBackups, downloadBackup, signInToGoogleDrive, getStoredToken } from '../services/googleDrive';
+import {
+  downloadBackup,
+  getStoredToken,
+  listBackups,
+  signInToGoogleDrive,
+  uploadBackup,
+} from '../services/googleDrive';
 
 export default function BackupScreen() {
   const [isConnected, setIsConnected] = useState(!!getStoredToken());
@@ -43,7 +49,12 @@ export default function BackupScreen() {
   };
 
   const handleRestore = async (fileId: string) => {
-    if (!window.confirm('RESTAURO DE BACKUP: Atenção! Restaurar este backup irá substituir TODOS os teus dados de treino atuais. Desejas continuar?')) return;
+    if (
+      !window.confirm(
+        'RESTAURO DE BACKUP: Atenção! Restaurar este backup irá substituir TODOS os teus dados de treino atuais. Desejas continuar?',
+      )
+    )
+      return;
     setLoading(true);
     try {
       const buffer = await downloadBackup(fileId);
@@ -68,9 +79,9 @@ export default function BackupScreen() {
       {!isConnected ? (
         <GlassCard className="p-6 text-center">
           <p className="text-gray-300 mb-4 text-sm">
-            Guarda os teus treinos na tua própria conta Google Drive. 
-            O FitTrack usa uma arquitetura BYOC (Bring Your Own Cloud) com Zero Trust. 
-            Os teus dados são encriptados no dispositivo antes de fazer upload, garantindo 100% de privacidade.
+            Guarda os teus treinos na tua própria conta Google Drive. O FitTrack usa uma arquitetura
+            BYOC (Bring Your Own Cloud) com Zero Trust. Os teus dados são encriptados no dispositivo
+            antes de fazer upload, garantindo 100% de privacidade.
           </p>
           <GradientButton onClick={handleConnect}>🔐 Ligar ao Google Drive</GradientButton>
         </GlassCard>
@@ -90,7 +101,10 @@ export default function BackupScreen() {
               <h3 className="text-white text-sm mb-3">Backups Disponíveis na Nuvem:</h3>
               <ul className="space-y-2 max-h-60 overflow-y-auto">
                 {backups.map((b) => (
-                  <li key={b.id} className="flex justify-between items-center bg-[#0a0f15] p-4 rounded-lg border border-[#e8c84a]/10">
+                  <li
+                    key={b.id}
+                    className="flex justify-between items-center bg-[#0a0f15] p-4 rounded-lg border border-[#e8c84a]/10"
+                  >
                     <div className="flex flex-col">
                       <span className="text-xs text-[#e8c84a]">{b.name}</span>
                       <span className="text-[10px] text-gray-500">{formatDate(b.createdTime)}</span>

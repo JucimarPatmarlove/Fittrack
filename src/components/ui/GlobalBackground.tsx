@@ -1,13 +1,27 @@
-import React from 'react';
+import type React from 'react';
 
 export function GlobalBackground({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: '#080b0f', overflowX: 'hidden' }}>
+    <div
+      style={{
+        position: 'relative',
+        minHeight: '100vh',
+        backgroundColor: '#080b0f',
+        overflowX: 'hidden',
+      }}
+    >
       {/* Gradiente principal */}
-      <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(to bottom right, #0a0f15, #0c111a, #080b0f)', pointerEvents: 'none' }} />
-      
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'linear-gradient(to bottom right, #0a0f15, #0c111a, #080b0f)',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* Ruído subtil (textura) */}
-      <div 
+      <div
         style={{
           position: 'fixed',
           inset: 0,
@@ -19,23 +33,23 @@ export function GlobalBackground({ children }: { children: React.ReactNode }) {
           backgroundSize: '120px',
         }}
       />
-      
+
       {/* Glow central (efeito moderno) */}
-      <div 
-         style={{
-           position: 'fixed',
-           top: '50%',
-           left: '50%',
-           transform: 'translate(-50%, -50%)',
-           width: '800px',
-           height: '800px',
-           backgroundColor: 'rgba(232, 200, 74, 0.05)',
-           borderRadius: '50%',
-           filter: 'blur(120px)',
-           pointerEvents: 'none'
-         }} 
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '800px',
+          height: '800px',
+          backgroundColor: 'rgba(232, 200, 74, 0.05)',
+          borderRadius: '50%',
+          filter: 'blur(120px)',
+          pointerEvents: 'none',
+        }}
       />
-      
+
       <div style={{ position: 'relative', zIndex: 10 }}>{children}</div>
     </div>
   );

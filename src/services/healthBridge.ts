@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
-import { healthKit, HealthKitData } from './healthKitService';
+import { type HealthKitData, healthKit } from './healthKitService';
 // Assumindo que a tua lógica de Google Fit atual exporta uma função 'fetchGoogleFitData'
-// import { fetchGoogleFitData } from './googleFitApi'; 
+// import { fetchGoogleFitData } from './googleFitApi';
 
 export interface UnifiedHealthMetrics {
   weight: number | null;
@@ -14,13 +14,11 @@ export interface UnifiedHealthMetrics {
 }
 
 export class HealthBridge {
-  
   /**
-   * Ponto de entrada universal. 
+   * Ponto de entrada universal.
    * Determina qual motor usar com base no Sistema Operativo.
    */
   public static async autoSync(): Promise<UnifiedHealthMetrics> {
-    
     // 1. MODO SIMULAÇÃO (Browser Dev no Kali/Windows)
     if (!Capacitor.isNativePlatform()) {
       console.log('[HealthBridge] A ejetar dados simulados de telemetria.');
@@ -33,8 +31,7 @@ export class HealthBridge {
     if (platform === 'ios') {
       console.log('[HealthBridge] Encaminhando para Apple HealthKit...');
       return await this.syncAppleHealth();
-    } 
-    else if (platform === 'android') {
+    } else if (platform === 'android') {
       console.log('[HealthBridge] Encaminhando para Google Fit REST API...');
       return await this.syncGoogleFit();
     }
@@ -48,7 +45,7 @@ export class HealthBridge {
     try {
       await healthKit.authorize();
       const data: HealthKitData = await healthKit.syncHealthData();
-      
+
       return {
         weight: data.weight,
         bodyFat: data.bodyFat,
@@ -56,7 +53,7 @@ export class HealthBridge {
         leanMass: data.leanMass,
         sleepHours: data.sleepHours,
         platform: 'apple',
-        lastSync: Date.now()
+        lastSync: Date.now(),
       };
     } catch (error) {
       console.error('[HealthBridge] Falha no Apple Health:', error);
@@ -68,15 +65,15 @@ export class HealthBridge {
     try {
       // ⚠️ A TUA IMPLEMENTAÇÃO EXISTENTE ENTRA AQUI ⚠️
       // const googleData = await fetchGoogleFitData();
-      
+
       return {
         weight: 76.5, // googleData.weight
         bodyFat: 24.5, // googleData.bodyFat
-        bmi: 24.4,     // googleData.bmi
+        bmi: 24.4, // googleData.bmi
         leanMass: 57.7, // googleData.leanMass
         sleepHours: 7.2, // googleData.sleepSession
         platform: 'google',
-        lastSync: Date.now()
+        lastSync: Date.now(),
       };
     } catch (error) {
       console.error('[HealthBridge] Falha no Google Fit:', error);
@@ -94,7 +91,7 @@ export class HealthBridge {
       leanMass: null,
       sleepHours: null,
       platform: 'mock',
-      lastSync: Date.now()
+      lastSync: Date.now(),
     };
   }
 
@@ -110,5 +107,3 @@ export class HealthBridge {
 }
 
 export const healthBridge = HealthBridge;
-
-

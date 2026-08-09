@@ -4,13 +4,13 @@ let unlocked = false;
 
 export function initAudio() {
   if (unlocked) return;
-  
+
   const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
   if (!AudioContextClass) return;
 
   try {
     audioCtx = new AudioContextClass();
-    
+
     // Criar um buffer vazio de 1 milissegundo e tocá-lo silenciosamente
     // Isto prova ao browser que o áudio foi iniciado por uma ação do utilizador
     const buffer = audioCtx.createBuffer(1, 1, 22050);
@@ -18,7 +18,7 @@ export function initAudio() {
     source.buffer = buffer;
     source.connect(audioCtx.destination);
     source.start(0);
-    
+
     unlocked = true;
   } catch (e) {
     console.warn('Erro ao inicializar AudioContext:', e);
@@ -30,7 +30,7 @@ export function playBeep() {
     // Fallback para o método clássico caso a inicialização tenha falhado
     const audio = new Audio('/beep.mp3');
     audio.volume = 0.5;
-    audio.play().catch(e => console.warn('Autoplay bloqueado:', e));
+    audio.play().catch((e) => console.warn('Autoplay bloqueado:', e));
     return;
   }
 

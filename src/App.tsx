@@ -1,29 +1,30 @@
+import { AnimatePresence } from 'framer-motion';
 // @ts-nocheck
-import React, { Suspense, lazy } from "react";
+import type React from 'react';
+import { lazy } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
-import { AnimatePresence } from "framer-motion";
-import { PageTransition, LazyLoad } from './components/ui/MotionComponents';
+import { LazyLoad, PageTransition } from './components/ui/MotionComponents';
 
+import { LockScreen } from './components/security/LockScreen';
+import { SocialModal } from './components/social/SocialModal';
+import { BackupRestoreModal } from './components/ui/BackupRestoreModal';
+import { BottomNav } from './components/ui/BottomNav';
 // ── IMPORTAÇÕES BASES & CONSTANTES ──────────────────────────────────────────
 import { C } from './data/constants';
 import { useFitnessData } from './hooks/useFitnessData';
-import { BottomNav } from './components/ui/BottomNav';
-import { BackupRestoreModal } from './components/ui/BackupRestoreModal';
-import { SocialModal } from "./components/social/SocialModal";
-import { LockScreen } from './components/security/LockScreen';
-import { useNutritionStore } from './stores/useNutritionStore';
 import { getTodayDateString } from './services/nutritionEngine';
+import { useNutritionStore } from './stores/useNutritionStore';
 
+import { BeginnerGuide } from './components/onboarding/BeginnerGuide';
+import { FitnessAssessment } from './components/onboarding/FitnessAssessment';
 // ── COMPONENTES MENORES & MODULOS LAZY LOAD ─────────────────────────────────
-import { WelcomeWizard } from "./components/onboarding/WelcomeWizard";
-import { FitnessAssessment } from "./components/onboarding/FitnessAssessment";
-import { BeginnerGuide } from "./components/onboarding/BeginnerGuide";
-import { PostWorkoutFeedback } from "./components/workout/PostWorkoutFeedback";
-import { FreeWorkoutBuilder } from "./components/workout/FreeWorkoutBuilder";
-import { WeeklyPlanGenerator } from "./components/workout/WeeklyPlanGenerator";
-import { UserProfile, WorkoutPlan } from './types';
-import { WorkoutSession } from './db/schema';
-import { ViewName } from './hooks/useFitnessData';
+import { WelcomeWizard } from './components/onboarding/WelcomeWizard';
+import { FreeWorkoutBuilder } from './components/workout/FreeWorkoutBuilder';
+import { PostWorkoutFeedback } from './components/workout/PostWorkoutFeedback';
+import { WeeklyPlanGenerator } from './components/workout/WeeklyPlanGenerator';
+import type { WorkoutSession } from './db/schema';
+import type { ViewName } from './hooks/useFitnessData';
+import type { UserProfile, WorkoutPlan } from './types';
 
 // Componentes Pesados - Code Splitting
 const Dashboard = lazy(() => import('./screens/Dashboard'));
@@ -35,12 +36,18 @@ const GymVibe = lazy(() => import('./screens/GymVibe'));
 const Milestones = lazy(() => import('./screens/Milestones'));
 const CycleReview = lazy(() => import('./screens/CycleReview'));
 const BackupScreen = lazy(() => import('./screens/BackupScreen'));
-const DeviceManager = lazy(() => import('./screens/DeviceManager').then(m => ({ default: m.DeviceManager })));
+const DeviceManager = lazy(() =>
+  import('./screens/DeviceManager').then((m) => ({ default: m.DeviceManager })),
+);
 const WalkingCoachScreen = lazy(() => import('./screens/WalkingCoachScreen'));
-const DetailedHistory = lazy(() => import('./components/history/DetailedHistory').then(m => ({ default: m.DetailedHistory })));
-const Planner = lazy(() => import('./screens/Planner').then(m => ({ default: m.Planner })));
+const DetailedHistory = lazy(() =>
+  import('./components/history/DetailedHistory').then((m) => ({ default: m.DetailedHistory })),
+);
+const Planner = lazy(() => import('./screens/Planner').then((m) => ({ default: m.Planner })));
 const NutritionPlanner = lazy(() => import('./screens/NutritionPlanner'));
-const RewardsStore = lazy(() => import('./screens/RewardsStore').then(m => ({ default: m.RewardsStore })));
+const RewardsStore = lazy(() =>
+  import('./screens/RewardsStore').then((m) => ({ default: m.RewardsStore })),
+);
 const CommunityFeed = lazy(() => import('./screens/CommunityFeed'));
 const CompeteScreen = lazy(() => import('./screens/CompeteScreen'));
 const RecoveryScreen = lazy(() => import('./screens/RecoveryScreen'));
@@ -58,16 +65,20 @@ interface ViewConfig {
 /** Build the NutritionPlanner view with required props */
 function buildNutritionView(
   profile: UserProfile,
-  setProfile: (p: UserProfile) => void
+  setProfile: (p: UserProfile) => void,
 ): React.ReactNode {
   return (
-    <NutritionPlanner 
-      profile={profile} 
-      meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as any} 
-      onUpdateProfile={(p) => setProfile({ ...profile, ...p })} 
-      onAddMealItem={(type, item) => useNutritionStore.getState().addMeal(getTodayDateString(), type, item as any)} 
-      onRemoveMealItem={(type, id) => useNutritionStore.getState().removeMeal(getTodayDateString(), type, id)} 
-      currentDate={getTodayDateString()} 
+    <NutritionPlanner
+      profile={profile}
+      meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as any}
+      onUpdateProfile={(p) => setProfile({ ...profile, ...p })}
+      onAddMealItem={(type, item) =>
+        useNutritionStore.getState().addMeal(getTodayDateString(), type, item as any)
+      }
+      onRemoveMealItem={(type, id) =>
+        useNutritionStore.getState().removeMeal(getTodayDateString(), type, id)
+      }
+      currentDate={getTodayDateString()}
     />
   );
 }
@@ -86,17 +97,28 @@ function createViewConfigs(
   handleReset: () => void,
   handleUnlock: (key: CryptoKey) => void,
   workoutData: WorkoutSession | null,
-  currentPlan: WorkoutPlan | string | null
+  currentPlan: WorkoutPlan | string | null,
 ): Record<string, React.ReactNode> {
   return {
     dashboard: (
       <PageTransition viewKey="dash">
-        <Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} />
+        <Dashboard
+          profile={profile}
+          setProfile={setProfile}
+          history={history}
+          onStartWorkout={handleStartWorkout}
+        />
       </PageTransition>
     ),
     workout: currentPlan ? (
       <PageTransition viewKey="work">
-        <ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => setView("dashboard")} />
+        <ActiveWorkout
+          todayPlan={currentPlan}
+          history={history}
+          profile={profile}
+          onFinish={handleFinishWorkout}
+          onCancel={() => setView('dashboard')}
+        />
       </PageTransition>
     ) : null,
     settings: (
@@ -106,12 +128,17 @@ function createViewConfigs(
     ),
     assessment: (
       <PageTransition viewKey="asses">
-        <FitnessAssessment onComplete={(data: Partial<UserProfile>) => { setProfile({ ...profile, ...data } as UserProfile); setView("dashboard"); }} />
+        <FitnessAssessment
+          onComplete={(data: Partial<UserProfile>) => {
+            setProfile({ ...profile, ...data } as UserProfile);
+            setView('dashboard');
+          }}
+        />
       </PageTransition>
     ),
     guide: (
       <PageTransition viewKey="gui">
-        <BeginnerGuide onComplete={() => setView("dashboard")} />
+        <BeginnerGuide onComplete={() => setView('dashboard')} />
       </PageTransition>
     ),
     history: (
@@ -121,7 +148,11 @@ function createViewConfigs(
     ),
     feedback: (
       <PageTransition viewKey="feed">
-        <PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} />
+        <PostWorkoutFeedback
+          onSubmit={handleFeedbackSubmit}
+          profile={profile}
+          workoutData={workoutData}
+        />
       </PageTransition>
     ),
     aicoach: (
@@ -151,13 +182,18 @@ function createViewConfigs(
     ),
     cyclereview: (
       <PageTransition viewKey="cyclereview">
-        <CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} />
+        <CycleReview
+          history={history}
+          onClose={() => setView('dashboard')}
+          onGenerateNewPlan={() => {
+            setView('dashboard');
+            window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN'));
+          }}
+        />
       </PageTransition>
     ),
     nutrition: (
-      <PageTransition viewKey="nutrition">
-        {buildNutritionView(profile, setProfile)}
-      </PageTransition>
+      <PageTransition viewKey="nutrition">{buildNutritionView(profile, setProfile)}</PageTransition>
     ),
     devices: (
       <PageTransition viewKey="devices">
@@ -166,7 +202,7 @@ function createViewConfigs(
     ),
     rewards: (
       <PageTransition viewKey="rewards">
-        <RewardsStore onClose={() => setView("dashboard")} />
+        <RewardsStore onClose={() => setView('dashboard')} />
       </PageTransition>
     ),
     backup: (
@@ -176,10 +212,7 @@ function createViewConfigs(
     ),
     walkingcoach: (
       <PageTransition viewKey="walkingcoach">
-        <WalkingCoachScreen 
-           onClose={() => setView("dashboard")} 
-           onFinish={handleInstantSave} 
-        />
+        <WalkingCoachScreen onClose={() => setView('dashboard')} onFinish={handleInstantSave} />
       </PageTransition>
     ),
     community: (
@@ -196,7 +229,7 @@ function createViewConfigs(
       <PageTransition viewKey="recovery">
         <RecoveryScreen />
       </PageTransition>
-    )
+    ),
   };
 }
 
@@ -230,26 +263,47 @@ export default function App() {
 
   if (!isUnlocked) {
     if (isFirstTime) {
-      return <WelcomeWizard 
-                onComplete={handleUnlock} 
-                profile={profile} 
-                setProfile={setProfile} 
-                onClearMocks={handleReset} 
-             />;
+      return (
+        <WelcomeWizard
+          onComplete={handleUnlock}
+          profile={profile}
+          setProfile={setProfile}
+          onClearMocks={handleReset}
+        />
+      );
     }
     return <LockScreen onUnlock={handleUnlock} isFirstTime={false} />;
   }
 
   const viewConfigs = createViewConfigs(
-    view, profile, setProfile, history, setView,
-    handleStartWorkout, handleFinishWorkout, handleFeedbackSubmit,
-    handleInstantSave, handleReset, handleUnlock, workoutData, currentPlan
+    view,
+    profile,
+    setProfile,
+    history,
+    setView,
+    handleStartWorkout,
+    handleFinishWorkout,
+    handleFeedbackSubmit,
+    handleInstantSave,
+    handleReset,
+    handleUnlock,
+    workoutData,
+    currentPlan,
   );
 
   const currentView = viewConfigs[view];
 
   return (
-    <div style={{ paddingTop: 'calc(12px + env(safe-area-inset-top))', paddingBottom: 100, minHeight: '100vh', position: 'relative', background: C.bg, color: C.text }}>
+    <div
+      style={{
+        paddingTop: 'calc(12px + env(safe-area-inset-top))',
+        paddingBottom: 100,
+        minHeight: '100vh',
+        position: 'relative',
+        background: C.bg,
+        color: C.text,
+      }}
+    >
       <style>{css}</style>
 
       {pendingRestoreBackup && (
@@ -262,9 +316,7 @@ export default function App() {
 
       <ErrorBoundary>
         <LazyLoad skeleton="card" skeletonClassName="mt-20 mx-4">
-          <AnimatePresence mode="wait">
-            {currentView}
-          </AnimatePresence>
+          <AnimatePresence mode="wait">{currentView}</AnimatePresence>
         </LazyLoad>
       </ErrorBoundary>
 
@@ -277,7 +329,7 @@ export default function App() {
 
       {showClubModal && <SocialModal onClose={() => setShowClubModal(false)} />}
       {showFreeBuilder && (
-        <FreeWorkoutBuilder 
+        <FreeWorkoutBuilder
           profile={profile}
           onClose={() => setShowFreeBuilder(false)}
           onStart={(plan) => {
@@ -287,7 +339,7 @@ export default function App() {
         />
       )}
       {showWeeklyPlan && (
-        <WeeklyPlanGenerator 
+        <WeeklyPlanGenerator
           profile={profile}
           setProfile={setProfile}
           onClose={() => setShowWeeklyPlan(false)}

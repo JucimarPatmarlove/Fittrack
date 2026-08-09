@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { VectorMemory } from '../../src/services/vectorMemory';
 import { protectApi } from '../../src/middleware/auth';
+import { VectorMemory } from '../../src/services/vectorMemory';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -11,7 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!(await protectApi(req, res))) return;
 
   const { userId, workoutId, summary } = req.body;
-  
+
   // Responde imediatamente ao frontend para não bloquear a UI
   res.status(200).json({ message: 'Treino recebido. Sincronização vetorial pendente na Edge.' });
 
@@ -19,7 +19,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (userId && workoutId && summary) {
     try {
       await VectorMemory.memorizeWorkout(userId, workoutId, summary);
-    } catch(e) {
+    } catch (e) {
       console.error('[Vercel API] Falha na sincronização vetorial em background:', e);
     }
   }

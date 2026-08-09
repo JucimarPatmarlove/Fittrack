@@ -1,20 +1,20 @@
-import { UserProfile } from '../types';
-import { MealItem } from '../db/schema';
+import type { MealItem } from '../db/schema';
+import type { UserProfile } from '../types';
 
 // Exporting FitnessGoal and ActivityLevel as types since they were merged into UserProfile or kept as constants
 export enum FitnessGoal {
-  LOSE_WEIGHT = "LOSE_WEIGHT",
-  GAIN_MUSCLE = "GAIN_MUSCLE",
-  MAINTAIN = "MAINTAIN",
-  HEALTH = "HEALTH",
+  LOSE_WEIGHT = 'LOSE_WEIGHT',
+  GAIN_MUSCLE = 'GAIN_MUSCLE',
+  MAINTAIN = 'MAINTAIN',
+  HEALTH = 'HEALTH',
 }
 
 export enum ActivityLevel {
-  SEDENTARY = "SEDENTARY", // Pouco ou nenhum exercício
-  LIGHT = "LIGHT",         // Exercício leve 1-3 dias/semana
-  MODERATE = "MODERATE",   // Exercício moderado 3-5 dias/semana
-  ACTIVE = "ACTIVE",       // Exercício intenso 6-7 dias/semana
-  VERY_ACTIVE = "VERY_ACTIVE" // Treino de atleta/trabalho manual pesado
+  SEDENTARY = 'SEDENTARY', // Pouco ou nenhum exercício
+  LIGHT = 'LIGHT', // Exercício leve 1-3 dias/semana
+  MODERATE = 'MODERATE', // Exercício moderado 3-5 dias/semana
+  ACTIVE = 'ACTIVE', // Exercício intenso 6-7 dias/semana
+  VERY_ACTIVE = 'VERY_ACTIVE', // Treino de atleta/trabalho manual pesado
 }
 
 // ---- Constants and Lookup Tables ----
@@ -33,10 +33,10 @@ const GOAL_CALORIE_ADJUSTMENT: Record<FitnessGoal, (tdee: number) => number> = {
 };
 
 const GOAL_MACRO_SPLITS: Record<FitnessGoal, MacroSplit> = {
-  [FitnessGoal.LOSE_WEIGHT]: { proteinRatio: 0.35, carbRatio: 0.40, fatRatio: 0.25 },
-  [FitnessGoal.GAIN_MUSCLE]: { proteinRatio: 0.30, carbRatio: 0.45, fatRatio: 0.25 },
-  [FitnessGoal.MAINTAIN]: { proteinRatio: 0.25, carbRatio: 0.50, fatRatio: 0.25 },
-  [FitnessGoal.HEALTH]: { proteinRatio: 0.25, carbRatio: 0.50, fatRatio: 0.25 },
+  [FitnessGoal.LOSE_WEIGHT]: { proteinRatio: 0.35, carbRatio: 0.4, fatRatio: 0.25 },
+  [FitnessGoal.GAIN_MUSCLE]: { proteinRatio: 0.3, carbRatio: 0.45, fatRatio: 0.25 },
+  [FitnessGoal.MAINTAIN]: { proteinRatio: 0.25, carbRatio: 0.5, fatRatio: 0.25 },
+  [FitnessGoal.HEALTH]: { proteinRatio: 0.25, carbRatio: 0.5, fatRatio: 0.25 },
 };
 
 const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
@@ -48,17 +48,17 @@ const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
 };
 
 const GOAL_STRING_MAP: Record<string, FitnessGoal> = {
-  'hipertrofia': FitnessGoal.GAIN_MUSCLE,
-  'forca': FitnessGoal.GAIN_MUSCLE,
-  'perda_peso': FitnessGoal.LOSE_WEIGHT,
-  'saude': FitnessGoal.HEALTH,
-  'condicionamento': FitnessGoal.HEALTH,
+  hipertrofia: FitnessGoal.GAIN_MUSCLE,
+  forca: FitnessGoal.GAIN_MUSCLE,
+  perda_peso: FitnessGoal.LOSE_WEIGHT,
+  saude: FitnessGoal.HEALTH,
+  condicionamento: FitnessGoal.HEALTH,
 };
 
 const ACTIVITY_STRING_MAP: Record<string, ActivityLevel> = {
-  'sedentario': ActivityLevel.SEDENTARY,
-  'praticante_irregular': ActivityLevel.LIGHT,
-  'praticante_regular': ActivityLevel.ACTIVE,
+  sedentario: ActivityLevel.SEDENTARY,
+  praticante_irregular: ActivityLevel.LIGHT,
+  praticante_regular: ActivityLevel.ACTIVE,
 };
 
 // ---- Pure utility functions ----
@@ -148,7 +148,13 @@ export const PRESET_FOODS: Omit<MealItem, 'id'>[] = [
   { name: 'Peito de Frango Grelhado (100g)', calories: 165, protein: 31, carb: 0, fat: 3.6 },
   { name: 'Arroz Integral Cozido (100g)', calories: 111, protein: 2.6, carb: 23, fat: 0.9 },
   { name: 'Feijão Preto Cozido (100g)', calories: 132, protein: 8.9, carb: 23.7, fat: 0.5 },
-  { name: 'Ovo de Galinha Inteiro Cozido (1 unid)', calories: 78, protein: 6.3, carb: 0.6, fat: 5.3 },
+  {
+    name: 'Ovo de Galinha Inteiro Cozido (1 unid)',
+    calories: 78,
+    protein: 6.3,
+    carb: 0.6,
+    fat: 5.3,
+  },
   { name: 'Banana Prata Média (1 unid)', calories: 90, protein: 1.1, carb: 23, fat: 0.3 },
   { name: 'Whey Protein Isolado (1 scoop - 30g)', calories: 120, protein: 25, carb: 2, fat: 1 },
   { name: 'Batata Doce Cozida (100g)', calories: 86, protein: 1.6, carb: 20, fat: 0.1 },
@@ -157,7 +163,13 @@ export const PRESET_FOODS: Omit<MealItem, 'id'>[] = [
   { name: 'Brocolis Cozido (100g)', calories: 35, protein: 2.4, carb: 7, fat: 0.4 },
   { name: 'Tapioca pronta (50g)', calories: 130, protein: 0.2, carb: 32, fat: 0.1 },
   { name: 'Iogurte Desnatado Natural (170g)', calories: 70, protein: 6.8, carb: 9, fat: 0 },
-  { name: 'Azeite de Oliva Extra Virgem (1 colher de sopa)', calories: 119, protein: 0, carb: 0, fat: 13.5 },
+  {
+    name: 'Azeite de Oliva Extra Virgem (1 colher de sopa)',
+    calories: 119,
+    protein: 0,
+    carb: 0,
+    fat: 13.5,
+  },
 ];
 
 export function getTodayDateString(): string {

@@ -3,13 +3,13 @@
 // Centraliza leitura de peso (RENPHO via HealthKit) e sono (Apple Watch via HealthKit)
 
 export interface HealthKitData {
-  weight: number | null;     // kg (RENPHO → HealthKit)
-  bodyFat: number | null;    // %
+  weight: number | null; // kg (RENPHO → HealthKit)
+  bodyFat: number | null; // %
   bmi: number | null;
-  leanMass: number | null;   // kg
+  leanMass: number | null; // kg
   sleepHours: number | null; // horas de sono (Apple Watch → HealthKit)
-  lastSync: number;          // timestamp do último sync
-  isMock: boolean;           // true quando em modo simulação (browser)
+  lastSync: number; // timestamp do último sync
+  isMock: boolean; // true quando em modo simulação (browser)
 }
 
 class HealthKitService {
@@ -34,7 +34,8 @@ class HealthKitService {
 
   private detectPlatform(): void {
     try {
-      this.isNative = typeof (window as any).Capacitor !== 'undefined' &&
+      this.isNative =
+        typeof (window as any).Capacitor !== 'undefined' &&
         (window as any).Capacitor.isNativePlatform?.() === true;
     } catch {
       this.isNative = false;
@@ -101,11 +102,11 @@ class HealthKitService {
       await this.CapacitorHealthKit.requestAuthorization({
         all: [],
         read: [
-          this.SampleNames.WEIGHT, 
+          this.SampleNames.WEIGHT,
           this.SampleNames.SLEEP_ANALYSIS,
           this.SampleNames.BODY_FAT_PERCENTAGE,
           this.SampleNames.BODY_MASS_INDEX,
-          this.SampleNames.LEAN_BODY_MASS
+          this.SampleNames.LEAN_BODY_MASS,
         ],
         write: [],
       });
@@ -177,14 +178,14 @@ class HealthKitService {
     const weight = 79.5 + (Math.random() * 1.5 - 0.7);
     const bodyFat = 25.0 + (Math.random() * 0.6 - 0.3);
     const bmi = weight / (1.77 * 1.77);
-    const leanMass = weight - (weight * (bodyFat / 100));
-    
+    const leanMass = weight - weight * (bodyFat / 100);
+
     return {
-      weight: parseFloat(weight.toFixed(1)),
-      bodyFat: parseFloat(bodyFat.toFixed(1)),
-      bmi: parseFloat(bmi.toFixed(1)),
-      leanMass: parseFloat(leanMass.toFixed(1)),
-      sleepHours: parseFloat((6.5 + Math.random() * 2).toFixed(1)),
+      weight: Number.parseFloat(weight.toFixed(1)),
+      bodyFat: Number.parseFloat(bodyFat.toFixed(1)),
+      bmi: Number.parseFloat(bmi.toFixed(1)),
+      leanMass: Number.parseFloat(leanMass.toFixed(1)),
+      sleepHours: Number.parseFloat((6.5 + Math.random() * 2).toFixed(1)),
       lastSync: Date.now(),
       isMock: true,
     };
@@ -209,7 +210,17 @@ class HealthKitService {
     // Modo nativo → HealthKit real
     const pluginLoaded = await this.loadPlugin();
     if (!pluginLoaded) {
-      return this.cached || { weight: null, bodyFat: null, bmi: null, leanMass: null, sleepHours: null, lastSync: Date.now(), isMock: false };
+      return (
+        this.cached || {
+          weight: null,
+          bodyFat: null,
+          bmi: null,
+          leanMass: null,
+          sleepHours: null,
+          lastSync: Date.now(),
+          isMock: false,
+        }
+      );
     }
 
     try {
@@ -234,7 +245,17 @@ class HealthKitService {
       return result;
     } catch (error) {
       console.error('[HealthKit] Sync error:', error);
-      return this.cached || { weight: null, bodyFat: null, bmi: null, leanMass: null, sleepHours: null, lastSync: Date.now(), isMock: false };
+      return (
+        this.cached || {
+          weight: null,
+          bodyFat: null,
+          bmi: null,
+          leanMass: null,
+          sleepHours: null,
+          lastSync: Date.now(),
+          isMock: false,
+        }
+      );
     }
   }
 

@@ -3,26 +3,26 @@
 // Cruza 3 variáveis biométricas (sono × peso × calorias) para recalcular metas diárias.
 
 export interface BiometricContext {
-  currentWeight: number;             // Peso atual em kg (RENPHO via HealthKit)
-  sleepHours: number;                // Horas de sono da última noite (Apple Watch)
-  yesterdayCaloriesBurned: number;    // Calorias gastas ontem (treinos)
-  yesterdayCaloriesConsumed: number;  // Calorias consumidas ontem (refeições)
-  baselineWeight: number;            // Peso base do perfil (idealmente média 7 dias)
-  targetCalories: number;            // Meta calórica padrão do perfil
+  currentWeight: number; // Peso atual em kg (RENPHO via HealthKit)
+  sleepHours: number; // Horas de sono da última noite (Apple Watch)
+  yesterdayCaloriesBurned: number; // Calorias gastas ontem (treinos)
+  yesterdayCaloriesConsumed: number; // Calorias consumidas ontem (refeições)
+  baselineWeight: number; // Peso base do perfil (idealmente média 7 dias)
+  targetCalories: number; // Meta calórica padrão do perfil
 }
 
 export interface DailyAdjustment {
-  suggestedCalories: number;    // Meta calórica recalculada
-  workoutType: string;          // Tipo de treino recomendado
-  intensityModifier: number;    // Multiplicador de intensidade (0.7 a 1.1)
-  sleepInsight: string;         // Nota clínica sobre sono
-  weightInsight: string;        // Nota clínica sobre variação de peso
-  calorieInsight: string;       // Nota sobre balanço calórico
+  suggestedCalories: number; // Meta calórica recalculada
+  workoutType: string; // Tipo de treino recomendado
+  intensityModifier: number; // Multiplicador de intensidade (0.7 a 1.1)
+  sleepInsight: string; // Nota clínica sobre sono
+  weightInsight: string; // Nota clínica sobre variação de peso
+  calorieInsight: string; // Nota sobre balanço calórico
 }
 
 /**
  * Calcula os ajustes diários com base no contexto biométrico.
- * 
+ *
  * TABELA DE DECISÃO:
  * ┌──────────────────┬─────────────────┬──────────────────────────────────────────┐
  * │ Variável         │ Threshold       │ Ação                                     │
@@ -97,7 +97,10 @@ export function calculateDailyAdjustments(ctx: BiometricContext): DailyAdjustmen
 
   // ─── CÁLCULO FINAL ──────────────────────────────────────────────────────
 
-  const finalCalories = Math.max(1200, Math.min(3500, Math.round(ctx.targetCalories + calorieModifier)));
+  const finalCalories = Math.max(
+    1200,
+    Math.min(3500, Math.round(ctx.targetCalories + calorieModifier)),
+  );
 
   return {
     suggestedCalories: finalCalories,

@@ -1,5 +1,5 @@
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Conexão ao Upstash
@@ -11,7 +11,7 @@ const redis = new Redis({
 // Algoritmo Sliding Window: 10 requests a cada 60 segundos
 const ratelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(10, "60 s"),
+  limiter: Ratelimit.slidingWindow(10, '60 s'),
   analytics: true,
 });
 
@@ -28,8 +28,8 @@ export const aiRateLimiter = async (req: VercelRequest, res: VercelResponse): Pr
 
     if (!success) {
       console.warn(`[Upstash] Bloqueio tático ativado. IP: ${identifier} excedeu a quota.`);
-      res.status(429).json({ 
-        error: "Demasiados pedidos. Descansa 1 minuto e tenta novamente." 
+      res.status(429).json({
+        error: 'Demasiados pedidos. Descansa 1 minuto e tenta novamente.',
       });
       return false;
     }

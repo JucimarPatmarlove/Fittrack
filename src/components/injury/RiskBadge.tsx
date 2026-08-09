@@ -1,7 +1,7 @@
 // src/components/injury/RiskBadge.tsx
 
-import React from 'react';
 import { AlertTriangle, Shield, ShieldAlert, ShieldX } from 'lucide-react';
+import type React from 'react';
 
 interface RiskBadgeProps {
   level: 'low' | 'moderate' | 'high' | 'critical';
@@ -39,22 +39,22 @@ const SIZE_CLASSES = {
   lg: 'text-base px-4 py-2',
 };
 
-export const RiskBadge: React.FC<RiskBadgeProps> = ({ 
-  level, 
-  score, 
+export const RiskBadge: React.FC<RiskBadgeProps> = ({
+  level,
+  score,
   showIcon = true,
-  size = 'md' 
+  size = 'md',
 }) => {
   const config = CONFIG[level];
   const Icon = config.icon;
-  
+
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border font-semibold ${config.color} ${SIZE_CLASSES[size]}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border font-semibold ${config.color} ${SIZE_CLASSES[size]}`}
+    >
       {showIcon && <Icon className="w-4 h-4" />}
       <span>{config.label}</span>
-      {score !== undefined && (
-        <span className="opacity-75">({Math.round(score)})</span>
-      )}
+      {score !== undefined && <span className="opacity-75">({Math.round(score)})</span>}
     </span>
   );
 };

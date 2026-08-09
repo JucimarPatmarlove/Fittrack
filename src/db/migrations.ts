@@ -1,7 +1,7 @@
 // @ts-nocheck
 // src/db/migrations.ts
-import { IDBPDatabase } from 'idb';
-import { FitTrackDBSchema } from './schema';
+import type { IDBPDatabase } from 'idb';
+import type { FitTrackDBSchema } from './schema';
 
 export const CURRENT_DB_VERSION = 3;
 
@@ -53,7 +53,7 @@ const migrations: Migration[] = [
 export async function runMigrations(
   db: IDBPDatabase<FitTrackDBSchema>,
   oldVersion: number,
-  newVersion: number
+  newVersion: number,
 ): Promise<void> {
   for (const m of migrations) {
     if (m.version > oldVersion && m.version <= newVersion) {
@@ -71,7 +71,15 @@ export async function checkSchemaHealth(): Promise<{
 }> {
   const { getDB } = await import('./schema');
   const db = await getDB();
-  const expected = ['workouts', 'setLogs', 'personalRecords', 'recoveryMetrics', 'meals', 'hydration', 'weightHistory'];
+  const expected = [
+    'workouts',
+    'setLogs',
+    'personalRecords',
+    'recoveryMetrics',
+    'meals',
+    'hydration',
+    'weightHistory',
+  ];
   const missing = expected.filter((s: string) => !db.objectStoreNames.contains(s as any));
   return {
     healthy: missing.length === 0,
@@ -80,4 +88,3 @@ export async function checkSchemaHealth(): Promise<{
     missingStores: missing,
   };
 }
-

@@ -132,7 +132,10 @@ function genClubCode(): string {
   return out;
 }
 
-async function loadClubById(supabase: ReturnType<typeof getSocialClient>, clubId: string): Promise<Club | null> {
+async function loadClubById(
+  supabase: ReturnType<typeof getSocialClient>,
+  clubId: string,
+): Promise<Club | null> {
   if (!supabase) return null;
   const { data: club, error } = await supabase
     .from('clubs')
@@ -182,7 +185,9 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   loadSession: async () => {
     const supabase = getSocialClient();
     if (!supabase) return;
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session?.user) {
       set({ profile: null, myClub: null });
       return;
@@ -211,7 +216,11 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
     if (!supabase) return { error: 'Rede social não configurada.' };
     set({ authLoading: true, authError: null });
 
-    const { data: existing } = await supabase.from('profiles').select('id').eq('username', username).maybeSingle();
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle();
     if (existing) {
       const errorMsg = 'Username já está em uso.';
       set({ authLoading: false, authError: errorMsg });
@@ -265,7 +274,15 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   },
 
   // ══ Publicação de PRs ═════════════════════════════════════════
-  publishPR: async ({ exerciseName, metricType, value, unit = 'kg', reps, note, visibility = 'public' }) => {
+  publishPR: async ({
+    exerciseName,
+    metricType,
+    value,
+    unit = 'kg',
+    reps,
+    note,
+    visibility = 'public',
+  }) => {
     const supabase = getSocialClient();
     const { profile } = get();
     if (!supabase || !profile) return { error: 'Precisas de sessão iniciada para publicar.' };
@@ -325,7 +342,8 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   createChallenge: async ({ exerciseName, metricType, title, endsAt }) => {
     const supabase = getSocialClient();
     const { profile } = get();
-    if (!supabase || !profile) return { error: 'Precisas de sessão iniciada para criar um desafio.' };
+    if (!supabase || !profile)
+      return { error: 'Precisas de sessão iniciada para criar um desafio.' };
 
     const { data, error } = await supabase
       .from('challenges')
@@ -385,7 +403,8 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   joinChallenge: async (challengeId) => {
     const supabase = getSocialClient();
     const { profile } = get();
-    if (!supabase || !profile) return { error: 'Precisas de sessão iniciada para entrar num desafio.' };
+    if (!supabase || !profile)
+      return { error: 'Precisas de sessão iniciada para entrar num desafio.' };
 
     const { error } = await supabase
       .from('challenge_participants')
@@ -457,7 +476,8 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
   joinClub: async (code) => {
     const supabase = getSocialClient();
     const { profile } = get();
-    if (!supabase || !profile) throw new Error('Precisas de sessão iniciada para entrar num clube.');
+    if (!supabase || !profile)
+      throw new Error('Precisas de sessão iniciada para entrar num clube.');
     set({ clubLoading: true, clubError: null });
 
     const { data: club, error: findError } = await supabase
@@ -507,7 +527,7 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
           ...myClub,
           weeklyProgress: myClub.weeklyProgress + xp,
           members: myClub.members.map((m) =>
-            m.id === profile.id ? { ...m, xpThisWeek: m.xpThisWeek + xp } : m
+            m.id === profile.id ? { ...m, xpThisWeek: m.xpThisWeek + xp } : m,
           ),
         },
       });
@@ -519,11 +539,7 @@ export const useSocialStore = create<SocialState>()((set, get) => ({
     const { profile, myClub } = get();
     if (!supabase || !profile || !myClub) return;
 
-    await supabase
-      .from('club_members')
-      .delete()
-      .eq('club_id', myClub.id)
-      .eq('user_id', profile.id);
+    await supabase.from('club_members').delete().eq('club_id', myClub.id).eq('user_id', profile.id);
 
     set({ myClub: null });
   },

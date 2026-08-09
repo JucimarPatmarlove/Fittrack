@@ -1,5 +1,5 @@
 // src/hooks/useFitnessMachine.ts
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const FTMS_SERVICE = '00001826-0000-1000-8000-00805f9b34fb';
 const FTMS_CHARACTERISTICS = [
@@ -35,7 +35,7 @@ function readMetricIfFlagged<T>(
   flags: number,
   flagBit: number,
   offset: { current: number },
-  reader: (v: DataView, o: number) => T
+  reader: (v: DataView, o: number) => T,
 ): T | undefined {
   if (!(flags & flagBit)) return undefined;
   const result = reader(value, offset.current);
@@ -45,9 +45,12 @@ function readMetricIfFlagged<T>(
 
 function getByteSize(flagBit: number): number {
   switch (flagBit) {
-    case 0x0010: return 1;   // heart rate (uint8)
-    case 0x0080: return 4;   // distance (uint32)
-    default: return 2;       // most fields are uint16/int16
+    case 0x0010:
+      return 1; // heart rate (uint8)
+    case 0x0080:
+      return 4; // distance (uint32)
+    default:
+      return 2; // most fields are uint16/int16
   }
 }
 
@@ -107,7 +110,7 @@ async function discoverFTMSCharacteristic(service: any): Promise<any> {
 /** Setup notifications for a BLE characteristic */
 async function setupCharacteristicNotifications(
   characteristic: any,
-  onData: (data: FitnessMachineData) => void
+  onData: (data: FitnessMachineData) => void,
 ): Promise<void> {
   await characteristic.startNotifications();
   characteristic.addEventListener('characteristicvaluechanged', (event: any) => {

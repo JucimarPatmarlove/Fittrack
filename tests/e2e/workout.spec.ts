@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('completa um treino simples e verifica persistência', async ({ page }) => {
   // Assumindo que o perfil já existe (ou cria um mock)

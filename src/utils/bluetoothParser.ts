@@ -1,7 +1,7 @@
 // src/utils/bluetoothParser.ts
 
-import { HeartRateData } from '../hooks/useBluetoothHRM';
-import { FitnessMachineData } from '../hooks/useFitnessMachine';
+import type { HeartRateData } from '../hooks/useBluetoothHRM';
+import type { FitnessMachineData } from '../hooks/useFitnessMachine';
 
 export function parseHeartRateMeasurement(value: DataView): HeartRateData {
   const flags = value.getUint8(0);
@@ -55,6 +55,6 @@ export function parseFTMSMeasurement(value: DataView): FitnessMachineData {
       data.calories = value.getUint16(offset, true);
       offset += 2;
     }
-  } catch(e) {}
+  } catch (e) {}
   return data;
 }

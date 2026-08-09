@@ -2,24 +2,40 @@
 // Hook customizado que encapsula toda a lógica de persistência, XP e feedback do App.tsx
 // Resultado da refatoração: App.tsx fica responsável apenas pela navegação e renderização.
 
-import { useState, useEffect, useCallback } from 'react';
-import { useLS } from './index';
-import { ProfileSchema, HistorySchema } from '../utils/schemas';
-import { UserProfile, WorkoutPlan } from "../types";
-import { WorkoutSession } from "../db/schema";
-import { setMasterKey, getMasterKey } from '../utils/cryptoEngine';
+import { useCallback, useEffect, useState } from 'react';
+import type { WorkoutSession } from '../db/schema';
 import { checkForNewerBackup, importEncryptedBackup } from '../services/backupService';
-import { downloadBackup } from '../services/googleDrive';
 import { syncUserStats } from '../services/gamificationEngine';
+import { downloadBackup } from '../services/googleDrive';
 import { PredictiveChallenges } from '../services/predictiveChallenges';
+import type { UserProfile, WorkoutPlan } from '../types';
 import { initAudio } from '../utils/audio';
+import { getMasterKey, setMasterKey } from '../utils/cryptoEngine';
+import { HistorySchema, ProfileSchema } from '../utils/schemas';
+import { useLS } from './index';
 
 export type ViewName =
-  | 'dashboard' | 'workout' | 'settings' | 'assessment' | 'guide'
-  | 'feedback' | 'history' | 'aicoach' | 'trends' | 'planner'
-  | 'gymvibe' | 'milestones' | 'cyclereview' | 'nutrition'
-  | 'devices' | 'rewards' | 'backup' | 'walkingcoach' | 'community'
-  | 'compete' | 'recovery';
+  | 'dashboard'
+  | 'workout'
+  | 'settings'
+  | 'assessment'
+  | 'guide'
+  | 'feedback'
+  | 'history'
+  | 'aicoach'
+  | 'trends'
+  | 'planner'
+  | 'gymvibe'
+  | 'milestones'
+  | 'cyclereview'
+  | 'nutrition'
+  | 'devices'
+  | 'rewards'
+  | 'backup'
+  | 'walkingcoach'
+  | 'community'
+  | 'compete'
+  | 'recovery';
 
 interface PendingBackup {
   id: string;
@@ -47,13 +63,13 @@ function checkSessionUnlock(): boolean {
 /** Auto-backup: store snapshot in IDB once per 24h */
 async function performSilentBackup(): Promise<void> {
   const lastBackup = localStorage.getItem('last_backup');
-  if (lastBackup && Date.now() - parseInt(lastBackup) <= 24 * 60 * 60 * 1000) return;
+  if (lastBackup && Date.now() - Number.parseInt(lastBackup) <= 24 * 60 * 60 * 1000) return;
 
   try {
     const { get, set } = await import('idb-keyval');
-    const profileData = await get('fit_profile') || localStorage.getItem('fit_profile');
+    const profileData = (await get('fit_profile')) || localStorage.getItem('fit_profile');
     const historyData = await get('fit_history');
-    const ghostData = await get('ghost-storage') || localStorage.getItem('ghost-storage');
+    const ghostData = (await get('ghost-storage')) || localStorage.getItem('ghost-storage');
 
     await set('cloud_backup_mock', {
       profile: profileData || null,
@@ -84,7 +100,10 @@ async function checkDatabaseIntegrity(): Promise<void> {
 }
 
 /** Evaluate and update challenge completions */
-function updateChallengesFromWorkout(workoutData: WorkoutSession, newHistory: WorkoutSession[]): void {
+function updateChallengesFromWorkout(
+  workoutData: WorkoutSession,
+  newHistory: WorkoutSession[],
+): void {
   try {
     const storedC = localStorage.getItem('fit_challenges');
     if (!storedC) return;
@@ -93,7 +112,10 @@ function updateChallengesFromWorkout(workoutData: WorkoutSession, newHistory: Wo
     let updated = false;
 
     challenges = challenges.map((c: any) => {
-      if (c.status === 'active' && PredictiveChallenges.evaluateChallenge(c, workoutData, newHistory)) {
+      if (
+        c.status === 'active' &&
+        PredictiveChallenges.evaluateChallenge(c, workoutData, newHistory)
+      ) {
         c.status = 'completed';
         updated = true;
       }
@@ -110,13 +132,15 @@ function updateChallengesFromWorkout(workoutData: WorkoutSession, newHistory: Wo
 async function syncXPAndCheckLevelUp(
   currentXP: number,
   workoutId: string | undefined,
-  setProfile: (updater: (prev: UserProfile) => UserProfile) => void
+  setProfile: (updater: (prev: UserProfile) => UserProfile) => void,
 ): Promise<void> {
   try {
     const stats = await syncUserStats(currentXP, workoutId || '');
     setProfile((p: UserProfile) => ({ ...p, xp: stats.newTotalXP }));
     if (stats.levelUp) {
-      alert(`🏆 PARABÉNS! Subiste para o nível ${stats.newLevel?.level}: ${stats.newLevel?.title}!`);
+      alert(
+        `🏆 PARABÉNS! Subiste para o nível ${stats.newLevel?.level}: ${stats.newLevel?.title}!`,
+      );
     }
   } catch (err) {
     console.warn('Erro a processar XP:', err);
@@ -135,9 +159,15 @@ export function useFitnessData() {
     'fit_profile',
     { name: 'Atleta', goal: 'hipertrofia', level: 'beginner', weight: 70, xp: 0 } as UserProfile,
     ProfileSchema,
-    isUnlocked
+    isUnlocked,
   );
-  const [history, setHistory] = useLS<WorkoutSession[]>('fit_history', [], HistorySchema, isUnlocked, true);
+  const [history, setHistory] = useLS<WorkoutSession[]>(
+    'fit_history',
+    [],
+    HistorySchema,
+    isUnlocked,
+    true,
+  );
   const [currentPlan, setCurrentPlan] = useState<WorkoutPlan | string | null>(null);
   const [workoutData, setWorkoutData] = useState<WorkoutSession | null>(null);
   const [showClubModal, setShowClubModal] = useState(false);
@@ -164,10 +194,10 @@ export function useFitnessData() {
 
     const handleNavigate = (e: CustomEvent | Event) => setView((e as CustomEvent).detail);
     const handleOpenWeeklyPlan = () => setShowWeeklyPlan(true);
-    
+
     window.addEventListener('NAVIGATE_TO', handleNavigate);
     window.addEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
-    
+
     return () => {
       window.removeEventListener('NAVIGATE_TO', handleNavigate);
       window.removeEventListener('OPEN_WEEKLY_PLAN', handleOpenWeeklyPlan);
@@ -190,34 +220,43 @@ export function useFitnessData() {
     setView('feedback');
   }, []);
 
-  const handleFeedbackSubmit = useCallback(async (feedback: { difficulty: string; notes?: string }) => {
-    const finalData = { ...workoutData, feedback };
-    const newHistory = [...history, finalData as WorkoutSession];
+  const handleFeedbackSubmit = useCallback(
+    async (feedback: { difficulty: string; notes?: string }) => {
+      const finalData = { ...workoutData, feedback };
+      const newHistory = [...history, finalData as WorkoutSession];
 
-    // Update challenges
-    updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
+      // Update challenges
+      updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
 
-    // Save history
-    setHistory(newHistory);
+      // Save history
+      setHistory(newHistory);
 
-    // Sync XP
-    await syncXPAndCheckLevelUp(profile.xp || 0, workoutData?.id, setProfile);
+      // Sync XP
+      await syncXPAndCheckLevelUp(profile.xp || 0, workoutData?.id, setProfile);
 
-    // Reset state
-    setWorkoutData(null);
-    setCurrentPlan(null);
-    setView('dashboard');
-  }, [workoutData, history, profile, setHistory, setProfile]);
+      // Reset state
+      setWorkoutData(null);
+      setCurrentPlan(null);
+      setView('dashboard');
+    },
+    [workoutData, history, profile, setHistory, setProfile],
+  );
 
-  const handleInstantSave = useCallback(async (data: WorkoutSession) => {
-    const finalData = { ...data, feedback: { difficulty: 'good', notes: 'Caminhada registada.' } };
-    const newHistory = [...history, finalData as WorkoutSession];
+  const handleInstantSave = useCallback(
+    async (data: WorkoutSession) => {
+      const finalData = {
+        ...data,
+        feedback: { difficulty: 'good', notes: 'Caminhada registada.' },
+      };
+      const newHistory = [...history, finalData as WorkoutSession];
 
-    updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
-    setHistory(newHistory);
-    await syncXPAndCheckLevelUp(profile.xp || 0, data.id, setProfile);
-    setView('dashboard');
-  }, [history, profile, setHistory, setProfile]);
+      updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
+      setHistory(newHistory);
+      await syncXPAndCheckLevelUp(profile.xp || 0, data.id, setProfile);
+      setView('dashboard');
+    },
+    [history, profile, setHistory, setProfile],
+  );
 
   const handleReset = useCallback(() => {
     setHistory([]);

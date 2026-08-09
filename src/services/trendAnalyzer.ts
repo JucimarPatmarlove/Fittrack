@@ -4,7 +4,7 @@
 // Analisa o histórico de séries no IndexedDB para sugerir progressive overload ou deload.
 
 import { getRecentSetLogsDecrypted } from '../db/encryptedDb';
-import { SetLog } from '../db/schema';
+import type { SetLog } from '../db/schema';
 
 // ─── TIPOS DE RESULTADO ──────────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ export type TrendStatus = 'NO_DATA' | 'PROGRESSING' | 'FATIGUED' | 'STABLE';
 export interface TrendAnalysis {
   status: TrendStatus;
   message: string;
-  suggestedWeightIncrement: number;  // Positivo = aumentar, Negativo = deload
+  suggestedWeightIncrement: number; // Positivo = aumentar, Negativo = deload
   nextRpeTarget?: number;
   avgRpeLastWorkout?: number;
   avgWeightLastWorkout?: number;
@@ -24,12 +24,12 @@ export interface TrendAnalysis {
 
 /**
  * Analisa a tendência de um exercício baseada no histórico recente.
- * 
+ *
  * Lógica de decisão:
  * - RPE médio ≤ 7.5 → PROGRESSING → sugere +2.5kg
  * - RPE médio ≥ 9.5 → FATIGUED → sugere -2.5kg (deload tático)
  * - RPE entre 7.5 e 9.5 → STABLE → manter carga
- * 
+ *
  * @param exerciseName Nome do exercício a analisar
  * @returns Análise de tendência com sugestão de carga
  */
@@ -56,7 +56,7 @@ export async function analyzeExerciseTrend(exerciseName: string): Promise<TrendA
     }
 
     const workoutIds = Array.from(setsByWorkout.keys());
-    
+
     if (workoutIds.length === 0) {
       return {
         status: 'NO_DATA',
@@ -68,10 +68,10 @@ export async function analyzeExerciseTrend(exerciseName: string): Promise<TrendA
 
     // Analisar o último treino (o primeiro no array, pois está ordenado desc)
     const lastWorkoutSets = setsByWorkout.get(workoutIds[0])!;
-    
+
     // Filtrar séries sem dados válidos
-    const validSets = lastWorkoutSets.filter(s => 
-      s.weightKg > 0 && s.repsCompleted > 0 && s.rpe > 0
+    const validSets = lastWorkoutSets.filter(
+      (s) => s.weightKg > 0 && s.repsCompleted > 0 && s.rpe > 0,
     );
 
     if (validSets.length === 0) {
@@ -138,15 +138,17 @@ export async function analyzeExerciseTrend(exerciseName: string): Promise<TrendA
 /**
  * Analisa múltiplos exercícios em batch (útil para dashboard/relatórios).
  */
-export async function analyzeMultipleExercises(exerciseNames: string[]): Promise<Map<string, TrendAnalysis>> {
+export async function analyzeMultipleExercises(
+  exerciseNames: string[],
+): Promise<Map<string, TrendAnalysis>> {
   const results = new Map<string, TrendAnalysis>();
-  
+
   // Executa em paralelo para melhor performance
   const analyses = await Promise.all(
     exerciseNames.map(async (name) => ({
       name,
       analysis: await analyzeExerciseTrend(name),
-    }))
+    })),
   );
 
   for (const { name, analysis } of analyses) {

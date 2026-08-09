@@ -7,7 +7,7 @@
 // de métricas de treino. O Gemini NUNCA envia SQL raw.
 // ════════════════════════════════════════════════════════════════
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -40,7 +40,7 @@ interface MetricParams {
  */
 export async function executeSupabaseMetrics(
   userId: string,
-  params: MetricParams
+  params: MetricParams,
 ): Promise<string> {
   const { metric_type, exercise_name, period_days = 30 } = params;
   const supabase = getSupabase();
@@ -49,9 +49,11 @@ export async function executeSupabaseMetrics(
   if (!supabase) {
     console.warn('[Supabase Metrics] Não configurado. Modo scaffolding ativo.');
     const exName = exercise_name ? ` para ${exercise_name}` : '';
-    return `[MODO DEMO] Métrica "${metric_type}"${exName} (últimos ${period_days} dias): ` +
-           `A base de dados SQL ainda não está ligada. Quando ativa, vou calcular valores exatos. ` +
-           `Por agora, responde com base no contexto disponível.`;
+    return (
+      `[MODO DEMO] Métrica "${metric_type}"${exName} (últimos ${period_days} dias): ` +
+      `A base de dados SQL ainda não está ligada. Quando ativa, vou calcular valores exatos. ` +
+      `Por agora, responde com base no contexto disponível.`
+    );
   }
 
   // Modo produção

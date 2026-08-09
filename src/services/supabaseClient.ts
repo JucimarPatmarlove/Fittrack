@@ -12,7 +12,7 @@
 // role key — usa src/services/tools/supabaseQuery.ts para isso.
 // ════════════════════════════════════════════════════════════════
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -26,7 +26,9 @@ let client: SupabaseClient | null = null;
 export function getSocialClient(): SupabaseClient | null {
   if (client) return client;
   if (!url || !anonKey) {
-    console.warn('[Social] VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY não configurados — rede social desativada.');
+    console.warn(
+      '[Social] VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY não configurados — rede social desativada.',
+    );
     return null;
   }
   client = createClient(url, anonKey, {

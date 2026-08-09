@@ -1,6 +1,6 @@
 // src/utils/xpCalculator.ts
 
-export function calculateSetEffort(set: any, userBodyweightKg: number = 75): number {
+export function calculateSetEffort(set: any, userBodyweightKg = 75): number {
   const bw = userBodyweightKg; // fallback if undefined or 0
 
   switch (set.type) {
@@ -15,7 +15,7 @@ export function calculateSetEffort(set: any, userBodyweightKg: number = 75): num
 
     case 'cardio': {
       const distEffort = (set.distance || 0) * 100;
-      const timeEffort = (set.duration || 0) / 60 * 2; // duration em segundos -> minutos
+      const timeEffort = ((set.duration || 0) / 60) * 2; // duration em segundos -> minutos
       return distEffort + timeEffort;
     }
 
@@ -34,8 +34,11 @@ export function calculateSetEffort(set: any, userBodyweightKg: number = 75): num
   }
 }
 
-export function calculateWorkoutEffort(sets: any[], userBodyweightKg: number = 75): number {
-  return sets.flat().filter(s => s.done).reduce((sum, set) => {
-    return sum + calculateSetEffort(set, userBodyweightKg);
-  }, 0);
+export function calculateWorkoutEffort(sets: any[], userBodyweightKg = 75): number {
+  return sets
+    .flat()
+    .filter((s) => s.done)
+    .reduce((sum, set) => {
+      return sum + calculateSetEffort(set, userBodyweightKg);
+    }, 0);
 }

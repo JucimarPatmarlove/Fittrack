@@ -2,7 +2,7 @@
 // Componente reutilizável de "Estado Vazio" com design premium.
 // Exibe ícone, mensagem e CTA quando não há dados disponíveis.
 
-import React from 'react';
+import type React from 'react';
 import { C } from '../../data/constants';
 
 interface EmptyStateProps {

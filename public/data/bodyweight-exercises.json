@@ -20,7 +20,11 @@
         "Desce até o peito quase tocar no chão.",
         "Empurra o chão com força para voltar à posição inicial."
       ],
-      "tips": ["Contrai o core durante todo o movimento", "Não deixes a anca descair", "Cotovelos a 45° do corpo"]
+      "tips": [
+        "Contrai o core durante todo o movimento",
+        "Não deixes a anca descair",
+        "Cotovelos a 45° do corpo"
+      ]
     },
     {
       "id": "bw_squat_01",
@@ -38,7 +42,11 @@
         "Desce até as coxas ficarem paralelas ao chão.",
         "Empurra através dos calcanhares para subir."
       ],
-      "tips": ["Joelhos na direção dos dedos dos pés", "Peso nos calcanhares", "Mantem o peito alto"]
+      "tips": [
+        "Joelhos na direção dos dedos dos pés",
+        "Peso nos calcanhares",
+        "Mantem o peito alto"
+      ]
     },
     {
       "id": "bw_plank_01",
@@ -56,7 +64,11 @@
         "Contrai o abdómen e os glúteos para evitar que a lombar descaia.",
         "Mantém a posição durante o tempo indicado."
       ],
-      "tips": ["Olha para o chão para alinhar a cervical", "Respira de forma controlada", "Começa com 20s e vai aumentando"]
+      "tips": [
+        "Olha para o chão para alinhar a cervical",
+        "Respira de forma controlada",
+        "Começa com 20s e vai aumentando"
+      ]
     },
     {
       "id": "bw_mountain_climber_01",
@@ -74,7 +86,11 @@
         "Troca rapidamente de perna, puxando a esquerda e esticando a direita.",
         "Mantém um ritmo acelerado como se estivesses a correr no lugar."
       ],
-      "tips": ["Mantém a anca baixa e estável", "Não deixes os ombros passar à frente das mãos", "Excelente para queimar calorias"]
+      "tips": [
+        "Mantém a anca baixa e estável",
+        "Não deixes os ombros passar à frente das mãos",
+        "Excelente para queimar calorias"
+      ]
     },
     {
       "id": "bw_burpee_01",
@@ -92,7 +108,11 @@
         "Faz uma flexão completa (opcional mas recomendado).",
         "Salta com os pés de volta para perto das mãos e dá um salto explosivo para cima."
       ],
-      "tips": ["Fase excêntrica suave, fase concêntrica explosiva", "Respira na subida", "Escala removendo a flexão se necessário"]
+      "tips": [
+        "Fase excêntrica suave, fase concêntrica explosiva",
+        "Respira na subida",
+        "Escala removendo a flexão se necessário"
+      ]
     },
     {
       "id": "bw_pullup_01",
@@ -110,7 +130,11 @@
         "Desce de forma controlada até os braços ficarem quase esticados.",
         "Repete sem balançar o corpo."
       ],
-      "tips": ["Inicia o movimento com as escápulas", "Evita kipping (balanço)", "Se não consegues, usa banda elástica"]
+      "tips": [
+        "Inicia o movimento com as escápulas",
+        "Evita kipping (balanço)",
+        "Se não consegues, usa banda elástica"
+      ]
     },
     {
       "id": "bw_dips_01",
@@ -128,7 +152,11 @@
         "Desce até os cotovelos fazerem 90 graus.",
         "Empurra para cima até à extensão completa dos braços."
       ],
-      "tips": ["Inclina para a frente = mais peito, vertical = mais tríceps", "Não descas demasiado para proteger o ombro", "Usa banco para assistência"]
+      "tips": [
+        "Inclina para a frente = mais peito, vertical = mais tríceps",
+        "Não descas demasiado para proteger o ombro",
+        "Usa banco para assistência"
+      ]
     },
     {
       "id": "bw_lunge_01",
@@ -146,7 +174,11 @@
         "O joelho de trás quase toca no chão.",
         "Empurra com o pé da frente para voltar à posição inicial."
       ],
-      "tips": ["Joelho não ultrapassa a ponta do pé", "Tronco ereto durante todo o movimento", "Alterna as pernas"]
+      "tips": [
+        "Joelho não ultrapassa a ponta do pé",
+        "Tronco ereto durante todo o movimento",
+        "Alterna as pernas"
+      ]
     },
     {
       "id": "bw_russian_twist_01",
@@ -164,7 +196,11 @@
         "Roda o tronco para a esquerda e depois para a direita.",
         "Cada rotação completa conta como uma repetição."
       ],
-      "tips": ["Levanta os pés para aumentar a dificuldade", "Usa peso para progredir", "Movimento vem do core, não dos braços"]
+      "tips": [
+        "Levanta os pés para aumentar a dificuldade",
+        "Usa peso para progredir",
+        "Movimento vem do core, não dos braços"
+      ]
     },
     {
       "id": "bw_diamond_pushup_01",
@@ -182,7 +218,11 @@
         "Mantém os cotovelos junto ao corpo durante a descida.",
         "Empurra para cima até à extensão completa."
       ],
-      "tips": ["Foco total nos tríceps", "Se for difícil, faz de joelhos", "Variação avançada do push-up regular"]
+      "tips": [
+        "Foco total nos tríceps",
+        "Se for difícil, faz de joelhos",
+        "Variação avançada do push-up regular"
+      ]
     },
     {
       "id": "bw_jump_squat_01",
@@ -200,7 +240,11 @@
         "Aterra suavemente com os joelhos ligeiramente fletidos.",
         "Desce imediatamente para o próximo agachamento."
       ],
-      "tips": ["Aterragem suave para proteger os joelhos", "Braços ajudam no impulso", "Excelente para potência explosiva"]
+      "tips": [
+        "Aterragem suave para proteger os joelhos",
+        "Braços ajudam no impulso",
+        "Excelente para potência explosiva"
+      ]
     },
     {
       "id": "bw_hanging_leg_raise_01",
@@ -218,7 +262,11 @@
         "Eleva as pernas até ficarem paralelas ao chão (ou mais alto).",
         "Desce de forma controlada sem balançar."
       ],
-      "tips": ["Evita momentum e balanço", "Começa com joelhos fletidos se for difícil", "Contrai o core antes de iniciar o movimento"]
+      "tips": [
+        "Evita momentum e balanço",
+        "Começa com joelhos fletidos se for difícil",
+        "Contrai o core antes de iniciar o movimento"
+      ]
     }
   ]
 }

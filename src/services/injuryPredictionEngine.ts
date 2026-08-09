@@ -1,32 +1,37 @@
 // @ts-nocheck
 // src/services/injuryPredictionEngine.ts
 import { getDB, getRecentSetLogsByExercise, getRecoveryMetricsByDateRange } from '../db/schema';
-import type { RecoveryMetric } from '../db/schema';
 
 export interface InjuryRiskReport {
   overallRisk: 'low' | 'moderate' | 'high' | 'critical';
-  riskScore: number;        
+  riskScore: number;
   flags: RiskFlag[];
   recommendations: string[];
   affectedMuscleGroups: string[];
-  nextReview: string;       
+  nextReview: string;
 }
 
 export interface RiskFlag {
-  type: 'volume_spike' | 'asymmetry' | 'rpe_drift' | 'velocity_decay' | 'recovery_decline' | 'overuse';
+  type:
+    | 'volume_spike'
+    | 'asymmetry'
+    | 'rpe_drift'
+    | 'velocity_decay'
+    | 'recovery_decline'
+    | 'overuse';
   severity: 'warning' | 'alert' | 'critical';
   message: string;
   exerciseName?: string;
-  metric: string;           
-  threshold: string;        
+  metric: string;
+  threshold: string;
 }
 
 const ACWR_SAFE_MIN = 0.8;
 const ACWR_SAFE_MAX = 1.3;
 const ACWR_DANGER = 1.5;
-const RPE_DRIFT_THRESHOLD = 0.5;    
-const VELOCITY_DECAY_THRESHOLD = 15; 
-const OVERUSE_THRESHOLD = 5;         
+const RPE_DRIFT_THRESHOLD = 0.5;
+const VELOCITY_DECAY_THRESHOLD = 15;
+const OVERUSE_THRESHOLD = 5;
 
 export async function generateInjuryRiskReport(): Promise<InjuryRiskReport> {
   const now = Date.now();
@@ -56,19 +61,20 @@ export async function generateInjuryRiskReport(): Promise<InjuryRiskReport> {
     flags,
     recommendations: generateRecommendations(flags, overallRisk),
     affectedMuscleGroups: extractAffectedGroups(flags),
-    nextReview: overallRisk === 'critical' ? '24 horas' : overallRisk === 'high' ? '3 dias' : '7 dias',
+    nextReview:
+      overallRisk === 'critical' ? '24 horas' : overallRisk === 'high' ? '3 dias' : '7 dias',
   };
 }
 
 async function analyzeACWR(acuteStart: number, chronicStart: number): Promise<RiskFlag[]> {
   const flags: RiskFlag[] = [];
   const acuteVolume = await calculateVolumeInRange(acuteStart, Date.now());
-  const chronicVolume = await calculateVolumeInRange(chronicStart, Date.now()) / 4;
-  
+  const chronicVolume = (await calculateVolumeInRange(chronicStart, Date.now())) / 4;
+
   if (chronicVolume === 0) return flags;
-  
+
   const acwr = acuteVolume / chronicVolume;
-  
+
   if (acwr > ACWR_DANGER) {
     flags.push({
       type: 'volume_spike',
@@ -94,27 +100,31 @@ async function analyzeACWR(acuteStart: number, chronicStart: number): Promise<Ri
       threshold: `ACWR < ${ACWR_SAFE_MIN}`,
     });
   }
-  
+
   return flags;
 }
 
 async function analyzeRPEDrift(since: number): Promise<RiskFlag[]> {
   const flags: RiskFlag[] = [];
   const exercises = ['Barbell Back Squat', 'Bench Press', 'Deadlift', 'Overhead Press'];
-  
+
   for (const exercise of exercises) {
     const logs = await getRecentSetLogsByExercise(exercise, 30);
-    const recentLogs = logs.filter(l => l.timestamp >= since);
-    
+    const recentLogs = logs.filter((l) => l.timestamp >= since);
+
     if (recentLogs.length < 6) continue;
-    const weeklyRPE = groupByWeek(recentLogs.map(l => ({ date: l.timestamp, rpe: l.rpe, weight: l.weightKg })));
+    const weeklyRPE = groupByWeek(
+      recentLogs.map((l) => ({ date: l.timestamp, rpe: l.rpe, weight: l.weightKg })),
+    );
     if (weeklyRPE.length < 2) continue;
-    
+
     const avgRPEFirst = weeklyRPE[0].reduce((s, d) => s + d.rpe, 0) / weeklyRPE[0].length;
-    const avgRPELast = weeklyRPE[weeklyRPE.length - 1].reduce((s, d) => s + d.rpe, 0) / weeklyRPE[weeklyRPE.length - 1].length;
-    
+    const avgRPELast =
+      weeklyRPE[weeklyRPE.length - 1].reduce((s, d) => s + d.rpe, 0) /
+      weeklyRPE[weeklyRPE.length - 1].length;
+
     const rpeDrift = avgRPELast - avgRPEFirst;
-    
+
     if (rpeDrift > RPE_DRIFT_THRESHOLD) {
       flags.push({
         type: 'rpe_drift',
@@ -133,18 +143,18 @@ async function analyzeRecoveryDecline(): Promise<RiskFlag[]> {
   const flags: RiskFlag[] = [];
   const now = Date.now();
   const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
-  
+
   const hrvMetrics = await getRecoveryMetricsByDateRange(fourteenDaysAgo, now, 'hrv');
   if (hrvMetrics.length < 5) return flags;
-  
+
   const sorted = hrvMetrics.sort((a, b) => a.timestamp - b.timestamp);
   const firstWeek = sorted.slice(0, Math.floor(sorted.length / 2));
   const secondWeek = sorted.slice(Math.floor(sorted.length / 2));
-  
+
   const avgFirst = firstWeek.reduce((s, m) => s + m.value, 0) / firstWeek.length;
   const avgSecond = secondWeek.reduce((s, m) => s + m.value, 0) / secondWeek.length;
   const decline = ((avgFirst - avgSecond) / avgFirst) * 100;
-  
+
   if (decline > 10) {
     flags.push({
       type: 'recovery_decline',
@@ -163,7 +173,7 @@ async function calculateVolumeInRange(start: number, end: number): Promise<numbe
   const index = tx.store.index('by-timestamp');
   const range = IDBKeyRange.bound(start, end);
   const logs = await index.getAll(range);
-  return logs.reduce((sum, l) => sum + (l.weightKg * l.repsCompleted), 0);
+  return logs.reduce((sum, l) => sum + l.weightKg * l.repsCompleted, 0);
 }
 
 async function analyzeOveruse(since: number): Promise<RiskFlag[]> {
@@ -175,7 +185,7 @@ async function analyzeOveruse(since: number): Promise<RiskFlag[]> {
   for (const exerciseName of exercises) {
     const range = IDBKeyRange.bound([exerciseName, since], [exerciseName, Date.now()]);
     const logs = await db.getAllFromIndex('setLogs', 'by-exercise-timestamp', range);
-    const uniqueWorkouts = new Set(logs.map(l => l.workoutId)).size;
+    const uniqueWorkouts = new Set(logs.map((l) => l.workoutId)).size;
     if (uniqueWorkouts > OVERUSE_THRESHOLD) {
       flags.push({
         type: 'overuse',
@@ -195,7 +205,7 @@ function groupByWeek<T extends { date: number }>(data: T[]): T[][] {
   const oneWeek = 7 * 24 * 60 * 60 * 1000;
   let currentWeek: T[] = [];
   let weekStart = data[0]?.date || Date.now();
-  
+
   for (const item of data) {
     if (item.date - weekStart > oneWeek) {
       if (currentWeek.length > 0) weeks.push(currentWeek);
@@ -226,7 +236,10 @@ function scoreToRiskLevel(score: number): InjuryRiskReport['overallRisk'] {
   return 'low';
 }
 
-function generateRecommendations(flags: RiskFlag[], risk: InjuryRiskReport['overallRisk']): string[] {
+function generateRecommendations(
+  flags: RiskFlag[],
+  risk: InjuryRiskReport['overallRisk'],
+): string[] {
   const recs: string[] = [];
   if (risk === 'critical') {
     recs.push('🛑 PAUSA OBRIGATÓRIA: Não treines hoje. O risco de lesão é extremo.');
@@ -239,10 +252,18 @@ function generateRecommendations(flags: RiskFlag[], risk: InjuryRiskReport['over
   }
   for (const flag of flags) {
     switch (flag.type) {
-      case 'volume_spike': recs.push('Implementa deload semanal.'); break;
-      case 'rpe_drift': recs.push(`Em ${flag.exerciseName}, reduz séries.`); break;
-      case 'recovery_decline': recs.push('Adiciona 1 dia de descanso ativo.'); break;
-      case 'overuse': recs.push('Substitui movimentos padrão por variantes.'); break;
+      case 'volume_spike':
+        recs.push('Implementa deload semanal.');
+        break;
+      case 'rpe_drift':
+        recs.push(`Em ${flag.exerciseName}, reduz séries.`);
+        break;
+      case 'recovery_decline':
+        recs.push('Adiciona 1 dia de descanso ativo.');
+        break;
+      case 'overuse':
+        recs.push('Substitui movimentos padrão por variantes.');
+        break;
     }
   }
   return recs;
@@ -253,7 +274,8 @@ function extractAffectedGroups(flags: RiskFlag[]): string[] {
   for (const flag of flags) {
     if (flag.exerciseName) {
       const exercise = flag.exerciseName.toLowerCase();
-      if (exercise.includes('squat') || exercise.includes('leg')) groups.add('Quadríceps / Glúteos');
+      if (exercise.includes('squat') || exercise.includes('leg'))
+        groups.add('Quadríceps / Glúteos');
       if (exercise.includes('deadlift')) groups.add('Posterior Chain');
       if (exercise.includes('bench') || exercise.includes('press')) groups.add('Peito / Ombros');
       if (exercise.includes('row') || exercise.includes('pull')) groups.add('Costas / Bíceps');
@@ -265,7 +287,7 @@ function extractAffectedGroups(flags: RiskFlag[]): string[] {
 export async function preWorkoutSafetyCheck(): Promise<{
   safe: boolean;
   report: InjuryRiskReport;
-  overrideRequired: boolean; 
+  overrideRequired: boolean;
 }> {
   const report = await generateInjuryRiskReport();
   return {

@@ -1,11 +1,12 @@
 // src/components/injury/InjuryRiskPanel.tsx
 
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, Heart, Moon } from 'lucide-react';
+import { Activity, ChevronDown, ChevronUp, Heart, Moon } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import type { BodyRegion, InjuryRiskReport, WorkoutModification } from '../../types/injury';
 import { BodyMap } from './BodyMap';
 import { RiskBadge } from './RiskBadge';
 import { WorkoutModifications } from './WorkoutModifications';
-import { InjuryRiskReport, BodyRegion, WorkoutModification } from '../../types/injury';
 
 interface InjuryRiskPanelProps {
   report: InjuryRiskReport;
@@ -38,7 +39,7 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
             <RiskBadge level={report.overallRisk} score={report.overallRiskScore} size="sm" />
           </div>
           <p className="text-xs text-gray-500 truncate">
-            {report.flaggedRegions.length > 0 
+            {report.flaggedRegions.length > 0
               ? `${report.flaggedRegions.length} região(ões) em alerta`
               : 'Sistemas verdes. Pronto para treinar!'}
           </p>
@@ -50,10 +51,14 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
   return (
     <div className="rounded-xl border bg-white shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       {/* Header */}
-      <div className={`p-4 ${report.overallRisk === 'critical' ? 'bg-red-50' : report.overallRisk === 'high' ? 'bg-orange-50' : 'bg-green-50'}`}>
+      <div
+        className={`p-4 ${report.overallRisk === 'critical' ? 'bg-red-50' : report.overallRisk === 'high' ? 'bg-orange-50' : 'bg-green-50'}`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Activity className={`w-6 h-6 ${report.overallRisk === 'critical' ? 'text-red-600' : report.overallRisk === 'high' ? 'text-orange-600' : 'text-green-600'}`} />
+            <Activity
+              className={`w-6 h-6 ${report.overallRisk === 'critical' ? 'text-red-600' : report.overallRisk === 'high' ? 'text-orange-600' : 'text-green-600'}`}
+            />
             <div>
               <h3 className="font-bold text-gray-900">Análise de Risco de Lesão</h3>
               <p className="text-xs text-gray-600">Baseado no teu AC Ratio e Esforço</p>
@@ -66,14 +71,11 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
       {/* Body Map + Detalhes */}
       <div className="p-4 flex flex-col md:flex-row gap-6">
         <div className="flex justify-center md:justify-start">
-          <BodyMap 
-            flaggedRegions={report.flaggedRegions} 
-            onRegionClick={handleRegionClick}
-          />
+          <BodyMap flaggedRegions={report.flaggedRegions} onRegionClick={handleRegionClick} />
         </div>
-        
+
         <div className="flex-1">
-          {report.flaggedRegions.some(r => r.recoveryScore < 50) && (
+          {report.flaggedRegions.some((r) => r.recoveryScore < 50) && (
             <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
               <h4 className="flex items-center gap-2 text-sm font-semibold text-blue-800 mb-2">
                 <Moon className="w-4 h-4" />
@@ -81,7 +83,7 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
               </h4>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {report.flaggedRegions
-                  .filter(r => r.recoveryScore < 50)
+                  .filter((r) => r.recoveryScore < 50)
                   .slice(0, 4)
                   .map((r, i) => (
                     <div key={i} className="flex items-center gap-2">
@@ -119,7 +121,7 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
         {showDetails && (
           <div className="pb-4 space-y-3">
             {report.flaggedRegions.map((region) => (
-              <div 
+              <div
                 key={region.region}
                 className={`p-3 rounded-lg border ${region.riskLevel === 'critical' ? 'border-red-200 bg-red-50' : region.riskLevel === 'high' ? 'border-orange-200 bg-orange-50' : 'border-gray-100 bg-gray-50'}`}
               >
@@ -136,11 +138,17 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
                   </div>
                   <div className="bg-white p-2 rounded border">
                     <span className="block text-gray-400 mb-1">Stress Crónico</span>
-                    <span className="font-bold text-gray-700">{region.chronicStress.toFixed(0)}</span>
+                    <span className="font-bold text-gray-700">
+                      {region.chronicStress.toFixed(0)}
+                    </span>
                   </div>
-                  <div className={`bg-white p-2 rounded border ${region.acuteChronicRatio > 1.3 ? 'border-red-300' : ''}`}>
+                  <div
+                    className={`bg-white p-2 rounded border ${region.acuteChronicRatio > 1.3 ? 'border-red-300' : ''}`}
+                  >
                     <span className="block text-gray-400 mb-1">AC Ratio</span>
-                    <span className={`font-bold ${region.acuteChronicRatio > 1.3 ? 'text-red-600' : 'text-green-600'}`}>
+                    <span
+                      className={`font-bold ${region.acuteChronicRatio > 1.3 ? 'text-red-600' : 'text-green-600'}`}
+                    >
                       {region.acuteChronicRatio.toFixed(2)}
                     </span>
                   </div>
@@ -152,7 +160,7 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
                 )}
               </div>
             ))}
-            
+
             {report.flaggedRegions.length === 0 && (
               <p className="text-center text-sm text-green-600 py-4 font-medium">
                 🎉 O teu corpo está totalmente recuperado e pronto para a carga máxima!
@@ -165,9 +173,13 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
       {/* Modificações Sugeridas */}
       {report.suggestedModifications.length > 0 && (
         <div className="px-4 pb-4">
-          <WorkoutModifications 
+          <WorkoutModifications
             modifications={report.suggestedModifications}
-            onApplyAll={onApplyAllModifications ? () => onApplyAllModifications(report.suggestedModifications) : undefined}
+            onApplyAll={
+              onApplyAllModifications
+                ? () => onApplyAllModifications(report.suggestedModifications)
+                : undefined
+            }
             onDismiss={onDismiss}
           />
         </div>
@@ -177,7 +189,8 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
       {report.predictedDowntime && report.predictedDowntime >= 3 && (
         <div className="mx-4 mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
           <p className="text-sm text-red-800 font-medium">
-            ⚠️ Continuar com esta sobrecarga pode resultar numa paragem forçada de ~{report.predictedDowntime} dias.
+            ⚠️ Continuar com esta sobrecarga pode resultar numa paragem forçada de ~
+            {report.predictedDowntime} dias.
           </p>
         </div>
       )}
@@ -192,7 +205,7 @@ export const InjuryRiskPanel: React.FC<InjuryRiskPanelProps> = ({
             Iniciar Treino
           </button>
         )}
-        
+
         {report.overallRisk === 'critical' && onDismiss && (
           <div className="flex-1 flex flex-col gap-2">
             <button

@@ -32,6 +32,6 @@ export const useDeviceStore = create<DeviceState>()(
         })),
       setAutoSync: (autoSync) => set({ autoSync }),
     }),
-    { name: 'fittrack_devices' }
-  )
+    { name: 'fittrack_devices' },
+  ),
 );

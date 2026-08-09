@@ -1,7 +1,7 @@
 // src/components/recovery/SleepInput.tsx
 
-import React from 'react';
 import { Moon, Star } from 'lucide-react';
+import type React from 'react';
 
 interface SleepInputProps {
   hours: number;
@@ -40,7 +40,7 @@ export const SleepInput: React.FC<SleepInputProps> = ({
           max="12"
           step="0.5"
           value={hours}
-          onChange={(e) => onHoursChange(parseFloat(e.target.value))}
+          onChange={(e) => onHoursChange(Number.parseFloat(e.target.value))}
           className="w-full accent-[#e8c84a] h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer"
         />
         <div className="flex justify-between text-xs text-gray-600 mt-2 font-mono">
