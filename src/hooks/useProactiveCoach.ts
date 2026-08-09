@@ -8,16 +8,14 @@
 import { useEffect, useCallback } from 'react';
 import { useProactiveCoachStore } from '../stores/useProactiveCoachStore';
 import { useInjuryStore } from '../stores/useInjuryStore';
-import { useWorkoutStore } from '../stores/useWorkoutStore';
-import { useProfileStore } from '../stores/useProfileStore';
 import type { TriggerContext } from '../services/aiCoach/proactiveEngine';
+import type { UserProfile } from '../types';
+import type { WorkoutSession } from '../db/schema';
 
-export function useProactiveCoach() {
+export function useProactiveCoach(profile: UserProfile | null, history: WorkoutSession[]) {
   const evaluate = useProactiveCoachStore((s) => s.evaluate);
   const lastReport = useInjuryStore((s) => s.lastReport);
   const recoveryData = useInjuryStore((s) => s.recoveryData);
-  const history = useWorkoutStore((s) => s.history);
-  const profile = useProfileStore((s) => s.profile);
 
   const runEvaluation = useCallback(() => {
     if (!profile) return;

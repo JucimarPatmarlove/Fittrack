@@ -268,7 +268,7 @@ export default function App() {
     handleConfirmRestore,
   } = useFitnessData();
 
-  useProactiveCoach();
+  useProactiveCoach(profile, history);
 
   if (!isUnlocked) {
     if (isFirstTime) {
