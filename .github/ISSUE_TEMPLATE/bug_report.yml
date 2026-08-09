@@ -1,0 +1,80 @@
+name: 🐛 Bug Report
+description: Reportar um comportamento inesperado
+title: "[BUG] "
+labels: ["type:bug", "status:todo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar! Preenche os campos abaixo para ajudar-nos a resolver rapidamente.
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: O que aconteceu? O que esperavas que acontecesse?
+      placeholder: "Quando clico em 'Iniciar Treino', o InjuryRiskPanel não aparece..."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para Reproduzir
+      description: Passos concretos que levam ao bug
+      placeholder: |
+        1. Ir ao Dashboard
+        2. Clicar em "Novo Treino"
+        3. Selecionar plano "Push Day"
+        4. Ver erro...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área Afetada
+      options:
+        - UI / UX
+        - Injury Prediction
+        - Recovery Tracking
+        - Workout / Treino
+        - AI Coach
+        - Gamificação / XP
+        - Autenticação
+        - Performance
+        - Mobile / PWA
+        - Outro
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidade
+      options:
+        - 🔴 Critical — App crasha, dados perdidos, segurança
+        - 🟠 High — Funcionalidade principal quebrada
+        - 🟡 Medium — Workaround existe, UX degradada
+        - 🟢 Low — Cosmético, não afeta uso
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Dispositivo, OS, browser, versão da app
+      placeholder: |
+        - iPhone 14 Pro, iOS 17.5, Safari
+        - Samsung S23, Android 14, Chrome 126
+        - Desktop, macOS 14, Chrome 126
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: Console errors, stack traces, screenshots
+      placeholder: Cole aqui logs do console ou screenshots
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Já pesquisei issues existentes
+        - label: Consigo reproduzir consistentemente
+        - label: Testei no último build da main

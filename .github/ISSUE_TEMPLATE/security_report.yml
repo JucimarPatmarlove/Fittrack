@@ -1,0 +1,31 @@
+name: 🔒 Security Report
+description: Reportar vulnerabilidade de segurança
+title: "[SEC] "
+labels: ["type:security", "status:todo", "priority:critical"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Se encontraste uma vulnerabilidade crítica**, considera reportar privadamente primeiro.
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição da Vulnerabilidade
+      description: O que expõe e como
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto Potencial
+      description: Quais dados/sistemas estão em risco
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para Reproduzir
+      description: Como demonstrar a vulnerabilidade
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Mitigação Sugerida
+      description: Como resolver (se souberes)

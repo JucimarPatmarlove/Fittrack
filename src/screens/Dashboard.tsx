@@ -16,6 +16,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { motion } from "framer-motion";
 import { InjuryRiskPanel } from "../components/injury/InjuryRiskPanel";
 import { useInjuryStore } from "../stores/useInjuryStore";
+import { StaggerList } from "../components/ui/MotionComponents";
 
 export default function Dashboard({ history = [], onStartWorkout, onNavigateToPlanner }: { history?: any[], onStartWorkout?: any, onNavigateToPlanner?: () => void }) {
   const { profile, meals, hydration, weightHistory, currentDate, addWater, setWeight, loadNutritionData, loadAllWeightLogs, setCurrentDate } = useNutritionStore();
@@ -265,8 +266,9 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
         isLoading={isHealthSyncing}
       />
 
-      {/* ROW 1: RESUMO DIÁRIO */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+      <StaggerList>
+        {/* ROW 1: RESUMO DIÁRIO */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
         
         {/* Calorie Card */}
         <div style={glassCardStyle}>
@@ -414,6 +416,7 @@ export default function Dashboard({ history = [], onStartWorkout, onNavigateToPl
           />
         </div>
       </div>
+      </StaggerList>
 
       {/* FLOATING ACTION BUTTON (FAB) PARA INICIAR TREINO LIVRE */}
       {!isSystemEmpty && (

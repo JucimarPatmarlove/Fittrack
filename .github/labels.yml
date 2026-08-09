@@ -1,0 +1,49 @@
+# FitTrack V7 Labels
+type:bug:
+  color: d73a4a
+  description: Algo não funciona como esperado
+type:feature:
+  color: a2eeef
+  description: Nova funcionalidade
+type:improvement:
+  color: 7057ff
+  description: Refactor, otimização, melhoria de UX
+type:docs:
+  color: 0075ca
+  description: Documentação
+type:security:
+  color: b60205
+  description: Vulnerabilidade ou hardening
+type:chore:
+  color: fef2c0
+  description: Manutenção, dependências, CI/CD
+priority:critical:
+  color: b60205
+  description: Bloqueia deploy, dados em risco
+priority:high:
+  color: d93f0b
+  description: Deve ser feito esta sprint
+priority:medium:
+  color: fbca04
+  description: Backlog normal
+priority:low:
+  color: 0e8a16
+  description: Nice to have
+status:todo:
+  color: cccccc
+  description: Ainda não iniciado
+status:in-progress:
+  color: ffb366
+  description: Alguém está a trabalhar
+status:review:
+  color: 5319e7
+  description: PR aberto, aguarda review
+status:done:
+  color: 0e8a16
+  description: Mergeado na main
+area:ui:
+  color: e99695
+  description: Interface / UX
+area:backend:
+  color: 5319e7
+  description: API / Banco de dados

@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import ErrorBoundary from './components/ErrorBoundary';
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { PageTransition, LazyLoad } from './components/ui/MotionComponents';
 
 // ── IMPORTAÇÕES BASES & CONSTANTES ──────────────────────────────────────────
 import { C } from './data/constants';
@@ -45,22 +46,11 @@ const RecoveryScreen = lazy(() => import('./screens/RecoveryScreen'));
 
 const css = `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap'); *{box-sizing:border-box;margin:0;padding:0} html,body{background: #080b0f;color:#eceae4;font-family:'Outfit',sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh;letter-spacing:0.01em;} h1,h2,h3,.title{font-family:'Bebas Neue',cursive;letter-spacing:2px;} .mono{font-family:'DM Mono',monospace;letter-spacing:-0.02em;} .small{font-family:'Inter',sans-serif;font-size:0.75rem;color:#888;} input:focus{outline:none;border-color:#e8c84a !important;box-shadow: 0 0 12px rgba(232,200,74,0.15)} button:active{transform:scale(0.96)} input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none} .glass { background: rgba(18, 25, 35, 0.6); backdrop-filter: blur(4px); border: 1px solid rgba(232, 200, 74, 0.15); border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }`;
 
-const LoadingFallback = () => (
-  <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", color: C.accent, fontFamily: "'Bebas Neue'", fontSize: 24, letterSpacing: 2 }}>
-    A CARREGAR...
-  </div>
-);
-
 // ── ANIMATION VARIANTS ─────────────────────────────────────────────────────
-const fadeIn = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } };
-const slideUp = { initial: { y: 50, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { opacity: 0 } };
-const slideLeft = { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0 } };
-const scaleIn = { initial: { scale: 0.9, opacity: 0 }, animate: { scale: 1, opacity: 1 }, exit: { scale: 0.9, opacity: 0 } };
-const scaleFade = { initial: { opacity: 0, scale: 0.98 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0 } };
+// As animações agora são delegadas para PageTransition em MotionComponents
 
 interface ViewConfig {
   key: string;
-  animation: typeof fadeIn;
   component: React.ReactNode;
 }
 
@@ -99,112 +89,112 @@ function createViewConfigs(
 ): Record<string, React.ReactNode> {
   return {
     dashboard: (
-      <motion.div key="dash" {...fadeIn}>
+      <PageTransition viewKey="dash">
         <Dashboard profile={profile} setProfile={setProfile} history={history} onStartWorkout={handleStartWorkout} />
-      </motion.div>
+      </PageTransition>
     ),
     workout: currentPlan ? (
-      <motion.div key="work" {...slideUp}>
+      <PageTransition viewKey="work">
         <ActiveWorkout todayPlan={currentPlan} history={history} profile={profile} onFinish={handleFinishWorkout} onCancel={() => setView("dashboard")} />
-      </motion.div>
+      </PageTransition>
     ) : null,
     settings: (
-      <motion.div key="set" {...fadeIn}>
+      <PageTransition viewKey="set">
         <Settings profile={profile} setProfile={setProfile} onReset={handleReset} />
-      </motion.div>
+      </PageTransition>
     ),
     assessment: (
-      <motion.div key="asses" {...fadeIn}>
+      <PageTransition viewKey="asses">
         <FitnessAssessment onComplete={(data: Partial<UserProfile>) => { setProfile({ ...profile, ...data } as UserProfile); setView("dashboard"); }} />
-      </motion.div>
+      </PageTransition>
     ),
     guide: (
-      <motion.div key="gui" {...fadeIn}>
+      <PageTransition viewKey="gui">
         <BeginnerGuide onComplete={() => setView("dashboard")} />
-      </motion.div>
+      </PageTransition>
     ),
     history: (
-      <motion.div key="hist" {...slideLeft}>
+      <PageTransition viewKey="hist">
         <DetailedHistory workouts={history} profile={profile} onStartWorkout={handleStartWorkout} />
-      </motion.div>
+      </PageTransition>
     ),
     feedback: (
-      <motion.div key="feed" {...scaleIn}>
+      <PageTransition viewKey="feed">
         <PostWorkoutFeedback onSubmit={handleFeedbackSubmit} profile={profile} workoutData={workoutData} />
-      </motion.div>
+      </PageTransition>
     ),
     aicoach: (
-      <motion.div key="aicoach" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+      <PageTransition viewKey="aicoach">
         <AICoach history={history} profile={profile} />
-      </motion.div>
+      </PageTransition>
     ),
     trends: (
-      <motion.div key="trends" {...scaleFade}>
+      <PageTransition viewKey="trends">
         <Trends history={history} />
-      </motion.div>
+      </PageTransition>
     ),
     planner: (
-      <motion.div key="planner" {...scaleFade}>
+      <PageTransition viewKey="planner">
         <Planner onStartWorkout={handleStartWorkout} />
-      </motion.div>
+      </PageTransition>
     ),
     gymvibe: (
-      <motion.div key="gymvibe" {...scaleFade}>
+      <PageTransition viewKey="gymvibe">
         <GymVibe profile={profile} />
-      </motion.div>
+      </PageTransition>
     ),
     milestones: (
-      <motion.div key="milestones" {...scaleFade}>
+      <PageTransition viewKey="milestones">
         <Milestones history={history} />
-      </motion.div>
+      </PageTransition>
     ),
     cyclereview: (
-      <motion.div key="cyclereview" {...scaleFade}>
+      <PageTransition viewKey="cyclereview">
         <CycleReview history={history} onClose={() => setView("dashboard")} onGenerateNewPlan={() => { setView("dashboard"); window.dispatchEvent(new CustomEvent('OPEN_WEEKLY_PLAN')); }} />
-      </motion.div>
+      </PageTransition>
     ),
     nutrition: (
-      <motion.div key="nutrition" {...scaleFade}>
+      <PageTransition viewKey="nutrition">
         {buildNutritionView(profile, setProfile)}
-      </motion.div>
+      </PageTransition>
     ),
     devices: (
-      <motion.div key="devices" {...scaleFade}>
+      <PageTransition viewKey="devices">
         <DeviceManager />
-      </motion.div>
+      </PageTransition>
     ),
     rewards: (
-      <motion.div key="rewards" {...scaleFade}>
+      <PageTransition viewKey="rewards">
         <RewardsStore onClose={() => setView("dashboard")} />
-      </motion.div>
+      </PageTransition>
     ),
     backup: (
-      <motion.div key="backup" {...scaleFade}>
+      <PageTransition viewKey="backup">
         <BackupScreen />
-      </motion.div>
+      </PageTransition>
     ),
     walkingcoach: (
-      <motion.div key="walkingcoach" {...scaleFade}>
+      <PageTransition viewKey="walkingcoach">
         <WalkingCoachScreen 
            onClose={() => setView("dashboard")} 
            onFinish={handleInstantSave} 
         />
-      </motion.div>
+      </PageTransition>
     ),
     community: (
-      <motion.div key="community" {...scaleFade}>
+      <PageTransition viewKey="community">
         <CommunityFeed profile={profile} />
-      </motion.div>
+      </PageTransition>
     ),
     compete: (
-      <motion.div key="compete" {...scaleFade}>
+      <PageTransition viewKey="compete">
         <CompeteScreen />
-      </motion.div>
+      </PageTransition>
     ),
     recovery: (
-      <motion.div key="recovery" {...scaleFade}>
+      <PageTransition viewKey="recovery">
         <RecoveryScreen />
-      </motion.div>
+      </PageTransition>
     )
   };
 }
@@ -270,11 +260,11 @@ export default function App() {
       )}
 
       <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
+        <LazyLoad skeleton="card" skeletonClassName="mt-20 mx-4">
           <AnimatePresence mode="wait">
             {currentView}
           </AnimatePresence>
-        </Suspense>
+        </LazyLoad>
       </ErrorBoundary>
 
       <BottomNav

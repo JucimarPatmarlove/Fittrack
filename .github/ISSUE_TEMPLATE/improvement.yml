@@ -1,0 +1,39 @@
+name: 🔧 Improvement
+description: Refactor, otimização ou melhoria de UX
+title: "[IMPR] "
+labels: ["type:improvement", "status:todo"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      description: O que está atualmente e por que precisa mudar
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta de Melhoria
+      description: O que muda e qual o benefício esperado
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Performance
+        - Acessibilidade
+        - Type Safety
+        - Testes
+        - CI/CD
+        - Observabilidade
+        - UI/UX Polish
+        - Arquitetura
+        - Documentação
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto Esperado
+      description: Métricas ou comportamentos que melhoram
+      placeholder: "Reduz bundle size em 15%", "Melhora LCP de 2.5s para 1.2s"

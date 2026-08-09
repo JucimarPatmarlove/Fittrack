@@ -1,0 +1,40 @@
+name: ✨ Feature Request
+description: Sugerir uma nova funcionalidade
+title: "[FEAT] "
+labels: ["type:feature", "status:todo"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema / Necessidade
+      description: Que problema resolve esta feature? Quem beneficia?
+      placeholder: "Como utilizador de calistenia, quero poder..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Descreve a funcionalidade ideal
+      placeholder: "Adicionar um novo tipo de exercício 'isometric' com..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Outras abordagens que pensaste
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade Sugerida
+      options:
+        - 🔥 Critical — Bloqueia roadmap
+        - ⚡ High — Grande impacto no negócio
+        - 📌 Medium — Melhoria significativa
+        - 💡 Low — Nice to have
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Referências
+      description: Links, screenshots, designs
