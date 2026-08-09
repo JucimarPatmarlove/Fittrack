@@ -22,6 +22,7 @@ export type ViewName =
   | 'guide'
   | 'feedback'
   | 'history'
+  | 'coach'
   | 'aicoach'
   | 'trends'
   | 'planner'

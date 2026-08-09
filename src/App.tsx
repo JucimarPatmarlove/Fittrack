@@ -9,6 +9,8 @@ import { LockScreen } from './components/security/LockScreen';
 import { SocialModal } from './components/social/SocialModal';
 import { BackupRestoreModal } from './components/ui/BackupRestoreModal';
 import { BottomNav } from './components/ui/BottomNav';
+import { ProactiveBanner, ProactiveMessageList } from './components/ai/ProactiveMessage';
+import { useProactiveCoach } from './hooks/useProactiveCoach';
 // ── IMPORTAÇÕES BASES & CONSTANTES ──────────────────────────────────────────
 import { C } from './data/constants';
 import { useFitnessData } from './hooks/useFitnessData';
@@ -230,6 +232,11 @@ function createViewConfigs(
         <RecoveryScreen />
       </PageTransition>
     ),
+    coach: (
+      <PageTransition viewKey="coach">
+        <ProactiveMessageList />
+      </PageTransition>
+    ),
   };
 }
 
@@ -260,6 +267,8 @@ export default function App() {
     handleUnlock,
     handleConfirmRestore,
   } = useFitnessData();
+
+  useProactiveCoach();
 
   if (!isUnlocked) {
     if (isFirstTime) {
@@ -305,6 +314,7 @@ export default function App() {
       }}
     >
       <style>{css}</style>
+      <ProactiveBanner />
 
       {pendingRestoreBackup && (
         <BackupRestoreModal

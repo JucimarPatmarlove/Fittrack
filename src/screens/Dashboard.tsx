@@ -36,6 +36,8 @@ import { useHealthStore } from '../stores/useHealthStore';
 import { useInjuryStore } from '../stores/useInjuryStore';
 import { useNutritionStore } from '../stores/useNutritionStore';
 import { usePlanStore } from '../stores/usePlanStore';
+import { ProactiveMessageCard } from '../components/ai/ProactiveMessage';
+import { useProactiveCoachStore } from '../stores/useProactiveCoachStore';
 
 export default function Dashboard({
   history = [],
@@ -68,6 +70,7 @@ export default function Dashboard({
   } = useHealthStore();
 
   const { lastReport, generateReport } = useInjuryStore();
+  const urgentMessages = useProactiveCoachStore((s) => s.getUrgentMessages());
 
   useEffect(() => {
     if (history && profile) {
@@ -302,6 +305,17 @@ export default function Dashboard({
       {lastReport && (
         <div style={{ marginBottom: '4px' }}>
           <InjuryRiskPanel report={lastReport} compact />
+        </div>
+      )}
+
+      {urgentMessages.length > 0 && (
+        <div className="space-y-2 mt-2 mb-4">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-widest pl-1">
+            Coach Proativo
+          </h3>
+          {urgentMessages.slice(0, 2).map((msg) => (
+            <ProactiveMessageCard key={msg.id} message={msg} compact />
+          ))}
         </div>
       )}
 

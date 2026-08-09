@@ -36,6 +36,8 @@ import { WorkoutExerciseList } from '../components/workout/WorkoutExerciseList';
 // ── COMPONENTES ────────────────────────────────────────────────────────────
 import { WorkoutHeader } from '../components/workout/WorkoutHeader';
 import { type WorkoutMode, WorkoutModeSelector } from '../components/workout/WorkoutModeSelector';
+import { ProactiveMessageCard } from '../components/ai/ProactiveMessage';
+import { useProactiveCoachStore } from '../stores/useProactiveCoachStore';
 
 import { getExerciseCategory } from '../data/exerciseClassifier';
 import { checkAutoProgression } from '../data/utils';
@@ -732,6 +734,10 @@ export default function ActiveWorkout({
   const [showRiskPanel, setShowRiskPanel] = useState(true);
   const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
   const { generateReport } = useInjuryStore();
+  const proactiveMessages = useProactiveCoachStore((s) => s.getActiveMessages());
+  const injuryMsgs = proactiveMessages.filter((m) => 
+    m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical'
+  );
   const [newPRData, setNewPRData] = useState<{ exerciseName: string; weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{
     text: string;
@@ -1105,6 +1111,14 @@ export default function ActiveWorkout({
   return (
     <GlobalBackground>
       <div style={{ minHeight: '100vh', paddingBottom: 90 }}>
+        {injuryMsgs.length > 0 && (
+          <div className="p-4 space-y-3 mb-4">
+            {injuryMsgs.map((msg) => (
+              <ProactiveMessageCard key={msg.id} message={msg} />
+            ))}
+          </div>
+        )}
+
         {newPRData && (
           <PRTracker
             exerciseName={newPRData.exerciseName}

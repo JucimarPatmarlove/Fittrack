@@ -22,6 +22,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', icon: '🏋️', label: 'Treino' },
+  { id: 'coach', icon: '💬', label: 'Coach' },
   { id: 'trends', icon: '📈', label: 'Tendências' },
   { id: 'recovery', icon: '⚕️', label: 'Recovery' },
   { id: 'planner', icon: '🗓️', label: 'Planner' },
