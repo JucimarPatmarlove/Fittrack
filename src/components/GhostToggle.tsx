@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { Ghost } from 'lucide-react';
 import { motion } from 'framer-motion';

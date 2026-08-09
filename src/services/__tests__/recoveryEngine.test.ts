@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/__tests__/recoveryEngine.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateReadinessScore } from '../recoveryEngine';

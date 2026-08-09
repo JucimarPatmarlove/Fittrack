@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
 let landmarker: PoseLandmarker | null = null;

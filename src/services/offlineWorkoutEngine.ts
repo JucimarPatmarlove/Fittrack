@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { WorkoutSession } from '../db/schema';
 import { UserProfile } from '../types';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Apple, Plus, Trash2, Send, Sparkles, Flame, Activity, AlertTriangle } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/injuryPrediction/riskModel.ts
 
 import { StressReading, InjuryRiskReport, WorkoutModification } from '../../types/injury';

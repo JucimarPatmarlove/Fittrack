@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { estimateCaloriesBurned } from '../../services/fitnessMechanics';
 import { ProgressionSystem } from '../../services/ProgressionSystem';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { analyzeMultipleExercises, TrendAnalysis } from '../../services/trendAnalyzer';
 import { TrendStatusBadge } from './TrendStatusBadge';

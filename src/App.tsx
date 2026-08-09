@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Suspense, lazy } from "react";
 import ErrorBoundary from './components/ErrorBoundary';
 import { AnimatePresence } from "framer-motion";

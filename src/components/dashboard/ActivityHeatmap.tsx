@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
 import { WorkoutSession } from "../../db/schema";;

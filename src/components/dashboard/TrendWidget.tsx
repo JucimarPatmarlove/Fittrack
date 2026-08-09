@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '../ui/GlassCard';

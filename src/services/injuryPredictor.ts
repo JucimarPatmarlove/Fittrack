@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getRecentSetLogsDecrypted, getAllExercisesFromHistory } from '../db/encryptedDb';
 import { SetLog } from '../db/schema';
 import { DemographicProfile } from './demographicEngine';

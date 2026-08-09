@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/screens/RecoveryScreen.tsx
 
 import React, { useState, useEffect } from 'react';

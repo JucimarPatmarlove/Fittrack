@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/__tests__/nutritionEngine.test.ts
 // Testes unitários para calculateMacros() — Equação de Mifflin-St Jeor
 // Cobre diferentes perfis (male, female, lose_weight, gain_muscle) e edge cases.

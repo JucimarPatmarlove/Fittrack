@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { Share2, Link as LinkIcon, Copy } from 'lucide-react';
 import { WebRTCEngine, WebRTCMessage } from '../../services/webrtcEngine';

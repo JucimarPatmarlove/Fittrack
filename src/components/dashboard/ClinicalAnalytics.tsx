@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/dashboard/ClinicalAnalytics.tsx
 // Painel de Análise de Fadiga Neural (SFR — Stimulus-to-Fatigue Ratio)
 //

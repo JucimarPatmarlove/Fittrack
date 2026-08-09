@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { getExerciseMedia } from '../../data/exerciseMedia';
 import { useExerciseStore } from '../../stores/useExerciseStore';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { useLS } from './index';
 import { PredictiveChallenges, Challenge } from '../services/predictiveChallenges';

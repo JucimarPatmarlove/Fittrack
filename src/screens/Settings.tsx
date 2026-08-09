@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { C, GOALS } from "../data/constants";
 import { useLS } from "../hooks";

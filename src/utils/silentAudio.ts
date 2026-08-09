@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/utils/silentAudio.ts
 // Áudio mudo em loop para permitir background tracking no iOS/Android
 

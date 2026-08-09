@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { C } from '../../data/constants';

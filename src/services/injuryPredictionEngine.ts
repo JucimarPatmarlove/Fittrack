@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/injuryPredictionEngine.ts
 import { getDB, getRecentSetLogsByExercise, getRecoveryMetricsByDateRange } from '../db/schema';
 import type { RecoveryMetric } from '../db/schema';

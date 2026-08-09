@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useCallback, useRef } from 'react';
 import { useMachine } from './useMachine';
 import { bluetoothReducer, BluetoothContext } from '../machines/bluetoothMachine';

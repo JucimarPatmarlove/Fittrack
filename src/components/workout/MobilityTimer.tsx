@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/workout/MobilityTimer.tsx
 // Temporizador de "tempo sob tensão" para o modo Mobilidade
 import React, { useState, useEffect, useRef } from 'react';

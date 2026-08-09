@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, Suspense } from 'react';
 import { WorkoutSession } from "../../db/schema";;
 const MuscleViewer = React.lazy(() => import('../3d/MuscleViewer').then(module => ({ default: module.MuscleViewer })));

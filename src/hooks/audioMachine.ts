@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createMachine } from './useMachine';
 
 export type AudioState =

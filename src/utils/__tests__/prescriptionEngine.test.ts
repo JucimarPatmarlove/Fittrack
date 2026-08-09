@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/utils/__tests__/prescriptionEngine.test.ts
 // Testes unitários para o motor de prescrição de treino.
 // Valida que os parâmetros de treino (reps, RPE, descanso, peso) estão

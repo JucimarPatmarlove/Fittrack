@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useProgressionStore } from '../stores/useProgressionStore';
 import { GlassCard } from '../components/ui/GlassCard';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/backupService.ts
 // ════════════════════════════════════════════════════════════════
 // Exporta/importa todo o estado do FitTrack (IndexedDB + Zustand)

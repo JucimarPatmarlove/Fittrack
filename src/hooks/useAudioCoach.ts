@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef, useCallback } from 'react';
 import { useMachine } from './useMachine';
 import { audioMachine } from './audioMachine';

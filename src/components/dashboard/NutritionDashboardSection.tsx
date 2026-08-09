@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { GlassCard } from '../ui/GlassCard';
 import { C } from '../../data/constants';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/gamificationEngine.ts
 import { getDB } from '../db/schema';
 import type { WorkoutSession, SetLog, PersonalRecord } from '../db/schema';

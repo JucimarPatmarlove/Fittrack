@@ -1,0 +1,216 @@
+src/components/3d/MuscleSphere.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/3d/MuscleSphere.tsx(6,36): error TS6133: 'name' is declared but its value is never read.
+src/components/3d/SmartCamera.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/GhostToggle.tsx(11,13): error TS7030: Not all code paths return a value.
+src/components/WatchSyncIndicator.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/components/WatchSyncIndicator.tsx(12,13): error TS7030: Not all code paths return a value.
+src/components/WatchSyncIndicator.tsx(45,41): error TS18048: 'mainDev' is possibly 'undefined'.
+src/components/WatchSyncIndicator.tsx(47,86): error TS18048: 'mainDev' is possibly 'undefined'.
+src/components/challenges/ActiveChallenges.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/challenges/ActiveChallenges.tsx(2,18): error TS6133: 'AnimatePresence' is declared but its value is never read.
+src/components/challenges/DeadHangWidget.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/BiometricInsight.tsx(3,20): error TS6133: 'Flame' is declared but its value is never read.
+src/components/dashboard/CycleTracker.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/MuscleRecoveryRing.tsx(32,37): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(62,30): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(67,33): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(87,34): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(94,61): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(106,71): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(106,101): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(114,22): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/MuscleRecoveryRing.tsx(116,30): error TS18048: 'current' is possibly 'undefined'.
+src/components/dashboard/NutritionDashboardSection.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/PhaseCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/TrendDashboardSection.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/TrendStatusBadge.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/VirtualPet.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/components/dashboard/VirtualPet.tsx(45,30): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(46,48): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(58,12): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(67,26): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(83,18): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(89,34): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(90,26): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(91,40): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(107,71): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(126,55): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(126,68): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(153,54): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(158,43): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/VirtualPet.tsx(165,50): error TS18048: 'stage' is possibly 'undefined'.
+src/components/dashboard/WeekCalendar.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/history/DetailedHistory.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/onboarding/BeginnerGuide.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/onboarding/BeginnerGuide.tsx(62,22): error TS2532: Object is possibly 'undefined'.
+src/components/onboarding/BeginnerGuide.tsx(66,22): error TS2532: Object is possibly 'undefined'.
+src/components/rival/RivalRace.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/rival/RivalResult.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/social/GymVibeWidget.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/social/QRSyncModal.tsx(110,13): error TS7030: Not all code paths return a value.
+src/components/social/ShareWorkoutModal.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/components/stats/RecoveryRing.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/stats/RecoveryRing.tsx(1,36): error TS6133: 'useCallback' is declared but its value is never read.
+src/components/workout/AutoRepToggle.tsx(2,10): error TS6133: 'Activity' is declared but its value is never read.
+src/components/workout/ExerciseLibrary.tsx(31,35): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+src/components/workout/MobilityTimer.tsx(3,8): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/NextWorkoutSuggestion.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/PRTracker.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/PaceTracker.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/PostWorkoutFeedback.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/WorkoutControls.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/WorkoutExerciseList.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/WorkoutHeader.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/WorkoutModeSelector.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/components/workout/WorkoutSetRow.tsx(30,7): error TS6133: 'input2Field' is declared but its value is never read.
+src/data/exerciseMedia.ts(625,22): error TS2322: Type 'ExerciseMedia | undefined' is not assignable to type 'ExerciseMedia'.
+  Type 'undefined' is not assignable to type 'ExerciseMedia'.
+src/data/exerciseMedia.ts(628,24): error TS2322: Type 'ExerciseMedia | undefined' is not assignable to type 'ExerciseMedia'.
+  Type 'undefined' is not assignable to type 'ExerciseMedia'.
+src/data/exerciseMedia.ts(635,88): error TS18048: 'mapped' is possibly 'undefined'.
+src/data/exerciseMedia.ts(636,25): error TS2322: Type 'ExerciseMedia | undefined' is not assignable to type 'ExerciseMedia'.
+  Type 'undefined' is not assignable to type 'ExerciseMedia'.
+src/hooks/audioMachine.ts(22,20): error TS6133: 'state' is declared but its value is never read.
+src/hooks/audioMachine.ts(22,20): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(22,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(29,20): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(38,20): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(46,20): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(46,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/hooks/audioMachine.ts(62,20): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/hooks/useChallenges.ts(1,10): error TS6133: 'useState' is declared but its value is never read.
+src/hooks/useMachine.ts(1,1): error TS6192: All imports in import declaration are unused.
+src/hooks/useMachine.ts(8,30): error TS6205: All type parameters are unused.
+src/hooks/useMotionCounter.ts(23,33): error TS18047: 'x' is possibly 'null'.
+src/hooks/useMotionCounter.ts(23,37): error TS18047: 'x' is possibly 'null'.
+src/hooks/useMotionCounter.ts(23,41): error TS18047: 'y' is possibly 'null'.
+src/hooks/useMotionCounter.ts(23,45): error TS18047: 'y' is possibly 'null'.
+src/hooks/useMotionCounter.ts(23,49): error TS18047: 'z' is possibly 'null'.
+src/hooks/useMotionCounter.ts(23,53): error TS18047: 'z' is possibly 'null'.
+src/main.tsx(70,40): error TS2339: Property 'message' does not exist on type '{}'.
+src/screens/CommunityFeed.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/screens/CompeteScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/screens/CompeteScreen.tsx(151,11): error TS6133: 'isLost' is declared but its value is never read.
+src/screens/DeviceManager.tsx(2,1): error TS6192: All imports in import declaration are unused.
+src/screens/DeviceManager.tsx(3,1): error TS6133: 'motion' is declared but its value is never read.
+src/screens/Milestones.tsx(14,63): error TS6133: 'h' is declared but its value is never read.
+src/screens/Milestones.tsx(31,9): error TS6133: 'totalVolumeAllTime' is declared but its value is never read.
+src/screens/Milestones.tsx(55,50): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/screens/NutritionPlanner.tsx(7,10): error TS6133: 'DailyMealLog' is declared but its value is never read.
+src/screens/NutritionPlanner.tsx(35,56): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(35,83): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(35,112): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(35,140): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(35,165): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(79,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/screens/NutritionPlanner.tsx(94,29): error TS18048: 'food' is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(94,45): error TS18048: 'food' is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(94,63): error TS18048: 'food' is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(94,80): error TS18048: 'food' is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(94,94): error TS18048: 'food' is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(286,59): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/screens/RecoveryScreen.tsx(3,8): error TS6133: 'React' is declared but its value is never read.
+src/screens/Settings.tsx(3,1): error TS6133: 'useLS' is declared but its value is never read.
+src/services/__tests__/gamificationEngine.test.ts(49,32): error TS18048: 'maxLevel' is possibly 'undefined'.
+src/services/__tests__/gamificationEngine.test.ts(50,32): error TS18048: 'maxLevel' is possibly 'undefined'.
+src/services/__tests__/gamificationEngine.test.ts(72,16): error TS2532: Object is possibly 'undefined'.
+src/services/__tests__/gamificationEngine.test.ts(72,64): error TS2532: Object is possibly 'undefined'.
+src/services/__tests__/gamificationEngine.test.ts(78,16): error TS2532: Object is possibly 'undefined'.
+src/services/__tests__/gamificationEngine.test.ts(90,14): error TS2532: Object is possibly 'undefined'.
+src/services/__tests__/injuryPredictionEngine.test.ts(3,1): error TS6133: 'schema' is declared but its value is never read.
+src/services/__tests__/nutritionEngine.test.ts(6,27): error TS6133: 'FitnessGoal' is declared but its value is never read.
+src/services/__tests__/nutritionEngine.test.ts(6,40): error TS6133: 'ActivityLevel' is declared but its value is never read.
+src/services/__tests__/offlineWorkoutEngine.test.ts(29,12): error TS18048: 'tuesday' is possibly 'undefined'.
+src/services/__tests__/offlineWorkoutEngine.test.ts(30,12): error TS18048: 'tuesday' is possibly 'undefined'.
+src/services/__tests__/offlineWorkoutEngine.test.ts(41,12): error TS18048: 'monday' is possibly 'undefined'.
+src/services/__tests__/recoveryEngine.test.ts(28,73): error TS6133: 'start' is declared but its value is never read.
+src/services/__tests__/recoveryEngine.test.ts(28,73): error TS7006: Parameter 'start' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(28,80): error TS6133: 'end' is declared but its value is never read.
+src/services/__tests__/recoveryEngine.test.ts(28,80): error TS7006: Parameter 'end' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(28,85): error TS7006: Parameter 'type' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(59,73): error TS6133: 'start' is declared but its value is never read.
+src/services/__tests__/recoveryEngine.test.ts(59,73): error TS7006: Parameter 'start' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(59,80): error TS6133: 'end' is declared but its value is never read.
+src/services/__tests__/recoveryEngine.test.ts(59,80): error TS7006: Parameter 'end' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(59,85): error TS7006: Parameter 'type' implicitly has an 'any' type.
+src/services/__tests__/recoveryEngine.test.ts(72,52): error TS6133: 'range' is declared but its value is never read.
+src/services/advancedFeatures.ts(2,1): error TS6133: 'UserProfile' is declared but its value is never read.
+src/services/advancedFeatures.ts(3,1): error TS6133: 'WorkoutSession' is declared but its value is never read.
+src/services/aiGenerator.ts(37,64): error TS6133: 'profile' is declared but its value is never read.
+src/services/aiGenerator.ts(52,40): error TS2532: Object is possibly 'undefined'.
+src/services/aiGenerator.ts(58,31): error TS2532: Object is possibly 'undefined'.
+src/services/backupService.ts(9,1): error TS6133: 'SENSITIVE_STORE_NAMES' is declared but its value is never read.
+src/services/backupService.ts(154,33): error TS18048: 'latestBackup' is possibly 'undefined'.
+src/services/backupService.ts(164,32): error TS2532: Object is possibly 'undefined'.
+src/services/backupService.ts(173,7): error TS2322: Type '{ id: string; name: string; createdTime: string; } | undefined' is not assignable to type '{ id: string; name: string; createdTime: string; } | null'.
+  Type 'undefined' is not assignable to type '{ id: string; name: string; createdTime: string; } | null'.
+src/services/gamificationEngine.ts(3,15): error TS6196: 'WorkoutSession' is declared but never used.
+src/services/gamificationEngine.ts(3,39): error TS6196: 'PersonalRecord' is declared but never used.
+src/services/gamificationEngine.ts(29,15): error TS2532: Object is possibly 'undefined'.
+src/services/gamificationEngine.ts(30,7): error TS2322: Type 'LevelThreshold | undefined' is not assignable to type 'LevelThreshold'.
+  Type 'undefined' is not assignable to type 'LevelThreshold'.
+src/services/gamificationEngine.ts(33,3): error TS2322: Type 'LevelThreshold | undefined' is not assignable to type 'LevelThreshold'.
+  Type 'undefined' is not assignable to type 'LevelThreshold'.
+src/services/googleDrive.ts(19,5): error TS6133: 'gapiInited' is declared but its value is never read.
+src/services/injuryPrediction/riskModel.ts(7,11): error TS6196: 'RiskFactor' is declared but never used.
+src/services/injuryPrediction/riskModel.ts(173,3): error TS6133: 'affectedJoints' is declared but its value is never read.
+src/services/injuryPredictionEngine.ts(3,1): error TS6133: 'RecoveryMetric' is declared but its value is never read.
+src/services/injuryPredictionEngine.ts(27,7): error TS6133: 'VELOCITY_DECAY_THRESHOLD' is declared but its value is never read.
+src/services/injuryPredictionEngine.ts(112,25): error TS2532: Object is possibly 'undefined'.
+src/services/injuryPredictionEngine.ts(112,71): error TS2532: Object is possibly 'undefined'.
+src/services/injuryPredictionEngine.ts(113,24): error TS2532: Object is possibly 'undefined'.
+src/services/injuryPredictionEngine.ts(113,89): error TS2532: Object is possibly 'undefined'.
+src/services/injuryPredictor.ts(127,3): error TS6133: 'userId' is declared but its value is never read.
+src/services/keyRotationService.ts(136,12): error TS18048: 'set' is possibly 'undefined'.
+src/services/keyRotationService.ts(143,63): error TS18048: 'set' is possibly 'undefined'.
+src/services/keyRotationService.ts(157,23): error TS2345: Argument of type '{ encryptedFields: string; id?: string | undefined; workoutId?: string | undefined; exerciseName?: string | undefined; category?: string | undefined; setNumber?: number | undefined; ... 7 more ...; barVelocity?: number; }' is not assignable to parameter of type 'SetLog'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/services/offlineWorkoutEngine.ts(101,18): error TS18048: 'config' is possibly 'undefined'.
+src/services/offlineWorkoutEngine.ts(102,56): error TS18048: 'config' is possibly 'undefined'.
+src/services/offlineWorkoutEngine.ts(169,63): error TS6133: 'history' is declared but its value is never read.
+src/services/offlineWorkoutEngine.ts(287,28): error TS6133: 'pool' is declared but its value is never read.
+src/services/offlineWorkoutEngine.ts(299,34): error TS6133: 'pool' is declared but its value is never read.
+src/services/p2pSync.ts(28,11): error TS6133: 'remoteId' is declared but its value is never read.
+src/services/p2pSync.ts(177,7): error TS2531: Object is possibly 'null'.
+src/services/recoveryEngine.ts(20,47): error TS6133: 'userId' is declared but its value is never read.
+src/services/recoveryEngine.ts(66,18): error TS2532: Object is possibly 'undefined'.
+src/services/recoveryEngine.ts(96,18): error TS2532: Object is possibly 'undefined'.
+src/services/recoveryEngine.ts(138,18): error TS2532: Object is possibly 'undefined'.
+src/services/recoveryEngine.ts(144,18): error TS2532: Object is possibly 'undefined'.
+src/services/recoveryEngine.ts(158,3): error TS6133: 'fatigue' is declared but its value is never read.
+src/services/recoveryEngine.ts(159,3): error TS6133: 'soreness' is declared but its value is never read.
+src/services/recoveryEngine.ts(177,3): error TS6133: 'score' is declared but its value is never read.
+src/services/recoveryEngine.ts(179,3): error TS6133: 'adjustment' is declared but its value is never read.
+src/services/recoveryEngine.ts(205,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/trendAnalyzer.ts(69,47): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/stores/useDualWorkoutStore.ts(66,7): error TS2322: Type '() => ScheduledWorkout | null | undefined' is not assignable to type '() => ScheduledWorkout | null'.
+  Type 'ScheduledWorkout | null | undefined' is not assignable to type 'ScheduledWorkout | null'.
+    Type 'undefined' is not assignable to type 'ScheduledWorkout | null'.
+src/stores/useNutritionStore.ts(8,3): error TS6133: 'getWeightLogDecrypted' is declared but its value is never read.
+src/stores/useNutritionStore.ts(70,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/utils/__tests__/prescriptionEngine.test.ts(81,12): error TS2532: Object is possibly 'undefined'.
+src/utils/__tests__/prescriptionEngine.test.ts(82,12): error TS2532: Object is possibly 'undefined'.
+src/utils/__tests__/prescriptionEngine.test.ts(83,12): error TS2532: Object is possibly 'undefined'.
+src/utils/missedDaysDetector.ts(61,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/utils/prescriptionEngine.ts(2,10): error TS6133: 'ExerciseCategory' is declared but its value is never read.
+src/utils/prescriptionEngine.ts(79,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/workers/poseDetection.worker.ts(35,27): error TS18048: 'landmarks' is possibly 'undefined'.
+src/workers/poseDetection.worker.ts(35,27): error TS2532: Object is possibly 'undefined'.
+src/workers/poseDetection.worker.ts(35,45): error TS18048: 'landmarks' is possibly 'undefined'.
+src/workers/poseDetection.worker.ts(35,45): error TS2532: Object is possibly 'undefined'.

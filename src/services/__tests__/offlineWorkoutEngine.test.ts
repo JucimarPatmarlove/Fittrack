@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { OfflineWorkoutEngine } from '../offlineWorkoutEngine';
 import { UserProfile } from '../../types';

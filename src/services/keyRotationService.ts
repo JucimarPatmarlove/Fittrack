@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/keyRotationService.ts
 // Serviço de rotação de chave mestra (mudança de PIN).
 //

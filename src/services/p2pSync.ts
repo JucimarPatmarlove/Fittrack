@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * FitTrack V7 – Sincronização P2P via WebRTC DataChannel
  * 

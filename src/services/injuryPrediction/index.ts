@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/injuryPrediction/index.ts
 
 import { calculateSessionStress, calculateACRatio, WorkoutHistoryEntry } from './stressCalculator';

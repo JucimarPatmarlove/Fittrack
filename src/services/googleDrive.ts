@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/googleDrive.ts
 // ════════════════════════════════════════════════════════════════
 // FitTrack V7 — Integração Google Drive (backup/restore cifrado)

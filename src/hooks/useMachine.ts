@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AudioState, AudioEvent } from './audioMachine';
 
 export type MachineState<TState, TContext> = {

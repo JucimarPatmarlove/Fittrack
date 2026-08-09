@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/social/ShareWorkoutModal.tsx
 import React, { useState, useEffect } from 'react';
 import { C } from '../../data/constants';

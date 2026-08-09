@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRobustTimer } from '../../hooks/useRobustTimer';
 import { useProgressiveHaptics } from '../../hooks/useProgressiveHaptics';

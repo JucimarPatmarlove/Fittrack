@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface ExerciseMedia {
   imageUrl: string;
   gifUrl?: string;

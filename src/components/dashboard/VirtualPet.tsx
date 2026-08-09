@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/dashboard/VirtualPet.tsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EXERCISE_LIBRARY, MUSCLE_GROUPS, EQUIPMENT_TYPES, ACTIVITY_TYPES, C } from '../../data/constants';

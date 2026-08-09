@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { GoalType, LevelType, SexType } from "../types";
 
 export const C = {

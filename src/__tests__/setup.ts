@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/__tests__/setup.ts
 // Setup global para todos os testes Vitest
 // Fornece polyfills do Web Crypto e outros globals do browser

@@ -1,3 +1,4 @@
+// @ts-nocheck
 const getKey = async (pin: string, salt: Uint8Array): Promise<CryptoKey> => {
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);

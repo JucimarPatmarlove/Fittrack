@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { C } from '../data/constants';

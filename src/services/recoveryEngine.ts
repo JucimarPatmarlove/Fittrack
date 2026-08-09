@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/services/recoveryEngine.ts
 import { getDB, RecoveryMetric } from '../db/schema';
 

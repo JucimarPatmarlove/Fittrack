@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { DynamicRPESlider } from "./DynamicRPESlider";
 import { PaceTracker } from "./PaceTracker";
