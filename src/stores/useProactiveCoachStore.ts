@@ -63,9 +63,7 @@ export const useProactiveCoachStore = create<ProactiveCoachState>()(
 
       dismissMessage: (messageId) => {
         set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === messageId ? { ...m, dismissed: true } : m
-          ),
+          messages: state.messages.map((m) => (m.id === messageId ? { ...m, dismissed: true } : m)),
           unreadCount: Math.max(0, state.unreadCount - 1),
         }));
 
@@ -101,6 +99,6 @@ export const useProactiveCoachStore = create<ProactiveCoachState>()(
         messages: state.messages.filter((m) => !m.dismissed),
         lastEvaluation: state.lastEvaluation,
       }),
-    }
-  )
+    },
+  ),
 );

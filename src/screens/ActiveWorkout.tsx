@@ -735,8 +735,8 @@ export default function ActiveWorkout({
   const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
   const { generateReport } = useInjuryStore();
   const proactiveMessages = useProactiveCoachStore((s) => s.getActiveMessages());
-  const injuryMsgs = proactiveMessages.filter((m) => 
-    m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical'
+  const injuryMsgs = proactiveMessages.filter(
+    (m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical',
   );
   const [newPRData, setNewPRData] = useState<{ exerciseName: string; weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{

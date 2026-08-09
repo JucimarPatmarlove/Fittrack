@@ -73,8 +73,12 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
     >
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className={`p-2 rounded-lg ${message.priority === 'urgent' ? 'bg-red-100' : message.priority === 'high' ? 'bg-orange-100' : 'bg-blue-100'}`}>
-          <PriorityIcon className={`w-5 h-5 ${message.priority === 'urgent' ? 'text-red-600' : message.priority === 'high' ? 'text-orange-600' : 'text-blue-600'}`} />
+        <div
+          className={`p-2 rounded-lg ${message.priority === 'urgent' ? 'bg-red-100' : message.priority === 'high' ? 'bg-orange-100' : 'bg-blue-100'}`}
+        >
+          <PriorityIcon
+            className={`w-5 h-5 ${message.priority === 'urgent' ? 'text-red-600' : message.priority === 'high' ? 'text-orange-600' : 'text-blue-600'}`}
+          />
         </div>
         <div className="flex-1">
           <h4 className="font-semibold text-sm">{message.title}</h4>
@@ -97,8 +101,8 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
               message.priority === 'urgent'
                 ? 'bg-red-600 text-white hover:bg-red-700'
                 : message.priority === 'high'
-                ? 'bg-orange-600 text-white hover:bg-orange-700'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'bg-orange-600 text-white hover:bg-orange-700'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
             {message.actionLabel}
@@ -179,9 +183,7 @@ export const ProactiveMessageList: React.FC = () => {
             <p>Tudo em ordem! Nenhum alerta ativo.</p>
           </motion.div>
         ) : (
-          messages.map((msg) => (
-            <ProactiveMessageCard key={msg.id} message={msg} />
-          ))
+          messages.map((msg) => <ProactiveMessageCard key={msg.id} message={msg} />)
         )}
       </AnimatePresence>
     </div>

@@ -25,7 +25,13 @@ export type TriggerType =
   | 'nutrition_reminder';
 
 export type MessagePriority = 'low' | 'medium' | 'high' | 'urgent';
-export type MessageAction = 'workout' | 'recovery' | 'rest' | 'modify_plan' | 'view_details' | 'dismiss';
+export type MessageAction =
+  | 'workout'
+  | 'recovery'
+  | 'rest'
+  | 'modify_plan'
+  | 'view_details'
+  | 'dismiss';
 
 export interface ProactiveMessage {
   id: string;
@@ -58,7 +64,9 @@ interface TriggerRule {
   type: TriggerType;
   condition: (ctx: TriggerContext) => boolean;
   priority: MessagePriority;
-  generateMessage: (ctx: TriggerContext) => Omit<ProactiveMessage, 'id' | 'timestamp' | 'dismissed'>;
+  generateMessage: (
+    ctx: TriggerContext,
+  ) => Omit<ProactiveMessage, 'id' | 'timestamp' | 'dismissed'>;
 }
 
 const TRIGGER_RULES: TriggerRule[] = [
@@ -84,7 +92,8 @@ const TRIGGER_RULES: TriggerRule[] = [
   // 🟠 HIGH: Risco de lesão elevado
   {
     type: 'injury_risk_high',
-    condition: (ctx) => ctx.injuryReport?.overallRisk === 'high' && ctx.injuryReport?.overallRisk !== 'critical',
+    condition: (ctx) =>
+      ctx.injuryReport?.overallRisk === 'high' && ctx.injuryReport?.overallRisk !== 'critical',
     priority: 'high',
     generateMessage: (ctx) => {
       const mods = ctx.injuryReport?.suggestedModifications || [];
@@ -129,9 +138,7 @@ const TRIGGER_RULES: TriggerRule[] = [
   {
     type: 'overtraining_detected',
     condition: (ctx) => {
-      const highACWR = ctx.injuryReport?.flaggedRegions.some(
-        (r) => r.acuteChronicRatio > 1.3
-      );
+      const highACWR = ctx.injuryReport?.flaggedRegions.some((r) => r.acuteChronicRatio > 1.3);
       const highRPE = ctx.workoutHistory
         .slice(-7)
         .every((w) => w.exercises.some((e) => e.sets.some((s: any) => (s.rpe || 5) > 8)));
@@ -155,7 +162,7 @@ const TRIGGER_RULES: TriggerRule[] = [
     condition: (ctx) => {
       const noWorkout3Days = ctx.daysSinceLastWorkout >= 3;
       const chronicDropping = ctx.injuryReport?.flaggedRegions.some(
-        (r) => r.acuteChronicRatio < 0.8
+        (r) => r.acuteChronicRatio < 0.8,
       );
       return noWorkout3Days && !!chronicDropping;
     },
@@ -190,13 +197,13 @@ const TRIGGER_RULES: TriggerRule[] = [
             .filter((s: any) => s.type === 'weighted')
             .reduce((max: number, s: any) => Math.max(max, s.weight || 0), 0);
           return (set.weight || 0) > historicalMax && historicalMax > 0;
-        })
+        }),
       );
     },
     priority: 'medium',
     generateMessage: (ctx) => {
       const prExercise = ctx.lastWorkout?.exercises.find((ex: any) =>
-        ex.sets.some((set: any) => set.type === 'weighted' && set.isPR)
+        ex.sets.some((set: any) => set.type === 'weighted' && set.isPR),
       );
       const prSet = prExercise?.sets.find((s: any) => s.isPR);
       return {
@@ -232,7 +239,7 @@ const TRIGGER_RULES: TriggerRule[] = [
     type: 'deload_recommended',
     condition: (ctx) => {
       const weeksWithoutDeload = ctx.workoutHistory.filter(
-        (w) => new Date(w.date) > new Date(Date.now() - 28 * 24 * 60 * 60 * 1000)
+        (w) => new Date(w.date) > new Date(Date.now() - 28 * 24 * 60 * 60 * 1000),
       ).length;
       return weeksWithoutDeload >= 12; // 3+ meses sem deload
     },

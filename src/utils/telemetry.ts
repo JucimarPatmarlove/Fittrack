@@ -110,7 +110,7 @@ export function initWebVitals() {
 
 export function createSpan(
   name: string,
-  attributes?: Record<string, string | number | boolean>
+  attributes?: Record<string, string | number | boolean>,
 ): Span {
   const tracer = trace.getTracer('fittrack');
   return tracer.startSpan(name, { attributes });
@@ -119,7 +119,7 @@ export function createSpan(
 export async function withSpan<T>(
   name: string,
   fn: () => Promise<T>,
-  attributes?: Record<string, string | number | boolean>
+  attributes?: Record<string, string | number | boolean>,
 ): Promise<T> {
   const tracer = trace.getTracer('fittrack');
   const span = tracer.startSpan(name, { attributes });
@@ -144,10 +144,7 @@ export async function withSpan<T>(
 
 // ── 5. Feature Usage Analytics ─────────────────────────────
 
-export function trackEvent(
-  eventName: string,
-  properties?: Record<string, any>
-) {
+export function trackEvent(eventName: string, properties?: Record<string, any>) {
   // PostHog
   posthog.capture(eventName, properties);
 
@@ -161,10 +158,7 @@ export function trackEvent(
 
 // ── 6. React Error Boundary with OTel ──────────────────────
 
-export function createErrorBoundarySpan(
-  error: Error,
-  errorInfo: { componentStack: string }
-): Span {
+export function createErrorBoundarySpan(error: Error, errorInfo: { componentStack: string }): Span {
   const tracer = trace.getTracer('react-error-boundary');
   const span = tracer.startSpan('error.react_boundary', {
     attributes: {

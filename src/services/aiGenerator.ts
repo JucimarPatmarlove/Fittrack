@@ -48,49 +48,49 @@ export class AIWorkoutGenerator {
     profile: UserProfile,
     history?: any[],
   ) {
-    const span = createSpan('ai.coach.response', { 
-        muscle_count: recoveredMuscles.length,
-        profile_level: profile.level
+    const span = createSpan('ai.coach.response', {
+      muscle_count: recoveredMuscles.length,
+      profile_level: profile.level,
     });
 
     try {
-    // 1. Priorizar os 2 ou 3 músculos mais descansados (>70% de recuperação)
-    const toTrain = recoveredMuscles
-      .filter((m) => m.recoveryPercentage > 70)
-      .sort((a, b) => b.recoveryPercentage - a.recoveryPercentage)
-      .slice(0, 3);
+      // 1. Priorizar os 2 ou 3 músculos mais descansados (>70% de recuperação)
+      const toTrain = recoveredMuscles
+        .filter((m) => m.recoveryPercentage > 70)
+        .sort((a, b) => b.recoveryPercentage - a.recoveryPercentage)
+        .slice(0, 3);
 
-    if (toTrain.length === 0) return null;
+      if (toTrain.length === 0) return null;
 
-    const selectedExercises: string[] = [];
+      const selectedExercises: string[] = [];
 
-    // 2. Escolher os exercícios correspondentes
-    toTrain.forEach((m) => {
-      const suitable = this.exercisePool.filter((e) => e.muscle === m.muscle);
-      if (suitable.length > 0) {
-        selectedExercises.push(suitable[0].name);
-        if (suitable[1]) selectedExercises.push(suitable[1].name);
-      }
-    });
+      // 2. Escolher os exercícios correspondentes
+      toTrain.forEach((m) => {
+        const suitable = this.exercisePool.filter((e) => e.muscle === m.muscle);
+        if (suitable.length > 0) {
+          selectedExercises.push(suitable[0].name);
+          if (suitable[1]) selectedExercises.push(suitable[1].name);
+        }
+      });
 
-    // 3. Determinar fase DUP (Anatoly) com base no músculo primário
-    const primaryMuscle = toTrain[0].muscle;
-    const phase = this.determineAnatolyPhase(history, primaryMuscle);
+      // 3. Determinar fase DUP (Anatoly) com base no músculo primário
+      const primaryMuscle = toTrain[0].muscle;
+      const phase = this.determineAnatolyPhase(history, primaryMuscle);
 
-    const labelPrefix =
-      phase === 'powerlifting'
-        ? '🔥 DIA DE FORÇA (POWERLIFTING)'
-        : '💪 DIA DE VOLUME (BODYBUILDING)';
+      const labelPrefix =
+        phase === 'powerlifting'
+          ? '🔥 DIA DE FORÇA (POWERLIFTING)'
+          : '💪 DIA DE VOLUME (BODYBUILDING)';
 
-    const result = {
-      id: `anatoly_${Date.now()}`,
-      label: `${labelPrefix}: ${toTrain.map((m) => m.muscle).join(' & ')}`,
-      phase,
-      exercises: selectedExercises,
-    };
-    
-    span.setStatus({ code: SpanStatusCode.OK });
-    return result;
+      const result = {
+        id: `anatoly_${Date.now()}`,
+        label: `${labelPrefix}: ${toTrain.map((m) => m.muscle).join(' & ')}`,
+        phase,
+        exercises: selectedExercises,
+      };
+
+      span.setStatus({ code: SpanStatusCode.OK });
+      return result;
     } catch (error) {
       span.recordException(error as Error);
       span.setStatus({ code: SpanStatusCode.ERROR, message: (error as Error).message });
