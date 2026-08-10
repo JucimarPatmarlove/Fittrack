@@ -24,6 +24,7 @@ export const MuscleRecoveryRing: React.FC<Props> = ({ recoveryData }) => {
   };
 
   const current = recoveryData[currentIndex];
+  if (!current) return null;
 
   // SVG Ring Calculations
   const size = 160;

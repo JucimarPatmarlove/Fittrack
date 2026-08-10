@@ -14,6 +14,7 @@ export const GhostToggle = () => {
       const interval = setInterval(() => setPulse((p) => !p), 1000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [active]);
 
   return (

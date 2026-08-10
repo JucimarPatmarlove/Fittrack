@@ -7,7 +7,8 @@ export const MuscleSphere = ({
   position,
   args,
   intensity = 0,
-  name,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  name: _name,
   isCylinder = false,
   isBox = false,
   fallbackColor = '#1e2832',

@@ -8,7 +8,7 @@ interface MetricBoxProps {
   label: string;
   value: number | null;
   unit: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ size?: number; color?: string }>;
   trend?: 'up' | 'down' | 'neutral';
   precision?: number;
 }
@@ -37,7 +37,7 @@ const MetricBox: React.FC<MetricBoxProps> = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <Icon size={16} color="rgba(255,255,255,0.5)" />
+        <Icon size={16} color={'rgba(255,255,255,0.5)'} />
         <span
           style={{
             fontSize: '10px',

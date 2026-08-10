@@ -13,12 +13,12 @@ export const ActivityHeatmap = ({ history }: HeatmapProps) => {
 
   const getWorkoutsForDate = (date: Date) => {
     const dStr = format(date, 'yyyy-MM-dd');
-    return history.filter((w) => w.date.startsWith(dStr));
+    return history.filter((w) => String(w.date).startsWith(dStr));
   };
 
   const getIntensityColor = (date: Date) => {
     const workouts = getWorkoutsForDate(date);
-    const volume = workouts.reduce((sum, w) => sum + (w.totalVolume || 0), 0);
+    const volume = workouts.reduce((sum, w) => sum + (w.totalVolumeKg || 0), 0);
 
     if (volume === 0) return '#1a1f25'; // sem treino
     if (volume < 5000) return '#2a5a2a'; // baixo volume / recuperação
@@ -28,7 +28,7 @@ export const ActivityHeatmap = ({ history }: HeatmapProps) => {
 
   const getVolumeForDate = (date: Date) => {
     const workouts = getWorkoutsForDate(date);
-    return workouts.reduce((sum, w) => sum + (w.totalVolume || 0), 0);
+    return workouts.reduce((sum, w) => sum + (w.totalVolumeKg || 0), 0);
   };
 
   return (
