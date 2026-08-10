@@ -68,13 +68,13 @@ export class AIWorkoutGenerator {
       toTrain.forEach((m) => {
         const suitable = this.exercisePool.filter((e) => e.muscle === m.muscle);
         if (suitable.length > 0) {
-          selectedExercises.push(suitable[0].name);
+          selectedExercises.push(suitable[0]!.name);
           if (suitable[1]) selectedExercises.push(suitable[1].name);
         }
       });
 
       // 3. Determinar fase DUP (Anatoly) com base no músculo primário
-      const primaryMuscle = toTrain[0].muscle;
+      const primaryMuscle = toTrain[0]!.muscle;
       const phase = this.determineAnatolyPhase(history, primaryMuscle);
 
       const labelPrefix =

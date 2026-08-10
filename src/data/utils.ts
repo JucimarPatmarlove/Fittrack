@@ -10,7 +10,7 @@ export function calculate1RM(weight: number, reps: number): number {
 
 export function estimateCaloriesBurned(workout: WorkoutSession, profile: UserProfile): number {
   const MET = 6; // MET médio para musculação intensa
-  const hours = workout.duration / 3600;
+  const hours = workout.durationSeconds / 3600;
   return Math.round(MET * profile.weight * hours);
 }
 
@@ -25,7 +25,7 @@ export function calculateRecovery(history: WorkoutSession[], goalId = 'hipertrof
 
   return muscles.map((muscle) => {
     const lastWorkout = history
-      .filter((w) => w.exercises.some((e: any) => e.muscle === muscle))
+      .filter((w) => (w as any).exercises?.some((e: any) => e.muscle === muscle))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
     const limitMs = recoveryHoursFull * 3600 * 1000;

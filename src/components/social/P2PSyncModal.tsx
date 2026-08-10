@@ -9,7 +9,7 @@ import { WebRTCEngine, type WebRTCMessage } from '../../services/webrtcEngine';
 // import { QRCodeCanvas } from 'qrcode.react';
 // import { Scanner } from '@yudiel/react-qr-scanner';
 
-const QRCodeCanvas = ({ value }: { value: string }) => (
+const QRCodeCanvas = ({ value }: { value: string, size?: number, fgColor?: string, bgColor?: string, level?: string }) => (
   <div
     style={{
       padding: '20px',
@@ -24,7 +24,7 @@ const QRCodeCanvas = ({ value }: { value: string }) => (
   </div>
 );
 
-const Scanner = ({ onScan }: { onScan: (res: any) => void }) => (
+const Scanner = ({ onScan }: { onScan: (res: any) => void, components?: any }) => (
   <div style={{ padding: '20px', textAlign: 'center', background: '#333', color: '#fff' }}>
     <p>Scanner Desativado (Offline Mode)</p>
     <button
@@ -81,15 +81,7 @@ export const P2PSyncModal: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     }
   };
 
-  const handleJoinGuest = async () => {
-    if (!inputToken) return;
-    setStatus('A encriptar handshake...');
-    if (engineRef.current) {
-      const answer = await engineRef.current.acceptOfferAndCreateAnswer(inputToken);
-      setToken(answer);
-      setStatus('Handshake gerado. Envia o token de volta ao Host.');
-    }
-  };
+
 
   const handleHostAcceptAnswer = async () => {
     if (!inputToken) return;

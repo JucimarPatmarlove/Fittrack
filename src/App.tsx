@@ -131,10 +131,7 @@ export default function App() {
           profile={profile}
           setProfile={setProfile}
           onClose={() => setShowWeeklyPlan(false)}
-          onStartWorkout={(plan) => {
-            setShowWeeklyPlan(false);
-            handleStartWorkout(plan);
-          }}
+
         />
       )}
     </div>

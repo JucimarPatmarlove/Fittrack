@@ -337,7 +337,6 @@ function ChallengesTab() {
     const isPending = c.status === 'pending' && c.targetUserId === 'user_local';
     const isActive = c.status === 'active';
     const isWon = c.status === 'completed' && c.winnerId === 'user_local';
-    const isLost = c.status === 'completed' && c.winnerId && c.winnerId !== 'user_local';
 
     const statusColors: Record<string, string> = {
       pending: '#f59e0b',

@@ -43,7 +43,7 @@ const ExerciseThumb = ({ name, emoji }: { name: string; emoji: string }) => {
       if (media.gifUrl) {
         const gif = new Image();
         gif.src = media.gifUrl;
-        gif.onload = () => setSrc(media.gifUrl);
+        gif.onload = () => setSrc(media.gifUrl || null);
       }
     };
   }, [name, media.imageUrl, media.gifUrl]);

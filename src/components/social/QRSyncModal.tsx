@@ -116,8 +116,9 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
 
   // Polling via localStorage (para cruzar tabs ou dispositivos no mesmo browser)
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
     if (mode === 'send' && step === 'show-code' && peerCode) {
-      const interval = setInterval(async () => {
+      interval = setInterval(async () => {
         const storedAnswer = localStorage.getItem(`p2p_answer_${peerCode}`);
         if (storedAnswer) {
           try {
@@ -130,8 +131,10 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
           } catch (e) {}
         }
       }, 1000);
-      return () => clearInterval(interval);
     }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [mode, step, peerCode, dataToSend, onClose]);
 
   // Trigger send data when connected and mode is send

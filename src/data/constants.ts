@@ -8,6 +8,8 @@ export const C = {
   red: '#e84a4a',
   green: '#3dd68c',
   blue: '#4a9ee8',
+  orange: '#f48c06',
+  danger: '#e84a4a',
   text: '#eceae4',
   muted: '#55626e',
   dim: '#1e2832',

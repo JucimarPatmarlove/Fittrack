@@ -74,7 +74,7 @@ if (root) {
       <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080b0f;color:#fff;padding:20px;font-family:sans-serif">
         <div style="max-width:500px;text-align:center">
           <h1 style="color:#e8c84a">FitTrack — Erro de Arranque</h1>
-          <p style="color:#aaa">${err?.message || err}</p>
+          <p style="color:#aaa">${err instanceof Error ? err.message : String(err)}</p>
           <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" 
                   style="margin-top:16px;padding:12px 24px;background:#e8c84a;border:none;border-radius:8px;cursor:pointer;font-size:16px">
             Limpar Cache e Recarregar

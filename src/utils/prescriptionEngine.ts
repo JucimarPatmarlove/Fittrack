@@ -86,7 +86,7 @@ export function getPrescription(
 
   if (macroPhase !== 'ADAPTACAO' || String(level).toLowerCase() !== 'avancado') {
     const repsMatch = phaseRules.repsTarget.match(/(\d+)-?(\d+)?/);
-    if (repsMatch) {
+    if (repsMatch && repsMatch[1]) {
       repsMin = Number.parseInt(repsMatch[1], 10);
       repsMax = repsMatch[2] ? Number.parseInt(repsMatch[2], 10) : repsMin;
     }

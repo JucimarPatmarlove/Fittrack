@@ -127,7 +127,7 @@ export const VideoTutorial = ({
 
   useEffect(() => {
     if (!hasSpoken.current) {
-      speak(`${exerciseName}. Foco: ${muscle}.`, true);
+      speak(`${exerciseName}. Foco: ${muscle}.`);
       hasSpoken.current = true;
     }
     setStepDone(new Array(steps.length).fill(false));

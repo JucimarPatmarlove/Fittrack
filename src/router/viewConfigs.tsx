@@ -1,11 +1,10 @@
 import type React from 'react';
 import { lazy } from 'react';
 import { PageTransition } from '../components/ui/MotionComponents';
-import type { WorkoutSession, DailyMealLog, MealItem } from '../db/schema';
+import type { WorkoutSession } from '../db/schema';
 import type { ViewName } from '../hooks/useFitnessData';
 import type { UserProfile, WorkoutPlan } from '../types';
-import { useNutritionStore } from '../stores/useNutritionStore';
-import { getTodayDateString } from '../services/nutritionEngine';
+
 
 import { BeginnerGuide } from '../components/onboarding/BeginnerGuide';
 import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
@@ -38,6 +37,9 @@ const RewardsStore = lazy(() =>
 const CommunityFeed = lazy(() => import('../screens/CommunityFeed'));
 const CompeteScreen = lazy(() => import('../screens/CompeteScreen'));
 const RecoveryScreen = lazy(() => import('../screens/RecoveryScreen'));
+const PostWorkoutFeedback = lazy(() =>
+  import('../components/workout/PostWorkoutFeedback').then((m) => ({ default: m.PostWorkoutFeedback })),
+);
 
 export interface ViewConfigProps {
   view: ViewName;
@@ -57,22 +59,11 @@ export interface ViewConfigProps {
 
 /** Build the NutritionPlanner view with required props */
 export function buildNutritionView(
-  profile: UserProfile,
-  setProfile: (p: UserProfile) => void,
+  _profile: UserProfile,
+  _setProfile: (p: UserProfile) => void,
 ): React.ReactNode {
   return (
-    <NutritionPlanner
-      profile={profile}
-      meals={[useNutritionStore.getState().currentMealLog].filter(Boolean) as DailyMealLog[]}
-      onUpdateProfile={(p: Partial<UserProfile>) => setProfile({ ...profile, ...p } as UserProfile)}
-      onAddMealItem={(type: 'breakfast' | 'lunch' | 'snack' | 'dinner', item: MealItem) =>
-        useNutritionStore.getState().addMeal(getTodayDateString(), type, item)
-      }
-      onRemoveMealItem={(type: 'breakfast' | 'lunch' | 'snack' | 'dinner', id: string) =>
-        useNutritionStore.getState().removeMeal(getTodayDateString(), type, id)
-      }
-      currentDate={getTodayDateString()}
-    />
+    <NutritionPlanner />
   );
 }
 
@@ -96,8 +87,6 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
     dashboard: (
       <PageTransition viewKey="dash">
         <Dashboard
-          profile={profile}
-          setProfile={setProfile}
           history={history}
           onStartWorkout={handleStartWorkout}
         />

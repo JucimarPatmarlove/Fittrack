@@ -19,7 +19,7 @@ const PET_STAGES: {
 ];
 
 function getPetStage(level: number) {
-  let stage = PET_STAGES[0];
+  let stage = PET_STAGES[0] || { minLevel: 0, emoji: '🥚', name: 'Ovo Misterioso', bg: '#f59e0b' };
   for (const s of PET_STAGES) {
     if (level >= s.minLevel) stage = s;
   }
@@ -34,7 +34,7 @@ export function VirtualPet({ xp }: Props) {
   const level = Math.floor(xp / 100);
   const xpInLevel = xp % 100;
   const progressPct = xpInLevel;
-  const stage = getPetStage(level);
+  const stage = getPetStage(level) || PET_STAGES[0];
   const [showDetail, setShowDetail] = useState(false);
   const nextStage = PET_STAGES.find((s) => s.minLevel > level);
 

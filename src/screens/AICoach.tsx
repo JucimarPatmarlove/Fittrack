@@ -46,7 +46,7 @@ export default function AICoach({ history, profile }: any) {
       .join(', ');
     const totalVolume = history.slice(-7).reduce((a: any, w: any) => a + (w.totalVolume || 0), 0);
     const readiness = NeuralFatigue.calculateReadiness(history);
-    const prs = useMilestonesStore.getState().personalRecords || {};
+    const prs = useMilestonesStore.getState().prs || {};
     const prText = Object.entries(prs)
       .map(([k, v]) => `${k} = ${v}kg`)
       .join(', ');

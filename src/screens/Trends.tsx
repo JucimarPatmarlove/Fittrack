@@ -40,7 +40,7 @@ export default function Trends({ history }: any) {
         readinessVolumeData.push({
           date: new Date(w.date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }),
           readiness: w.readinessScore ?? 70,
-          volume: w.totalVolumeKg ?? w.totalVolume ?? 0,
+          volume: w.totalVolumeKg ?? 0,
         });
       }
       setChartData(readinessVolumeData);
@@ -48,11 +48,11 @@ export default function Trends({ history }: any) {
       const acwrPoints = [];
       for (let i = 0; i < sorted.length; i += 3) {
         const week = sorted.slice(i, i + 3);
-        const acute = week.reduce((sum, w) => sum + (w.totalVolumeKg ?? w.totalVolume ?? 0), 0);
+        const acute = week.reduce((sum, w) => sum + (w.totalVolumeKg ?? 0), 0);
         const chronic =
           sorted
             .slice(Math.max(0, i - 3), i)
-            .reduce((sum, w) => sum + (w.totalVolumeKg ?? w.totalVolume ?? 0), 0) / 3;
+            .reduce((sum, w) => sum + (w.totalVolumeKg ?? 0), 0) / 3;
         const ratio = chronic > 0 ? acute / chronic : 1;
         acwrPoints.push({
           week: `S${Math.floor(i / 3) + 1}`,

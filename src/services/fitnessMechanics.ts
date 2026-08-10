@@ -11,7 +11,7 @@ export function calculate1RM(weight: number, reps: number): number {
 // 2. Cálculo de Calorias (MET 6 para musculação)
 export function estimateCaloriesBurned(workout: WorkoutSession, profile: UserProfile): number {
   const MET = 6;
-  const hours = workout.duration / 3600; // Assumindo que a duração está em segundos
+  const hours = workout.durationSeconds / 3600; // Assumindo que a duração está em segundos
   return Math.round(MET * profile.weight * hours);
 }
 
@@ -45,7 +45,7 @@ export function calculateRecovery(history: WorkoutSession[]): MuscleRecovery[] {
   return muscles.map((muscle) => {
     // Procura o último treino deste músculo
     const lastWorkout = history
-      .filter((w) => w.exercises.some((e) => e.muscle === muscle))
+      .filter((w: any) => w.exercises?.some((e: any) => e.muscle === muscle))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
     // Calcula os dias passados (se nunca treinou, assume 7 dias = 100% recuperado)

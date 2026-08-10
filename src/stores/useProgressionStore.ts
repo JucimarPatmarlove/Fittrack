@@ -32,6 +32,7 @@ interface ProgressionStore {
   recordFailure: (exerciseName: string) => void;
   shouldIncrease: (exerciseName: string) => boolean;
   shouldDeload: (exerciseName: string) => boolean;
+  clearSuggestions: (exerciseName: string) => void;
 }
 
 export const useProgressionStore = create<ProgressionStore>()(
@@ -129,6 +130,21 @@ export const useProgressionStore = create<ProgressionStore>()(
 
       shouldIncrease: (name) => get().exercises[name]?.suggestedIncrease || false,
       shouldDeload: (name) => get().exercises[name]?.deloadSuggested || false,
+      clearSuggestions: (name) => {
+        const prev = get().exercises[name];
+        if (prev) {
+          set((state) => ({
+            exercises: {
+              ...state.exercises,
+              [name]: {
+                ...prev,
+                suggestedIncrease: false,
+                deloadSuggested: false,
+              },
+            },
+          }));
+        }
+      },
     }),
     {
       name: 'progression-store',

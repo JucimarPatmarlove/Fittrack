@@ -3,7 +3,7 @@ export type MachineState<TState, TContext> = {
   context: TContext;
 };
 
-export function createMachine<TState, TEvent>(config: any) {
+export function createMachine(config: any) {
   return config;
 }
 

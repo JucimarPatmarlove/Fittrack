@@ -9,7 +9,6 @@ import { usePlanStore } from '../../stores/usePlanStore';
 interface WeeklyPlanGeneratorProps {
   profile: any;
   setProfile: (p: any) => void;
-  onStartWorkout: (plan: any) => void;
   onClose: () => void;
 }
 
@@ -18,7 +17,6 @@ const WEEK_DAYS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 
 export function WeeklyPlanGenerator({
   profile,
   setProfile,
-  onStartWorkout,
   onClose,
 }: WeeklyPlanGeneratorProps) {
   const [weight, setWeight] = useState(profile.weight || '');
@@ -26,7 +24,7 @@ export function WeeklyPlanGenerator({
   const [gender, setGender] = useState(profile.gender || 'Feminino');
   const [age, setAge] = useState(profile.age || 25);
   const [goal, setGoal] = useState(profile.goal || 'Hipertrofia');
-  const [workoutStyle, setWorkoutStyle] = useState(profile.workoutStyle || 'Musculação Padrão');
+
   const [equipment, setEquipment] = useState(profile.availableEquipment?.[0] || 'Ginásio Completo');
   const [trainingDays, setTrainingDays] = useState<string[]>(
     profile.trainingDays || ['Segunda', 'Quarta', 'Sexta'],
@@ -41,7 +39,7 @@ export function WeeklyPlanGenerator({
   const [preferredSlot, setPreferredSlot] = useState<'morning' | 'afternoon'>('morning');
   const [customDays, setCustomDays] = useState<string[]>(
     Object.entries(profile.dayPreferences || {})
-      .filter(([day, val]) => {
+      .filter(([_day, val]) => {
         return (
           val &&
           ![
@@ -53,7 +51,7 @@ export function WeeklyPlanGenerator({
             'Braços',
             'Core',
             'Cardio/HIIT',
-          ].includes(val)
+          ].includes(val as string)
         );
       })
       .map(([day]) => day),
@@ -194,15 +192,7 @@ export function WeeklyPlanGenerator({
     }
   };
 
-  const handleStartDay = (dayPlan: any) => {
-    const generatedPlan = {
-      id: `ai_day_${Date.now()}`,
-      label: `IA: ${dayPlan.focus} (${dayPlan.day})`,
-      exercises: dayPlan.exercises,
-    };
-    onClose();
-    onStartWorkout(generatedPlan);
-  };
+
 
   return (
     <div

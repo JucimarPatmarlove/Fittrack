@@ -166,7 +166,7 @@ export default function Dashboard({
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
-      const dateString = d.toISOString().split('T')[0];
+      const dateString = d.toISOString().split('T')[0] || '';
       const label = dateString.split('-').slice(1).reverse().join('/');
       const dayLog = meals.find((m: any) => m.date === dateString);
       let dayCal = 0,
@@ -400,7 +400,7 @@ export default function Dashboard({
       )}
       {/* 📡 TELEMETRIA BIOLÓGICA — HealthKit (RENPHO + Apple Watch) 📡 */}
       <BiometricInsight
-        healthData={healthKitData}
+        healthData={healthKitData as any}
         adjustment={dailyAdjustment}
         isSyncing={isHealthSyncing}
       />

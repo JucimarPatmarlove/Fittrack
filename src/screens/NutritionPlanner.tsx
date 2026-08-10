@@ -25,7 +25,7 @@ const theme = {
 const NutritionPlanner: React.FC = () => {
   // Estado Global via Zustand
   const { profile, currentMealLog: mealsLog, addMeal, removeMeal } = useNutritionStore();
-  const currentDate = new Date().toISOString().split('T')[0];
+  const currentDate = new Date().toISOString().split('T')[0] || '';
 
   // O estado atual das refeições no Zustand não expõe "meals" como array de logs se quisermos aceder ao dia específico,
   // expõe apenas "currentMealLog", que é o log da data atual se carregado corretamente.
@@ -37,11 +37,11 @@ const NutritionPlanner: React.FC = () => {
   );
   const [presetFoodIndex, setPresetFoodIndex] = useState('0');
   const [customFood, setCustomFood] = useState({
-    name: PRESET_FOODS[0].name,
-    cal: PRESET_FOODS[0].calories,
-    p: PRESET_FOODS[0].protein,
-    c: PRESET_FOODS[0].carb,
-    f: PRESET_FOODS[0].fat,
+    name: PRESET_FOODS[0]?.name || '',
+    cal: PRESET_FOODS[0]?.calories || 0,
+    p: PRESET_FOODS[0]?.protein || 0,
+    c: PRESET_FOODS[0]?.carb || 0,
+    f: PRESET_FOODS[0]?.fat || 0,
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -117,13 +117,15 @@ const NutritionPlanner: React.FC = () => {
     setValidationErrors({}); // Limpar erros ao mudar preset
     if (idx !== 'custom') {
       const food = PRESET_FOODS[Number(idx)];
-      setCustomFood({
-        name: food.name,
-        cal: food.calories,
-        p: food.protein,
-        c: food.carb,
-        f: food.fat,
-      });
+      if (food) {
+        setCustomFood({
+          name: food.name,
+          cal: food.calories,
+          p: food.protein,
+          c: food.carb,
+          f: food.fat,
+        });
+      }
     } else {
       setCustomFood({ name: '', cal: 0, p: 0, c: 0, f: 0 });
     }
@@ -558,7 +560,7 @@ const NutritionPlanner: React.FC = () => {
                           {item.calories} kcal
                         </span>
                         <button
-                          onClick={() => removeMeal(currentDate, activeSegment, item.id)}
+                          onClick={() => removeMeal(currentDate, activeSegment, item.id!)}
                           style={{
                             background: 'none',
                             border: 'none',

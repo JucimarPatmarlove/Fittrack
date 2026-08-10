@@ -133,7 +133,7 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
           if (eq === 'Máquinas' && ex.equipment === 'Máquinas') return true;
           if (eq === 'Cabos' && ex.equipment === 'Máquina de Cabos') return true;
           if (eq === 'Peso Corporal' && ex.equipment === 'PesoCorporal') return true;
-          if (eq === 'Outros' && ['Kettlebell', 'Bola medicinal', 'Outros'].includes(ex.equipment))
+          if (eq === 'Outros' && ['Kettlebell', 'Bola medicinal', 'Outros'].includes(ex.equipment || ''))
             return true;
           return false;
         });
@@ -160,22 +160,8 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
 
   const toggleSelection = (item: string, list: string[], setList: any) => {
     if (isDbLoading || Object.keys(EXERCISE_DB).length === 0) {
-      return (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: theme.bg,
-            color: theme.text,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          A carregar base de dados biomecânica...
-        </div>
-      );
+      alert('A carregar base de dados biomecânica...');
+      return;
     }
     if (injuryData?.restrictedExercises?.includes(item.toLowerCase()) && !list.includes(item)) {
       alert(
@@ -192,6 +178,7 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
     const available = fullPool.filter((ex) => !currentNames.has(ex.name));
     if (available.length > 0) {
       const randomEx = available[Math.floor(Math.random() * available.length)];
+      if (!randomEx) return;
       const newList = [...exercisesList];
       newList[index] = randomEx.name;
       setExercisesList(newList);
@@ -212,15 +199,17 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
       const shuffledAvailable = [...available].sort(() => 0.5 - Math.random());
 
       for (let i = 0; i < neededCount; i++) {
-        if (shuffledAvailable[i]) {
-          newItems.push(shuffledAvailable[i].name);
+        const item = shuffledAvailable[i];
+        if (item) {
+          newItems.push(item.name);
         } else {
           // Fallback to random non-duplicate exercise from full DB
           const allDb = Object.keys(EXERCISE_DB).filter(
             (name) => !currentNames.has(name) && !newItems.includes(name),
           );
           if (allDb.length > 0) {
-            newItems.push(allDb[Math.floor(Math.random() * allDb.length)]);
+            const randomDb = allDb[Math.floor(Math.random() * allDb.length)];
+            if (randomDb) newItems.push(randomDb);
           }
         }
       }
@@ -453,8 +442,8 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
                 selectorExercises.map((ex) => {
                   const isAlreadySelected = exercisesList.includes(ex.name);
                   const isCurrent = exercisesList[selectingExerciseIndex] === ex.name;
-                  const muscleEmoji = MUSCLE_EMOJIS[ex.muscle] || '🏋️';
-                  const equipEmoji = EQUIPMENT_EMOJIS[ex.equipment] || '📦';
+                  const muscleEmoji = (ex.muscle ? MUSCLE_EMOJIS[ex.muscle] : null) || '🏋️';
+                  const equipEmoji = (ex.equipment ? EQUIPMENT_EMOJIS[ex.equipment] : null) || '📦';
 
                   return (
                     <button
@@ -971,8 +960,8 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
                       >
                         {exercisesList.map((name, idx) => {
                           const detail = EXERCISE_DB[name];
-                          const muscleEmoji = MUSCLE_EMOJIS[detail?.muscle] || '🏋️';
-                          const equipEmoji = EQUIPMENT_EMOJIS[detail?.equipment] || '📦';
+                          const muscleEmoji = (detail?.muscle ? MUSCLE_EMOJIS[detail.muscle] : null) || '🏋️';
+                          const equipEmoji = (detail?.equipment ? EQUIPMENT_EMOJIS[detail.equipment] : null) || '📦';
 
                           return (
                             <div

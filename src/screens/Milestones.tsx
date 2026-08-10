@@ -26,7 +26,7 @@ const BADGES = [
     id: 'first_pr',
     label: 'Primeiro PR',
     icon: '💪',
-    check: (h: any[], prs: any) => Object.keys(prs).length > 0,
+    check: (_h: any[], prs: any) => Object.keys(prs).length > 0,
   },
   {
     id: '1000kg_volume',
@@ -49,7 +49,6 @@ export default function Milestones({ history }: any) {
   }, [history, prs, milestones, unlockMilestone]);
 
   const currentStreak = calculateStreak(history);
-  const totalVolumeAllTime = history.reduce((acc: number, w: any) => acc + (w.totalVolume || 0), 0);
 
   return (
     <div style={{ padding: '18px', maxWidth: 480, margin: '0 auto', paddingBottom: 90 }}>
@@ -100,7 +99,7 @@ export default function Milestones({ history }: any) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {BADGES.map((badge, i) => {
           const unlocked = !!milestones[badge.id];
-          const unlockDate = unlocked ? new Date(milestones[badge.id]).toLocaleDateString() : '???';
+          const unlockDate = unlocked ? new Date(milestones[badge.id] as number).toLocaleDateString() : '???';
 
           return (
             <motion.div
