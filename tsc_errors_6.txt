@@ -1,0 +1,18 @@
+src/screens/ActiveWorkout.tsx(759,37): error TS6133: 'ei' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(879,7): error TS2322: Type '({ reps: number; weight: number; rpe: number; done: boolean; } | { done: boolean; weight: number; reps: number; isWarmup: boolean; })[]' is not assignable to type '{ reps: number; weight: number; rpe: number; done: boolean; }[]'.
+  Type '{ reps: number; weight: number; rpe: number; done: boolean; } | { done: boolean; weight: number; reps: number; isWarmup: boolean; }' is not assignable to type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+    Property 'rpe' is missing in type '{ done: boolean; weight: number; reps: number; isWarmup: boolean; }' but required in type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(909,52): error TS2345: Argument of type '{ done: false; reps?: number | undefined; weight?: number | undefined; rpe?: number | undefined; }' is not assignable to parameter of type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+  Types of property 'reps' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/screens/ActiveWorkout.tsx(941,15): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(947,25): error TS2339: Property 'duration' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(948,25): error TS2339: Property 'distance' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(949,28): error TS2339: Property 'addedWeight' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(950,21): error TS2339: Property 'type' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1080,30): error TS2339: Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; } | { ...; }'.
+  Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; }'.
+src/screens/ActiveWorkout.tsx(1352,37): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(1353,38): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(1362,28): error TS2304: Cannot find name 'setGhostPRs'.

@@ -1,5 +1,4 @@
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-// @ts-nocheck
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { getExerciseMedia } from '../../data/exerciseMedia';

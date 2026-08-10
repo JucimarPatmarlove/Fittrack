@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-// @ts-nocheck
+
 import { useState } from 'react';
 import { C } from '../../data/constants';
 import { AnthropicService } from '../../services/anthropicService';
@@ -39,7 +39,7 @@ export function WeeklyPlanGenerator({
   const [preferredSlot, setPreferredSlot] = useState<'morning' | 'afternoon'>('morning');
   const [customDays, setCustomDays] = useState<string[]>(
     Object.entries(profile.dayPreferences || {})
-      .filter(([_day, val]) => {
+      .filter(([, val]) => {
         return (
           val &&
           ![
@@ -54,7 +54,7 @@ export function WeeklyPlanGenerator({
           ].includes(val as string)
         );
       })
-      .map(([day]) => day),
+      .map(([day]) => day as string),
   );
 
   const { setCurrentPlan } = usePlanStore();

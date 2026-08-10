@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-// @ts-nocheck
 import { useEffect, useRef, useState } from 'react';
 import { C } from '../data/constants';
 import { useLS } from '../hooks';

@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { C } from '../../data/constants';
 import { type TrendAnalysis, analyzeMultipleExercises } from '../../services/trendAnalyzer';
@@ -107,7 +106,7 @@ export function TrendWidget({ history }: TrendWidgetProps) {
                 icon = '📈';
                 badgeText = `+${trend.suggestedWeightIncrement}kg`;
               } else if (trend.status === 'FATIGUED') {
-                statusColor = C.danger;
+                statusColor = C.red;
                 icon = '📉';
                 badgeText = `-${Math.abs(trend.suggestedWeightIncrement)}kg`;
               } else {

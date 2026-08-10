@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-// @ts-nocheck
 // src/components/social/QRSyncModal.tsx
 import type React from 'react';
 import { useEffect, useState } from 'react';

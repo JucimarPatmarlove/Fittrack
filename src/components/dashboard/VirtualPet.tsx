@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-// @ts-nocheck
 // src/components/dashboard/VirtualPet.tsx
 import { useState } from 'react';
 import { GlassCard } from '../ui/GlassCard';
@@ -19,7 +18,7 @@ const PET_STAGES: {
 ];
 
 function getPetStage(level: number) {
-  let stage = PET_STAGES[0] || { minLevel: 0, emoji: '🥚', name: 'Ovo Misterioso', bg: '#f59e0b' };
+  let stage = PET_STAGES.length > 0 && PET_STAGES[0] ? PET_STAGES[0] : { minLevel: 0, emoji: '🥚', name: 'Ovo Misterioso', bg: '#f59e0b' };
   for (const s of PET_STAGES) {
     if (level >= s.minLevel) stage = s;
   }
@@ -34,7 +33,7 @@ export function VirtualPet({ xp }: Props) {
   const level = Math.floor(xp / 100);
   const xpInLevel = xp % 100;
   const progressPct = xpInLevel;
-  const stage = getPetStage(level) || PET_STAGES[0];
+  const stage = getPetStage(level) || { minLevel: 0, emoji: '🥚', name: 'Ovo Misterioso', bg: '#f59e0b' };
   const [showDetail, setShowDetail] = useState(false);
   const nextStage = PET_STAGES.find((s) => s.minLevel > level);
 

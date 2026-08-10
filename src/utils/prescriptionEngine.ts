@@ -1,7 +1,6 @@
 import { getExerciseCategory } from '../data/exerciseClassifier';
 import type { WorkoutSession } from '../db/schema';
 import { MacrocycleEngine } from '../services/macrocycleEngine';
-// @ts-nocheck
 // src/utils/prescriptionEngine.ts
 import type { Goal, UserLevel } from '../types/exercise';
 import { calculateSuggestedWeight } from './loadCalculator';

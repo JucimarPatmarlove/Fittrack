@@ -31,9 +31,9 @@ export function ReadinessGauge({ acwr, label = 'ACWR (Prontidão)' }: ReadinessG
     statusText = 'SOBRECARGA';
     statusColor = C.red;
   } else if (acwr > 1.3) {
-    strokeColor = C.orange;
+    strokeColor = '#f59e0b';
     statusText = 'ALERTA / FADIGA';
-    statusColor = C.orange;
+    statusColor = '#f59e0b';
   } else if (acwr < 0.8) {
     strokeColor = '#00d4ff'; // Blue Neon for undertraining
     statusText = 'DESTREINAMENTO';
@@ -126,7 +126,7 @@ export function ReadinessGauge({ acwr, label = 'ACWR (Prontidão)' }: ReadinessG
           marginTop: 8,
           padding: '4px 12px',
           borderRadius: 12,
-          background: `rgba(${statusColor === C.red ? '239,68,68' : statusColor === C.green ? '56,176,0' : statusColor === C.orange ? '249,115,22' : '0,212,255'}, 0.15)`,
+          background: `rgba(${statusColor === C.red ? '239,68,68' : statusColor === C.green ? '56,176,0' : statusColor === '#f59e0b' ? '249,115,22' : '0,212,255'}, 0.15)`,
           border: `1px solid ${statusColor}`,
           color: statusColor,
           fontSize: 11,

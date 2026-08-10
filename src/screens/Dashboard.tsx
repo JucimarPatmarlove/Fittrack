@@ -8,7 +8,6 @@ import {
   TrendingUp,
   UtensilsCrossed,
 } from 'lucide-react';
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import {
   Bar,

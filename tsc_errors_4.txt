@@ -1,0 +1,60 @@
+src/App.tsx(134,11): error TS2322: Type '{ profile: UserProfile; setProfile: (val: UserProfile | ((prev: UserProfile) => UserProfile)) => void; onClose: () => void; onStartWorkout: (plan: any) => void; }' is not assignable to type 'IntrinsicAttributes & WeeklyPlanGeneratorProps'.
+  Property 'onStartWorkout' does not exist on type 'IntrinsicAttributes & WeeklyPlanGeneratorProps'.
+src/App.tsx(134,28): error TS7006: Parameter 'plan' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(341,42): error TS2345: Argument of type '(r: any) => boolean' is not assignable to parameter of type 'boolean'.
+src/screens/ActiveWorkout.tsx(341,43): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(478,41): error TS2345: Argument of type '(r: any) => boolean' is not assignable to parameter of type 'boolean'.
+src/screens/ActiveWorkout.tsx(478,42): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(701,9): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(703,9): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(707,37): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(708,24): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(753,29): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(753,43): error TS2538: Type 'undefined' cannot be used as an index type.
+src/screens/ActiveWorkout.tsx(754,22): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/screens/ActiveWorkout.tsx(760,72): error TS2554: Expected 4 arguments, but got 5.
+src/screens/ActiveWorkout.tsx(769,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(783,55): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(784,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(803,35): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(803,54): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(806,21): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(808,21): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(815,24): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(816,10): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(816,29): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(816,54): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(817,46): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(821,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(821,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(824,52): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(829,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(829,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(829,25): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(829,25): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(830,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(830,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(859,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(859,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(859,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+  No index signature with a parameter of type 'string' was found on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(870,41): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(872,31): error TS2488: Type '{ reps: number; weight: number; rpe: number; done: boolean; }[] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/screens/ActiveWorkout.tsx(878,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(879,51): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(883,15): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(889,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(890,51): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(906,30): error TS2345: Argument of type '{ reps: number; weight: number; rpe: number; done: boolean; }[] | undefined' is not assignable to parameter of type '{ reps: number; weight: number; rpe?: number | undefined; }[]'.
+  Type 'undefined' is not assignable to type '{ reps: number; weight: number; rpe?: number | undefined; }[]'.
+src/screens/ActiveWorkout.tsx(927,15): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(933,25): error TS2339: Property 'duration' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(934,25): error TS2339: Property 'distance' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(935,28): error TS2339: Property 'addedWeight' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(936,21): error TS2339: Property 'type' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1066,30): error TS2339: Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; } | { ...; }'.
+  Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; }'.
+src/screens/ActiveWorkout.tsx(1338,37): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(1339,38): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(1348,28): error TS2304: Cannot find name 'setGhostPRs'.

@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-// @ts-nocheck
 // src/screens/Trends.tsx
 import { useEffect, useState } from 'react';
 import {

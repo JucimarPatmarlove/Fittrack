@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Activity, AlertTriangle, Apple, Flame, Plus, Send, Sparkles, Trash2 } from 'lucide-react';
-// @ts-nocheck
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import type { MealItem } from '../db/schema';

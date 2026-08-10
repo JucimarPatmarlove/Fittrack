@@ -1,0 +1,128 @@
+src/components/exercises/VideoTutorial.tsx(130,50): error TS2554: Expected 1 arguments, but got 2.
+src/components/social/P2PSyncModal.tsx(84,9): error TS6133: 'handleJoinGuest' is declared but its value is never read.
+src/components/social/P2PSyncModal.tsx(286,19): error TS2322: Type '{ value: string; size: number; fgColor: string; bgColor: string; level: string; }' is not assignable to type 'IntrinsicAttributes & { value: string; }'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & { value: string; }'.
+src/components/social/P2PSyncModal.tsx(396,21): error TS2322: Type '{ onScan: (result: any) => void; components: { audio: boolean; finder: boolean; }; }' is not assignable to type 'IntrinsicAttributes & { onScan: (res: any) => void; }'.
+  Property 'components' does not exist on type 'IntrinsicAttributes & { onScan: (res: any) => void; }'.
+src/components/social/P2PSyncModal.tsx(422,21): error TS2322: Type '{ value: string; size: number; fgColor: string; bgColor: string; level: string; }' is not assignable to type 'IntrinsicAttributes & { value: string; }'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & { value: string; }'.
+src/components/social/QRSyncModal.tsx(118,13): error TS7030: Not all code paths return a value.
+src/components/workout/ExerciseLibrary.tsx(46,35): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+src/components/workout/FreeWorkoutBuilder.tsx(136,86): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/components/workout/FreeWorkoutBuilder.tsx(161,27): error TS7030: Not all code paths return a value.
+src/components/workout/FreeWorkoutBuilder.tsx(169,25): error TS2304: Cannot find name 'theme'.
+src/components/workout/FreeWorkoutBuilder.tsx(170,20): error TS2304: Cannot find name 'theme'.
+src/components/workout/FreeWorkoutBuilder.tsx(196,24): error TS18048: 'randomEx' is possibly 'undefined'.
+src/components/workout/FreeWorkoutBuilder.tsx(216,25): error TS2532: Object is possibly 'undefined'.
+src/components/workout/FreeWorkoutBuilder.tsx(223,27): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/components/workout/FreeWorkoutBuilder.tsx(456,53): error TS2538: Type 'undefined' cannot be used as an index type.
+src/components/workout/FreeWorkoutBuilder.tsx(457,55): error TS2538: Type 'undefined' cannot be used as an index type.
+src/components/workout/FreeWorkoutBuilder.tsx(974,61): error TS2538: Type 'undefined' cannot be used as an index type.
+src/components/workout/FreeWorkoutBuilder.tsx(975,63): error TS2538: Type 'undefined' cannot be used as an index type.
+src/components/workout/WeeklyPlanGenerator.tsx(29,10): error TS6133: 'workoutStyle' is declared but its value is never read.
+src/components/workout/WeeklyPlanGenerator.tsx(29,24): error TS6133: 'setWorkoutStyle' is declared but its value is never read.
+src/components/workout/WeeklyPlanGenerator.tsx(44,17): error TS6133: 'day' is declared but its value is never read.
+src/components/workout/WeeklyPlanGenerator.tsx(56,22): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string'.
+src/components/workout/WeeklyPlanGenerator.tsx(197,9): error TS6133: 'handleStartDay' is declared but its value is never read.
+src/data/utils.ts(13,25): error TS2339: Property 'duration' does not exist on type 'WorkoutSession'.
+src/data/utils.ts(28,24): error TS2339: Property 'exercises' does not exist on type 'WorkoutSession'.
+src/hooks/useMachine.ts(6,30): error TS6205: All type parameters are unused.
+src/jobs/weeklyReport.ts(1,18): error TS2307: Cannot find module 'node-cron' or its corresponding type declarations.
+src/main.tsx(77,40): error TS2339: Property 'message' does not exist on type '{}'.
+src/router/viewConfigs.tsx(65,7): error TS2322: Type '{ profile: UserProfile; meals: DailyMealLog[]; onUpdateProfile: (p: Partial<UserProfile>) => void; onAddMealItem: (type: "breakfast" | "lunch" | "snack" | "dinner", item: MealItem) => Promise<...>; onRemoveMealItem: (type: "breakfast" | ... 2 more ... | "dinner", id: string) => Promise<...>; currentDate: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'profile' does not exist on type 'IntrinsicAttributes'.
+src/router/viewConfigs.tsx(99,11): error TS2322: Type '{ profile: UserProfile; setProfile: (p: UserProfile) => void; history: WorkoutSession[]; onStartWorkout: (plan: string | WorkoutPlan) => void; }' is not assignable to type 'IntrinsicAttributes & { history?: any[] | undefined; onStartWorkout?: any; onNavigateToPlanner?: (() => void) | undefined; }'.
+  Property 'profile' does not exist on type 'IntrinsicAttributes & { history?: any[] | undefined; onStartWorkout?: any; onNavigateToPlanner?: (() => void) | undefined; }'.
+src/router/viewConfigs.tsx(144,10): error TS2304: Cannot find name 'PostWorkoutFeedback'.
+src/screens/AICoach.tsx(49,47): error TS2339: Property 'personalRecords' does not exist on type 'MilestonesState'.
+src/screens/ActiveWorkout.tsx(116,3): error TS6133: 'ei' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(342,42): error TS2345: Argument of type '(r: any) => boolean' is not assignable to parameter of type 'boolean'.
+src/screens/ActiveWorkout.tsx(342,43): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(479,41): error TS2345: Argument of type '(r: any) => boolean' is not assignable to parameter of type 'boolean'.
+src/screens/ActiveWorkout.tsx(479,42): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(519,10): error TS6133: 'InjuryRiskModal' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(570,23): error TS2339: Property 'flags' does not exist on type 'InjuryRiskReport'.
+src/screens/ActiveWorkout.tsx(570,46): error TS7006: Parameter 'flag' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(570,52): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(710,46): error TS6133: 'isDbLoading' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(750,10): error TS6133: 'ghostPRs' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(752,21): error TS6133: 'setIsCircuit' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(759,25): error TS6133: 'setAmrapDuration' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(772,9): error TS6133: 'autoSync' is declared but its value is never read.
+src/screens/ActiveWorkout.tsx(820,9): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(822,9): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(826,37): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(827,24): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(872,29): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(872,43): error TS2538: Type 'undefined' cannot be used as an index type.
+src/screens/ActiveWorkout.tsx(873,22): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/screens/ActiveWorkout.tsx(888,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(902,55): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(903,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(922,35): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(922,54): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(925,21): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(927,21): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(934,24): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(935,10): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(935,29): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(935,54): error TS18048: 'currentSet' is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(936,46): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(940,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(940,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(943,52): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(948,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(948,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(948,25): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(948,25): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(949,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(949,12): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(978,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(978,7): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(978,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+  No index signature with a parameter of type 'string' was found on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(989,41): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(991,31): error TS2488: Type '{ reps: number; weight: number; rpe: number; done: boolean; }[] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/screens/ActiveWorkout.tsx(997,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(998,51): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(1002,15): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(1008,42): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(1009,51): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(1025,30): error TS2345: Argument of type '{ reps: number; weight: number; rpe: number; done: boolean; }[] | undefined' is not assignable to parameter of type '{ reps: number; weight: number; rpe?: number | undefined; }[]'.
+  Type 'undefined' is not assignable to type '{ reps: number; weight: number; rpe?: number | undefined; }[]'.
+src/screens/ActiveWorkout.tsx(1046,15): error TS2532: Object is possibly 'undefined'.
+src/screens/ActiveWorkout.tsx(1052,25): error TS2339: Property 'duration' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1053,25): error TS2339: Property 'distance' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1054,28): error TS2339: Property 'addedWeight' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1055,21): error TS2339: Property 'type' does not exist on type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+src/screens/ActiveWorkout.tsx(1185,30): error TS2339: Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; } | { ...; }'.
+  Property 'type' does not exist on type '{ name: string; muscle: string; equipment: string; base?: Record<string, number[]> | undefined; modalities?: string[] | undefined; media?: any; instructions?: string[] | undefined; }'.
+src/screens/ActiveWorkout.tsx(1457,37): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/ActiveWorkout.tsx(1458,38): error TS7006: Parameter 'ei' implicitly has an 'any' type.
+src/screens/CompeteScreen.tsx(340,11): error TS6133: 'isLost' is declared but its value is never read.
+src/screens/CycleReview.tsx(13,22): error TS2339: Property 'clearSuggestions' does not exist on type 'ProgressionStore'.
+src/screens/Dashboard.tsx(170,21): error TS18048: 'dateString' is possibly 'undefined'.
+src/screens/Dashboard.tsx(403,9): error TS2322: Type 'UnifiedHealthMetrics | null' is not assignable to type 'HealthKitData | null'.
+  Property 'isMock' is missing in type 'UnifiedHealthMetrics' but required in type 'HealthKitData'.
+src/screens/Milestones.tsx(29,13): error TS6133: 'h' is declared but its value is never read.
+src/screens/Milestones.tsx(52,9): error TS6133: 'totalVolumeAllTime' is declared but its value is never read.
+src/screens/Milestones.tsx(103,50): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'number | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'number | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/screens/NutritionPlanner.tsx(40,11): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(41,10): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(42,8): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(43,8): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(44,8): error TS2532: Object is possibly 'undefined'.
+src/screens/NutritionPlanner.tsx(105,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/screens/NutritionPlanner.tsx(563,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.

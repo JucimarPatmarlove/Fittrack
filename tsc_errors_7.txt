@@ -1,0 +1,4 @@
+src/screens/ActiveWorkout.tsx(909,52): error TS2345: Argument of type '{ done: false; reps?: number | undefined; weight?: number | undefined; rpe?: number | undefined; }' is not assignable to parameter of type '{ reps: number; weight: number; rpe: number; done: boolean; }'.
+  Types of property 'reps' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.

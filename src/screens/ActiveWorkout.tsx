@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-// @ts-nocheck
+
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';

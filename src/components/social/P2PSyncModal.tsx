@@ -1,5 +1,4 @@
 import { Share2 } from 'lucide-react';
-// @ts-nocheck
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { saveWorkoutSession } from '../../db/encryptedDb';

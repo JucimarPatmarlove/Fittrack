@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion';
-// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { C } from '../../data/constants';
 import { DemographicEngine } from '../../services/demographicEngine';
@@ -133,7 +132,7 @@ export function FreeWorkoutBuilder({ profile, onClose, onStart }: FreeWorkoutBui
           if (eq === 'Máquinas' && ex.equipment === 'Máquinas') return true;
           if (eq === 'Cabos' && ex.equipment === 'Máquina de Cabos') return true;
           if (eq === 'Peso Corporal' && ex.equipment === 'PesoCorporal') return true;
-          if (eq === 'Outros' && ['Kettlebell', 'Bola medicinal', 'Outros'].includes(ex.equipment || ''))
+          if (eq === 'Outros' && (['Kettlebell', 'Bola medicinal', 'Outros'] as string[]).includes(ex.equipment || ''))
             return true;
           return false;
         });
