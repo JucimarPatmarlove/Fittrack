@@ -113,7 +113,6 @@ function initSets(
 /** Save PR and set log to database */
 async function savePRAndSetLog(
   exName: string,
-  ei: number,
   si: number,
   currentSet: any,
   workoutId: string,
@@ -339,7 +338,7 @@ function AmrapHUD({
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button
-          onClick={() => setAmrapRunning((r) => !r)}
+          onClick={() => setAmrapRunning(!amrapRunning)}
           disabled={amrapTimeLeft <= 0}
           style={{
             flex: 2,
@@ -476,7 +475,7 @@ function EmomHUD({
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button
-          onClick={() => setEmomRunning((r) => !r)}
+          onClick={() => setEmomRunning(!emomRunning)}
           style={{
             flex: 2,
             background: emomRunning ? 'rgba(239,68,68,0.2)' : 'rgba(56,189,248,0.2)',
@@ -516,125 +515,7 @@ function EmomHUD({
   );
 }
 
-function InjuryRiskModal({
-  injuryRisk,
-  onDismiss,
-  onCancel,
-}: {
-  injuryRisk: InjuryRiskReport;
-  onDismiss: () => void;
-  onCancel: () => void;
-}) {
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.85)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999,
-        padding: 24,
-      }}
-    >
-      <div
-        style={{
-          background: '#1a1f26',
-          border: `2px solid ${injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316'}`,
-          borderRadius: 16,
-          padding: 30,
-          maxWidth: 400,
-          width: '100%',
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <span style={{ fontSize: 40 }}>{injuryRisk.overallRisk === 'critical' ? '🛑' : '⚠️'}</span>
-          <h2
-            style={{
-              fontFamily: "'Bebas Neue'",
-              fontSize: 28,
-              color: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316',
-              margin: '10px 0 5px',
-            }}
-          >
-            RISCO DE LESÃO DETETADO
-          </h2>
-          <p style={{ color: '#94a3b8', fontSize: 14 }}>
-            O sistema de segurança clínica identificou anomalias no teu padrão de treino.
-          </p>
-        </div>
-        <div
-          style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 8, padding: 16, marginBottom: 20 }}
-        >
-          {injuryRisk.flags.slice(0, 2).map((flag, i) => (
-            <div key={i} style={{ marginBottom: i === 0 ? 12 : 0, display: 'flex', gap: 10 }}>
-              <span style={{ color: flag.severity === 'critical' ? '#ef4444' : '#f97316' }}>•</span>
-              <span style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 1.4 }}>
-                {flag.message}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginBottom: 24 }}>
-          <p style={{ color: '#86efac', fontSize: 12, fontWeight: 'bold', marginBottom: 8 }}>
-            RECOMENDAÇÃO CLÍNICA:
-          </p>
-          {injuryRisk.recommendations.map((rec, i) => (
-            <p
-              key={i}
-              style={{
-                color: '#cbd5e1',
-                fontSize: 13,
-                margin: '0 0 4px',
-                paddingLeft: 10,
-                borderLeft: '2px solid #86efac',
-              }}
-            >
-              {rec}
-            </p>
-          ))}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {injuryRisk.overallRisk !== 'critical' && (
-            <button
-              onClick={onDismiss}
-              style={{
-                background: 'transparent',
-                border: '1px solid #475569',
-                borderRadius: 12,
-                padding: 20,
-                color: '#94a3b8',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: 16,
-              }}
-            >
-              Estou ciente, assumir risco e treinar
-            </button>
-          )}
-          <button
-            onClick={onCancel}
-            style={{
-              background: injuryRisk.overallRisk === 'critical' ? '#ef4444' : '#f97316',
-              border: 'none',
-              borderRadius: 12,
-              padding: 20,
-              color: '#fff',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: 18,
-            }}
-          >
-            {injuryRisk.overallRisk === 'critical'
-              ? 'Aceitar Recomendação e Descansar'
-              : 'Cancelar Treino'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 function AutoregulationBanner({
   message,
@@ -707,7 +588,7 @@ export default function ActiveWorkout({
   onFinish,
   onCancel,
 }: ActiveWorkoutProps) {
-  const { exercises: EXERCISE_DB, isLoading: isDbLoading, fetchExercises } = useExerciseStore();
+  const { exercises: EXERCISE_DB, fetchExercises } = useExerciseStore();
   useEffect(() => {
     fetchExercises();
   }, [fetchExercises]);
@@ -747,16 +628,16 @@ export default function ActiveWorkout({
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
   const [currentSetIdx, setCurrentSetIdx] = useState(0);
   const [setStartTimes, setSetStartTimes] = useState<Record<string, number>>({});
-  const [ghostPRs, setGhostPRs] = useState<Record<string, boolean>>({});
+  const [_ghostPRs, setGhostPRs] = useState<Record<string, boolean>>({});
   const [rivalState] = useState(() => RivalAI.findRival(history, todayPlan.label));
-  const [isCircuit, setIsCircuit] = useState(todayPlan.type === 'circuit');
+  const [isCircuit] = useState(todayPlan.type === 'circuit');
   const [currentRound, setCurrentRound] = useState(1);
   const [roundRestRemaining, setRoundRestRemaining] = useState<number | null>(null);
   const [roundExercisesCompleted, setRoundExercisesCompleted] = useState<string[]>([]);
 
   // Modos de treino
   const [workoutMode, setWorkoutMode] = useState<WorkoutMode>('classic');
-  const [amrapDuration, setAmrapDuration] = useState(15 * 60);
+  const [amrapDuration] = useState(15 * 60);
   const [amrapTimeLeft, setAmrapTimeLeft] = useState(15 * 60);
   const [amrapRunning, setAmrapRunning] = useState(false);
   const [roundsCompleted, setRoundsCompleted] = useState(0);
@@ -769,7 +650,7 @@ export default function ActiveWorkout({
   const hrm = useBluetoothHRM();
   const { bpm, status: btStatus, connect: btConnect } = hrm;
   const ftms = useFitnessMachine();
-  const { autoSync } = useDeviceStore();
+  const { autoSync: _autoSync } = useDeviceStore();
   const { triggerRepCompletionHaptic } = useProgressiveHaptics();
   const { active: ghostActive, registerAttempt, currentGhost } = useGhostStore();
   const { getRecommendedReps, recordSession, recordSuccess, recordFailure } = useProgressionStore();
@@ -814,7 +695,7 @@ export default function ActiveWorkout({
 
     mods.forEach((mod) => {
       const idx = newExs.findIndex((e) => e.name === mod.exerciseName);
-      if (idx === -1) return;
+      if (idx === -1 || !newExs[idx] || !newSets[idx]) return;
 
       if (mod.originalType === 'swap' && mod.alternativeExercise) {
         newExs[idx].name = mod.alternativeExercise;
@@ -866,17 +747,17 @@ export default function ActiveWorkout({
   // Handlers
   const handleRepDetected = () => {
     if (!profile.proMode && navigator.vibrate) navigator.vibrate(20);
-    if (openIdx !== -1) {
-      const activeSetIdx = sets[openIdx]?.findIndex((s: any) => !s.done);
-      if (activeSetIdx !== -1) {
+    if (openIdx !== -1 && sets[openIdx]) {
+      const activeSetIdx = sets[openIdx].findIndex((s: any) => !s.done);
+      if (activeSetIdx !== -1 && sets[openIdx][activeSetIdx]) {
         const currentReps = sets[openIdx][activeSetIdx].reps;
         upd(openIdx, activeSetIdx, 'reps', String(currentReps + 1));
       }
     }
   };
 
-  const handlePRAndSaveLog = async (ei: number, si: number, currentSet: any, exName: string) => {
-    const prResult = await savePRAndSetLog(exName, ei, si, currentSet, workoutIdRef.current);
+  const handlePRAndSaveLog = async (_ei: number, si: number, currentSet: any, exName: string) => {
+    const prResult = await savePRAndSetLog(exName, si, currentSet, workoutIdRef.current);
     if (prResult) setNewPRData(prResult);
     updateTrendMessage(exName, setAutoregulationMessage);
   };
@@ -885,7 +766,7 @@ export default function ActiveWorkout({
     if (!ghostActive || profile.proMode) return false;
     const isGhostSuccess = currentSet.reps >= (currentGhost?.bestReps || 0);
     const xpGain = registerAttempt(
-      localExs[ei].name,
+      localExs[ei]?.name || '',
       currentSet.weight,
       currentSet.reps,
       isGhostSuccess,
@@ -899,8 +780,10 @@ export default function ActiveWorkout({
 
   const handleCircuitCompletion = (ei: number) => {
     if (!isCircuit) return;
-    const newCompleted = [...roundExercisesCompleted, localExs[ei].name];
-    if (roundExercisesCompleted.includes(localExs[ei].name)) return;
+    const exName = localExs[ei]?.name;
+    if (!exName) return;
+    const newCompleted = [...roundExercisesCompleted, exName];
+    if (roundExercisesCompleted.includes(exName)) return;
     setRoundExercisesCompleted(newCompleted);
     if (newCompleted.length === localExs.length && currentRound < (todayPlan.rounds || 1)) {
       setRoundRestRemaining(todayPlan.restBetweenRounds || 60);
@@ -919,24 +802,27 @@ export default function ActiveWorkout({
   };
 
   const handleProgressionEvaluation = (ei: number, currentSet: any) => {
-    const tr = getRecommendedReps(localExs[ei].name, localExs[ei].base?.hipertrofia?.[2] || 10);
-    const rpeVal = currentSet.rpe ? Number(currentSet.rpe) : 8;
-    if (currentSet.reps < tr * 0.8 || rpeVal >= 9.5) {
-      recordFailure(localExs[ei].name);
+    const tr = getRecommendedReps(localExs[ei]?.name || '', localExs[ei]?.base?.hipertrofia?.[2] || 10);
+    const rpeVal = currentSet?.rpe ? Number(currentSet.rpe) : 8;
+    if ((currentSet?.reps || 0) < tr * 0.8 || rpeVal >= 9.5) {
+      recordFailure(localExs[ei]?.name || '');
     } else {
-      recordSuccess(localExs[ei].name, currentSet.reps, tr, rpeVal);
+      recordSuccess(localExs[ei]?.name || '', currentSet?.reps || 0, tr, rpeVal);
     }
     speak(`Série completada com ${currentSet.weight} quilos. Descansa.`);
   };
 
   // Toggle simplificado (extraído lógica para funções auxiliares)
   const toggle = (ei: number, si: number) => {
-    const currentSet = sets[ei][si];
+    const currentSet = sets[ei]?.[si];
+    if (!currentSet) return;
+    
     if (!currentSet.done && currentSet.weight > 0 && currentSet.reps > 0) {
-      handlePRAndSaveLog(ei, si, currentSet, localExs[ei].name);
+      handlePRAndSaveLog(ei, si, currentSet, localExs[ei]?.name || '');
     }
     setSets((prev) => {
       const n = cloneSets(prev);
+      if (!n[ei] || !n[ei][si]) return n;
       if (!n[ei][si].done) {
         if (!profile.proMode) beep(880, 0.07);
         setShowTimer(true);
@@ -975,7 +861,8 @@ export default function ActiveWorkout({
     }
     setSets((prev) => {
       const n = cloneSets(prev);
-      n[ei][si][f] = valNum;
+      if (!n[ei] || !n[ei][si]) return n;
+      (n[ei][si] as any)[f] = valNum;
       if (f === 'reps' && !setStartTimes[`${ei}-${si}`]) {
         setSetStartTimes((p) => ({ ...p, [`${ei}-${si}`]: Date.now() - 5000 }));
       }
@@ -986,32 +873,48 @@ export default function ActiveWorkout({
   const addWarmups = (ei: number) => {
     setSets((prev) => {
       const n = cloneSets(prev);
+      if (!n[ei]) return n;
       const workingWeight = Math.max(...n[ei].map((s) => s.weight)) || 20;
-      const warmups = getWarmupSets(workingWeight).map((w) => ({ ...w, done: false }));
+      const warmups = getWarmupSets(workingWeight).map((w) => ({ ...w, rpe: 8, done: false }));
       n[ei] = [...warmups, ...n[ei]];
       return n;
     });
   };
 
   const applyPreset = (ei: number, mode: 'strength' | 'endurance') => {
-    const pr = findHistoricalPR(history, localExs[ei].name);
-    const prescription = getPrescription(profile, localExs[ei].name, pr, todayPlan.phase);
+    const exName = localExs[ei]?.name;
+    if (!exName) return;
+    const pr = findHistoricalPR(history, exName);
+    const prescription = getPrescription(profile, exName, pr, todayPlan.phase);
     const preset = prescription.presets[mode];
     setSets((prev) => {
       const n = cloneSets(prev);
-      n[ei] = n[ei].map((s) => ({ ...s, weight: preset.weight, reps: preset.reps }));
+      if (n[ei]) {
+        n[ei] = n[ei].map((s) => ({ ...s, weight: preset.weight, reps: preset.reps }));
+      }
       return n;
     });
   };
 
   const applyVolumePreset = (ei: number) => {
-    const pr = findHistoricalPR(history, localExs[ei].name);
-    const prescription = getPrescription(profile, localExs[ei].name, pr, todayPlan.phase);
+    const exName = localExs[ei]?.name;
+    if (!exName) return;
+    const pr = findHistoricalPR(history, exName);
+    const prescription = getPrescription(profile, exName, pr, todayPlan.phase);
     const delta = prescription.presets.volume.setsDelta || 1;
     setSets((prev) => {
       const n = cloneSets(prev);
+      if (!n[ei] || n[ei].length === 0) return n;
       const newSets = [...n[ei]];
-      for (let i = 0; i < delta; i++) newSets.push({ ...newSets[0], done: false });
+      for (let i = 0; i < delta; i++) {
+        newSets.push({
+          ...(newSets[0] as any),
+          reps: newSets[0]?.reps || 10,
+          weight: newSets[0]?.weight || 0,
+          rpe: newSets[0]?.rpe || 8,
+          done: false,
+        });
+      }
       n[ei] = newSets;
       return n;
     });
@@ -1022,7 +925,7 @@ export default function ActiveWorkout({
     setFinalVolume(totalVolume);
     localExs.forEach((ex, idx) => {
       const tr = getRecommendedReps(ex.name, ex.base?.hipertrofia?.[2] || 10);
-      recordSession(ex.name, sets[idx], tr);
+      recordSession(ex.name, sets[idx] || [], tr);
     });
     if (rivalState.found) {
       setShowRivalResult(true);
@@ -1042,8 +945,8 @@ export default function ActiveWorkout({
       .map((ex, ei) => ({
         name: ex.name,
         muscle: ex.muscle,
-        type: ex.type || 'weighted',
-        sets: sets[ei]
+        type: (ex as any).type || 'weighted',
+        sets: (sets[ei] as any[])
           .filter((s) => s.done)
           .map((s) => ({
             weight: s.weight,
@@ -1052,7 +955,7 @@ export default function ActiveWorkout({
             duration: s.duration,
             distance: s.distance,
             addedWeight: s.addedWeight,
-            type: s.type || ex.type || 'weighted',
+            type: s.type || (ex as any).type || 'weighted',
           })),
       }))
       .filter((e) => e.sets.length > 0);
@@ -1182,7 +1085,7 @@ export default function ActiveWorkout({
                     weight: startW,
                     rpe: prescription.rpeTarget,
                     done: false,
-                    type: ex.type || 'weighted',
+                    type: (ex as any).type || 'weighted',
                     duration: 0,
                     distance: 0,
                     addedWeight: 0,
@@ -1454,8 +1357,8 @@ export default function ActiveWorkout({
               ME={ME}
               speak={speak}
               getPrescription={getPrescription}
-              applyStrengthPreset={(ei) => applyPreset(ei, 'strength')}
-              applyEndurancePreset={(ei) => applyPreset(ei, 'endurance')}
+              applyStrengthPreset={(ei: number) => applyPreset(ei, 'strength')}
+              applyEndurancePreset={(ei: number) => applyPreset(ei, 'endurance')}
               applyVolumePreset={applyVolumePreset}
               addWarmups={addWarmups}
               upd={upd}
