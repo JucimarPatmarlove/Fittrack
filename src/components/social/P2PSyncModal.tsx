@@ -377,7 +377,7 @@ export const P2PSyncModal: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                                 await engineRef.current.acceptOfferAndCreateAnswer(val);
                               setToken(answer);
                               setStatus('Handshake gerado. Envia o token de volta ao Host.');
-                            } catch (e) {
+                            } catch (_e) {
                               setStatus('Erro ao processar código QR.');
                             }
                           }

@@ -126,7 +126,7 @@ export const useHealthStore = create<HealthState>((set, get) => ({
     try {
       // O syncHealthData legado já não recebe biometrics assim, pois HealthBridge mudou para UnifiedHealthMetrics.
       // Vamos ignorar a parte do freshBiometrics para o Readiness por agora e usar o HealthBridge.autoSync
-      const freshSync = await HealthBridge.autoSync();
+      const _freshSync = await HealthBridge.autoSync();
       const result = await getEnhancedReadinessScore(history);
       // biometrics é legado, vamos mantê-lo como null
       const freshBiometrics = null;

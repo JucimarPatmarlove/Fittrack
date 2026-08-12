@@ -157,7 +157,7 @@ const NutritionPlanner: React.FC = () => {
         ...prev,
         { id: Date.now().toString(), sender: 'ai', text: data.text || 'Erro na matriz neural.' },
       ]);
-    } catch (err) {
+    } catch (_err) {
       setAiChat((prev) => [
         ...prev,
         {

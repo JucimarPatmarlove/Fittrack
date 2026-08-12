@@ -299,7 +299,7 @@ export async function getAllWeightLogsDecrypted(): Promise<WeightLog[]> {
       try {
         const sensitive = await decryptJSON<{ weight: number }>(log.encryptedFields, key);
         decrypted.push({ ...log, weight: sensitive.weight });
-      } catch (e) {
+      } catch (_e) {
         decrypted.push(log);
       }
     } else {

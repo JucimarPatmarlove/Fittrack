@@ -28,7 +28,7 @@ const PoseRig = ({
           rightArmRef.current.position.y = 4.8 - landmarks[12].y * 2;
           rightArmRef.current.position.x = 1.2 - landmarks[12].x * 2;
         }
-      } catch (e) {}
+      } catch (_e) { /* Silently handle missing landmark data */ }
     }
   });
 

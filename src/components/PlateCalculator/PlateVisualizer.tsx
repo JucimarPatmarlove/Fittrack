@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { motion } from 'framer-motion';
+import type React from 'react';
 import type { PlateResult } from '../../utils/plateCalculator';
 
 interface Props {
@@ -10,15 +10,14 @@ interface Props {
 const BAR_WIDTH = 200;
 const BAR_HEIGHT = 12;
 const DISC_WIDTH = 20;
-const DISC_MAX_RADIUS = 22;
 
-export function PlateVisualizer({ plates, barWeight }: Props) {
+export function PlateVisualizer({ plates, barWeight: _barWeight }: Props) {
   // Ordena do maior para o menor (aparência real)
   const sorted = [...plates].sort((a, b) => b.disc - a.disc);
 
   // Calcula posições X acumuladas (da ponta para o centro)
   let currentX = BAR_WIDTH / 2;
-  const discElements: JSX.Element[] = [];
+  const discElements: React.JSX.Element[] = [];
 
   for (const plate of sorted) {
     for (let i = 0; i < plate.quantityPerSide; i++) {

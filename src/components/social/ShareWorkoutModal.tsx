@@ -27,7 +27,7 @@ export function ShareWorkoutModal({
         // Base64 encoding simples
         const b64 = btoa(encodeURIComponent(str));
         setSyncCode(b64);
-      } catch (e) {
+      } catch (_e) {
         setStatus('Erro ao empacotar treino.');
       }
     }
@@ -38,7 +38,7 @@ export function ShareWorkoutModal({
       await navigator.clipboard.writeText(syncCode);
       setStatus('✓ Código copiado para a Área de Transferência!');
       setTimeout(() => setStatus(null), 3000);
-    } catch (e) {
+    } catch (_e) {
       setStatus('Erro ao copiar.');
     }
   };
@@ -50,7 +50,7 @@ export function ShareWorkoutModal({
           title: 'Treino FitTrack V7',
           text: `Copia este token para o teu FitTrack: ${syncCode}`,
         });
-      } catch (e) {
+      } catch (_e) {
         // user cancelled or failed
       }
     } else {
@@ -76,7 +76,7 @@ export function ShareWorkoutModal({
         setStatus(null);
         onClose();
       }, 1500);
-    } catch (e) {
+    } catch (_e) {
       setStatus('❌ Token inválido ou corrompido.');
     }
   };

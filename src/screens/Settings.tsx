@@ -52,7 +52,7 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
         }
         alert('Restauro completo! A aplicação vai reiniciar.');
         window.location.reload();
-      } catch (err) {
+      } catch (_err) {
         alert('Erro ao importar o backup. Ficheiro inválido.');
       }
     };

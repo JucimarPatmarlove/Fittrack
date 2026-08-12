@@ -18,7 +18,7 @@ export interface ReadinessSnapshot {
   };
 }
 
-export async function calculateReadinessScore(userId?: string): Promise<ReadinessSnapshot> {
+export async function calculateReadinessScore(_userId?: string): Promise<ReadinessSnapshot> {
   const { getRecoveryMetricsByDateRange } = await import('../db/schema');
   const now = Date.now();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
@@ -157,8 +157,8 @@ function getStatusFromScore(score: number): ReadinessSnapshot['status'] {
 
 function getTrainingAdjustment(
   score: number,
-  fatigue: number,
-  soreness: number,
+  _fatigue: number,
+  _soreness: number,
 ): ReadinessSnapshot['trainingAdjustment'] {
   if (score >= 85) {
     return {
@@ -203,7 +203,7 @@ function getTrainingAdjustment(
 function generateRecommendation(
   score: number,
   status: ReadinessSnapshot['status'],
-  adjustment: ReadinessSnapshot['trainingAdjustment'],
+  _adjustment: ReadinessSnapshot['trainingAdjustment'],
 ): string {
   const messages: Record<ReadinessSnapshot['status'], string[]> = {
     excellent: [

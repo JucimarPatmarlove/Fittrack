@@ -156,14 +156,14 @@ export function useBluetoothHRM() {
     if (characteristicRef.current) {
       try {
         await characteristicRef.current.stopNotifications();
-      } catch {}
+      } catch { /* Non-critical notification cleanup */ }
       characteristicRef.current = null;
     }
 
     if (state.context.device?.gatt?.connected) {
       try {
         state.context.device.gatt.disconnect();
-      } catch {}
+      } catch { /* Non-critical disconnect cleanup */ }
     }
 
     send({ type: 'DISCONNECT' });
@@ -195,7 +195,7 @@ export function useBluetoothHRM() {
       if (state.context.device?.gatt?.connected) {
         try {
           state.context.device.gatt.disconnect();
-        } catch {}
+        } catch { /* Non-critical unmount cleanup */ }
       }
     };
   }, [state.context.device]);

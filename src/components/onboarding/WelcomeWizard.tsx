@@ -59,7 +59,7 @@ export const WelcomeWizard: React.FC<WelcomeWizardProps> = ({
       sessionStorage.setItem('fittrack_session_unlocked', 'true');
 
       onComplete(key);
-    } catch (err) {
+    } catch (_err) {
       setError('Erro ao encriptar a base de dados. Tenta novamente.');
     } finally {
       setLoading(false);

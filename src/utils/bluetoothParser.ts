@@ -55,6 +55,6 @@ export function parseFTMSMeasurement(value: DataView): FitnessMachineData {
       data.calories = value.getUint16(offset, true);
       offset += 2;
     }
-  } catch (e) {}
+  } catch (_e) { /* Return partial data if FTMS parsing fails mid-stream */ }
   return data;
 }

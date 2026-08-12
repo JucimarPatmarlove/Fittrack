@@ -92,7 +92,7 @@ export const useGhostStore = create<GhostStore>()(
 
       registerAttempt: (exerciseId, weight, reps, success) => {
         const today = new Date().toISOString().split('T')[0];
-        const { dailyStats, xpInsuranceWeeklyReset, xpInsuranceUsed } = get();
+        const { dailyStats, xpInsuranceWeeklyReset, _xpInsuranceUsed } = get();
 
         // Check weekly reset for insurance (Monday)
         const d = new Date();

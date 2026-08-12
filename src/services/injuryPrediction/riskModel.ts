@@ -5,7 +5,7 @@ import type { WorkoutPlan } from '../../types';
 import type { InjuryRiskReport, StressReading, WorkoutModification } from '../../types/injury';
 import { EXERCISE_REGION_MAP } from './exerciseRegionMap';
 
-interface RiskFactor {
+interface _RiskFactor {
   name: string;
   weight: number;
   score: number; // 0-100
@@ -177,7 +177,7 @@ function generateWorkoutModifications(
   return modifications;
 }
 
-function suggestAlternative(exerciseName: string, affectedJoints: string[]): string {
+function suggestAlternative(exerciseName: string, _affectedJoints: string[]): string {
   // Lógica simples de substituição
   const alternatives: Record<string, string[]> = {
     'Barbell Bench Press': ['Dumbbell Bench Press', 'Push-Up'],

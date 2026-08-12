@@ -87,7 +87,7 @@ export async function getEnhancedReadinessScore(
 
       healthScore -= penalty;
     }
-  } catch (e) {
+  } catch (_e) {
     // Ignora erros silenciosamente
   }
 

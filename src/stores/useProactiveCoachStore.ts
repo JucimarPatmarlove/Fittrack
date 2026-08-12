@@ -77,7 +77,7 @@ export const useProactiveCoachStore = create<ProactiveCoachState>()(
         }));
       },
 
-      markAsRead: (messageId) => {
+      markAsRead: (_messageId) => {
         set((state) => ({
           unreadCount: Math.max(0, state.unreadCount - 1),
         }));

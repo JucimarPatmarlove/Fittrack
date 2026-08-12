@@ -35,7 +35,7 @@ export function WatchSyncIndicator() {
         clearInterval(interval);
         worker.terminate();
       };
-    } catch (e) {}
+    } catch (_e) { /* Worker init failed — non-critical, widget hidden */ }
   }, []);
 
   if (pairedDevices.length === 0) return null;

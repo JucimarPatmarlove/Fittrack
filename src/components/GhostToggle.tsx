@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Ghost } from 'lucide-react';
-// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { useGhostStore } from '../stores/useGhostStore';
 

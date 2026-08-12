@@ -84,7 +84,7 @@ export async function decryptData(key: CryptoKey, base64Data: string): Promise<s
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
     const dec = new TextDecoder();
     return dec.decode(decrypted);
-  } catch (e) {
+  } catch (_e) {
     throw new Error('Invalid PIN or corrupted data');
   }
 }

@@ -34,7 +34,7 @@ export function useLS<T>(
         if (mk) {
           try {
             jsonStr = await decryptData(mk, rawStr);
-          } catch (e) {
+          } catch (_e) {
             // Poderá não estar encriptado (legacy), ou corrompido
             if (!rawStr.startsWith('{') && !rawStr.startsWith('[')) {
               console.warn(`Dados corrompidos ou chave inválida para ${key}`);
@@ -158,7 +158,7 @@ export function useBeep() {
       g.gain.value = v;
       o.start();
       o.stop(ctx.current.currentTime + d);
-    } catch {}
+    } catch { /* Non-critical beep failure */ }
   }, []);
 
   const done = useCallback(() => {

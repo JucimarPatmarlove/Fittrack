@@ -14,7 +14,7 @@ export const getCachedWorkout = async (contextHash: string) => {
       return cached.workout;
     }
     return null;
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 };

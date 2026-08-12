@@ -50,7 +50,7 @@ export async function exportEncryptedBackup(): Promise<Blob> {
             resolve();
           };
         };
-      } catch (err) {
+      } catch (_err) {
         resolve(); // Se a store não existir ainda
       }
     };
@@ -115,7 +115,7 @@ export async function importEncryptedBackup(encryptedBlob: Blob): Promise<void> 
           store.put(state, name);
         }
         tx.oncomplete = () => resolve();
-      } catch (err) {
+      } catch (_err) {
         resolve(); // Se a store não existir
       }
     };

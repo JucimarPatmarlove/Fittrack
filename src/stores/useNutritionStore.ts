@@ -68,7 +68,7 @@ const getProfileSafe = () => {
       targetFat: 68,
       ...p,
     };
-  } catch (e) {
+  } catch (_e) {
     return { weight: 75, targetCalories: 2300, targetProtein: 140, targetCarb: 270, targetFat: 68 };
   }
 };

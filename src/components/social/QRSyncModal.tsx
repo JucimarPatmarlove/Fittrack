@@ -44,7 +44,7 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
     try {
       const offer = await p2pSync.createOffer();
       localStorage.setItem(`p2p_offer_${code}`, JSON.stringify(offer));
-    } catch (e) {
+    } catch (_e) {
       setErrorMsg('Falha ao gerar oferta P2P');
       setStep('error');
     }
@@ -82,7 +82,7 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
         setStep('connected');
         setTimeout(() => onClose(), 1500);
       });
-    } catch (e) {
+    } catch (_e) {
       setErrorMsg('Falha ao conectar.');
       setStep('error');
     }
@@ -127,7 +127,7 @@ export const QRSyncModal: React.FC<QRSyncModalProps> = ({
             setStep('connected');
             clearInterval(interval);
             setTimeout(() => onClose(), 1500);
-          } catch (e) {}
+          } catch (_e) { /* Non-critical P2P parse failure */ }
         }
       }, 1000);
     }

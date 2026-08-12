@@ -93,7 +93,7 @@ export const AnthropicService = {
    * Conversa com o Neural Coach.
    * Envia o prompt e histórico ao proxy, que reencaminha para a Anthropic.
    */
-  async askCoach(prompt: string, history: WorkoutSession[], _apiKey?: string): Promise<string> {
+  async askCoach(prompt: string, history: WorkoutSession[], __apiKey?: string): Promise<string> {
     const recentHistory = [...history]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5);
@@ -177,7 +177,7 @@ ${JSON.stringify(recentHistory)}
             (w: any) => new Date(w.date).getTime() > Date.now() - 7 * 24 * 3600 * 1000,
           ).length;
         }
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
       const isStrengthDay = workoutsThisWeek % 2 === 0;

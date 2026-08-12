@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Activity, Brain, Droplets, Scale } from 'lucide-react';
-// @ts-nocheck
 import type React from 'react';
 import type { UnifiedHealthMetrics } from '../../services/healthBridge';
 

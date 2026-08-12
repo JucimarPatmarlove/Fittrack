@@ -41,12 +41,10 @@ export const WorkoutSetRow = React.memo(
     }
 
     // INPUT 2 Logic (MIN, SEGS, or REPS)
-    let input2Field = 'reps';
     let input2Value = s.reps || 0;
     let input2Step = 1;
 
     if (isCardio || isTimed) {
-      input2Field = 'duration';
       input2Value = Math.floor((s.duration || 0) / 60);
       input2Step = 1; // 1 min per click
     }

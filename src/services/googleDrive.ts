@@ -17,7 +17,6 @@ export interface GoogleDriveToken {
 }
 
 let tokenClient: any = null;
-let gapiInited = false;
 let gisInited = false;
 
 export async function initGoogleDrive() {
@@ -52,7 +51,6 @@ export async function initGoogleDrive() {
   await new Promise((resolve) => {
     (window as any).gapi.load('client', async () => {
       await (window as any).gapi.client.init({ discoveryDocs: [DISCOVERY_DOC] });
-      gapiInited = true;
       resolve(true);
     });
   });

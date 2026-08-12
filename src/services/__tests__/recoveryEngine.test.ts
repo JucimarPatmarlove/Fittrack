@@ -70,7 +70,7 @@ describe('Recovery Engine', () => {
     });
 
     // Mock Fatigue (alto volume agudo)
-    const mockGetAll = vi.fn().mockImplementation((range) => {
+    const mockGetAll = vi.fn().mockImplementation((_range) => {
       // Simplificação: se for agudo, retorna muitos logs
       return [{ weightKg: 100, repsCompleted: 10 }]; // Volume 1000
     });

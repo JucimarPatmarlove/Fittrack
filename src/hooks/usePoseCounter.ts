@@ -82,7 +82,7 @@ export function usePoseCounter(mode: 'squat' | 'push' = 'squat') {
             setFeedback('⬆ EMPURRA!');
           }
         }
-      } catch (e) {
+      } catch (_e) {
         // Ignorar erros de frames corrompidas
       }
     },

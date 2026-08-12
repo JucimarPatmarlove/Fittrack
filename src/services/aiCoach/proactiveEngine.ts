@@ -5,7 +5,7 @@
 // src/services/aiCoach/proactiveEngine.ts
 // ============================================================
 
-import type { InjuryRiskReport, StressReading } from '../../types/injury';
+import type { InjuryRiskReport, _StressReading } from '../../types/injury';
 import type { RecoveryInput } from '../../types/injury';
 import type { WorkoutSession } from '../../types';
 import { trackEvent } from '../../utils/telemetry';
@@ -145,7 +145,7 @@ const TRIGGER_RULES: TriggerRule[] = [
       return !!highACWR && highRPE;
     },
     priority: 'high',
-    generateMessage: (ctx) => ({
+    generateMessage: (_ctx) => ({
       trigger: 'overtraining_detected',
       priority: 'high',
       title: '🔥 Overtraining Detectado',
@@ -244,7 +244,7 @@ const TRIGGER_RULES: TriggerRule[] = [
       return weeksWithoutDeload >= 12; // 3+ meses sem deload
     },
     priority: 'low',
-    generateMessage: (ctx) => ({
+    generateMessage: (_ctx) => ({
       trigger: 'deload_recommended',
       priority: 'low',
       title: '💡 Deload Preventivo',
@@ -297,7 +297,7 @@ export function shouldShowMessage(message: ProactiveMessage): boolean {
   return true;
 }
 
-export function dismissMessage(messageId: string): void {
+export function dismissMessage(_messageId: string): void {
   // Implementado no store
 }
 

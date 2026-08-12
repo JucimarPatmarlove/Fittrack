@@ -11,7 +11,7 @@ import { X, ChevronRight, AlertTriangle, Flame, Trophy, Moon, Dumbbell } from 'l
 import type { ProactiveMessage } from '../../services/aiCoach/proactiveEngine';
 import { getMessageIcon } from '../../services/aiCoach/proactiveEngine';
 import { useProactiveCoachStore } from '../../stores/useProactiveCoachStore';
-import { InteractiveButton, InteractiveCard } from '../ui/MotionComponents';
+import { InteractiveButton } from '../ui/MotionComponents';
 
 const PRIORITY_STYLES = {
   urgent: 'bg-red-50 border-red-300 text-red-900 shadow-red-100',

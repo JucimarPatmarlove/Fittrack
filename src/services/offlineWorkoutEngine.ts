@@ -1,6 +1,15 @@
-// @ts-nocheck
 import type { WorkoutSession } from '../db/schema';
 import type { UserProfile } from '../types';
+
+export interface ExercisePool {
+  peito: string[];
+  costas: string[];
+  pernas: string[];
+  ombros: string[];
+  bracos: string[];
+  core: string[];
+  [key: string]: string[]; // para index signatures
+}
 
 // 1. Base de Dados Categorizada Interna
 const EXERCISE_POOL = {
@@ -73,7 +82,7 @@ const CARDIO_EXERCISES = ['Burpees', 'Mountain Climbers', 'Jumping Jacks', 'Squa
 // Preference -> exercise selector config
 interface PreferenceConfig {
   keywords: string[];
-  getExercises: (pool: any) => string[];
+  getExercises: (pool: ExercisePool) => string[];
   titleSuffix?: string;
 }
 
@@ -119,7 +128,7 @@ const PREFERENCE_CONFIGS: Record<string, PreferenceConfig> = {
   },
 };
 
-const FALLBACK_EXERCISES = (pool: any) => [
+const FALLBACK_EXERCISES = (pool: ExercisePool) => [
   ...getRandom(pool.peito, 1),
   ...getRandom(pool.costas, 1),
   ...getRandom(pool.pernas, 1),
@@ -142,16 +151,18 @@ const classifyPreference = (prefLower: string): string | null => {
 };
 
 /** Builds a workout for a given day preference */
-const buildPreferenceDay = (pool: any, prefVal: string) => {
+const buildPreferenceDay = (pool: ExercisePool, prefVal: string) => {
   const prefLower = prefVal.toLowerCase();
   const prefType = classifyPreference(prefLower);
 
   if (prefType) {
     const config = PREFERENCE_CONFIGS[prefType];
-    return {
-      exercises: config.getExercises(pool),
-      focusTitle: prefVal.includes('(') ? prefVal : `${config.titleSuffix} (${prefVal})`,
-    };
+    if (config) {
+      return {
+        exercises: config.getExercises(pool),
+        focusTitle: prefVal.includes('(') ? prefVal : `${config.titleSuffix} (${prefVal})`,
+      };
+    }
   }
 
   return {
@@ -166,19 +177,20 @@ function buildRestDay(day: string) {
 }
 
 /** Build a day based on user preference */
-function buildPreferredDay(day: string, pool: any, prefVal: string) {
+function buildPreferredDay(day: string, pool: ExercisePool, prefVal: string) {
   const { exercises, focusTitle } = buildPreferenceDay(pool, prefVal);
   return { day, focus: focusTitle, exercises };
 }
 
 /** Build a day from the split plan */
-function buildSplitDay(day: string, rawSplit: any[], splitIndex: number) {
+function buildSplitDay(day: string, rawSplit: { title: string; exercises: string[] }[], splitIndex: number, pool: ExercisePool) {
   const workoutDay = rawSplit[splitIndex];
+  if (!workoutDay) return buildFallbackDay(day, pool);
   return { day, focus: workoutDay.title, exercises: workoutDay.exercises };
 }
 
 /** Build a fallback general training day */
-function buildFallbackDay(day: string, pool: any) {
+function buildFallbackDay(day: string, pool: ExercisePool) {
   return { day, focus: 'Treino Geral', exercises: FALLBACK_EXERCISES(pool) };
 }
 
@@ -195,8 +207,8 @@ function buildWorkoutDay(
   day: string,
   activeDays: string[],
   dayPreferences: Record<string, string>,
-  pool: any,
-  rawSplit: any[],
+  pool: ExercisePool,
+  rawSplit: { title: string; exercises: string[] }[],
   splitIndexRef: { current: number },
 ) {
   if (!activeDays.includes(day)) {
@@ -209,7 +221,7 @@ function buildWorkoutDay(
   }
 
   if (splitIndexRef.current < rawSplit.length) {
-    const result = buildSplitDay(day, rawSplit, splitIndexRef.current);
+    const result = buildSplitDay(day, rawSplit, splitIndexRef.current, pool);
     splitIndexRef.current++;
     return result;
   }
@@ -218,7 +230,7 @@ function buildWorkoutDay(
 }
 
 export class OfflineWorkoutEngine {
-  static generateSingleWorkout(profile: Partial<UserProfile>, history: WorkoutSession[] = []): any {
+  static generateSingleWorkout(profile: Partial<UserProfile>, _history: WorkoutSession[] = []): any {
     const pool = selectExercisePool(profile);
     const goal = profile.goal || 'Hipertrofia';
 
@@ -263,7 +275,7 @@ export class OfflineWorkoutEngine {
     };
   }
 
-  private static getSplitForPlanType(planType: string, goal: string, pool: any): any[] {
+  private static getSplitForPlanType(planType: string, goal: string, pool: ExercisePool): { title: string; exercises: string[] }[] {
     const normalizedType = planType.toLowerCase();
     const planTypeMap = this.getPlanTypeMap();
 
@@ -282,7 +294,7 @@ export class OfflineWorkoutEngine {
   }
 
   // Plan type lookup table (inside class to access private methods)
-  private static getPlanTypeMap(): Record<string, (pool: any) => any[]> {
+  private static getPlanTypeMap(): Record<string, (pool: ExercisePool) => { title: string; exercises: string[] }[]> {
     return {
       forca: (pool) => this.generateUpperLowerSplit(pool),
       powerbuilding: (pool) => this.generateUpperLowerSplit(pool),
@@ -294,7 +306,7 @@ export class OfflineWorkoutEngine {
     };
   }
 
-  static generateUpperLowerSplit(pool: any) {
+  static generateUpperLowerSplit(pool: ExercisePool) {
     return [
       {
         title: 'Força Superior (Upper A)',
@@ -336,7 +348,7 @@ export class OfflineWorkoutEngine {
     ];
   }
 
-  static generatePushPullLegsSplit(pool: any) {
+  static generatePushPullLegsSplit(pool: ExercisePool) {
     return [
       {
         title: 'Treino Push (Empurrar)',
@@ -377,7 +389,7 @@ export class OfflineWorkoutEngine {
     ];
   }
 
-  static generateFullBodySplit(pool: any) {
+  static generateFullBodySplit(pool: ExercisePool) {
     return [
       {
         title: 'Full Body A (Foco Metabólico)',
@@ -415,7 +427,7 @@ export class OfflineWorkoutEngine {
     ];
   }
 
-  static generateAnatolySplit(pool: any) {
+  static generateAnatolySplit(pool: ExercisePool) {
     return [
       {
         title: 'Pressão Máxima (Força)',
@@ -460,7 +472,7 @@ export class OfflineWorkoutEngine {
     ];
   }
 
-  static generateHIITSplit(pool: any) {
+  static generateHIITSplit(_pool?: ExercisePool) {
     return [
       {
         title: 'HIIT Full Body (Tabata 20/10)',
@@ -484,7 +496,7 @@ export class OfflineWorkoutEngine {
     ];
   }
 
-  static generateFunctionalSplit(pool: any) {
+  static generateFunctionalSplit(_pool?: ExercisePool) {
     return [
       {
         title: 'Cross: Força Base + AMRAP 12',

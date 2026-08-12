@@ -30,7 +30,7 @@ const ACWR_SAFE_MIN = 0.8;
 const ACWR_SAFE_MAX = 1.3;
 const ACWR_DANGER = 1.5;
 const RPE_DRIFT_THRESHOLD = 0.5;
-const VELOCITY_DECAY_THRESHOLD = 15;
+const _VELOCITY_DECAY_THRESHOLD = 15;
 const OVERUSE_THRESHOLD = 5;
 
 export async function generateInjuryRiskReport(): Promise<InjuryRiskReport> {

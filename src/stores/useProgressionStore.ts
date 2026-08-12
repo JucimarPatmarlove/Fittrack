@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createEncryptedStorage } from './encryptedPersist';
@@ -25,7 +25,7 @@ interface ProgressionStore {
   getRecommendedReps: (exerciseId: string, currentTargetReps: number) => number;
   recordSession: (
     exerciseId: string,
-    sets: { reps: number; weight: number; rpe?: number }[],
+    sets: { reps: number; weight: number; completed: boolean; rpe?: number }[],
     targetReps: number,
   ) => void;
   recordSuccess: (exerciseName: string, repsDone: number, repsTarget: number, rpe: number) => void;
@@ -55,7 +55,7 @@ export const useProgressionStore = create<ProgressionStore>()(
         }
 
         const lastSession = exerciseHistory[exerciseHistory.length - 1];
-        if (!lastSession.allSetsCompleted && currentTargetReps > 4) {
+        if (lastSession && !lastSession.allSetsCompleted && currentTargetReps > 4) {
           return currentTargetReps - 1;
         }
 
@@ -148,7 +148,7 @@ export const useProgressionStore = create<ProgressionStore>()(
     }),
     {
       name: 'progression-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedStorage() as any,
     },
   ),
 );

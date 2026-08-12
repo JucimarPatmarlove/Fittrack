@@ -1,7 +1,16 @@
 import type { WorkoutSession } from '../db/schema';
-// @ts-nocheck
 import type { UserProfile } from '../types';
 import { ME } from './constants';
+
+interface WorkoutExercise {
+  muscle?: string;
+  name?: string;
+  sets?: { reps: number; weight: number }[];
+}
+
+interface WorkoutWithExercises extends WorkoutSession {
+  exercises?: WorkoutExercise[];
+}
 
 export function calculate1RM(weight: number, reps: number): number {
   if (reps === 0) return 0;
@@ -25,7 +34,7 @@ export function calculateRecovery(history: WorkoutSession[], goalId = 'hipertrof
 
   return muscles.map((muscle) => {
     const lastWorkout = history
-      .filter((w) => (w as any).exercises?.some((e: any) => e.muscle === muscle))
+      .filter((w) => (w as WorkoutWithExercises).exercises?.some((e) => e.muscle === muscle))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
     const limitMs = recoveryHoursFull * 3600 * 1000;
@@ -74,22 +83,22 @@ export function bmiLabel(b: number) {
 }
 
 export function checkAutoProgression(
-  history: any[],
+  history: WorkoutWithExercises[],
   exerciseName: string,
   maxBaseReps = 10,
 ): boolean {
   const lastWorkingouts = history
-    .filter((w) => w.exercises.some((e: any) => e.name === exerciseName))
+    .filter((w) => w.exercises?.some((e) => e.name === exerciseName))
     .slice(-2);
 
   if (lastWorkingouts.length < 2) return false;
 
   // Se nas 2 últimas sessões, tentou fazer a base.max e completou em todas as séries?
   return lastWorkingouts.every((w) => {
-    const ex = w.exercises.find((e: any) => e.name === exerciseName);
-    if (!ex || ex.sets.length === 0) return false;
+    const ex = w.exercises?.find((e) => e.name === exerciseName);
+    if (!ex || !ex.sets || ex.sets.length === 0) return false;
 
     // Todas as séries completas e alcançou/ultrapassou maxBaseReps
-    return ex.sets.every((s: any) => s.reps >= maxBaseReps && s.weight > 0);
+    return ex.sets.every((s) => s.reps >= maxBaseReps && s.weight > 0);
   });
 }
