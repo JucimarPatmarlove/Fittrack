@@ -88,8 +88,9 @@ export const useProactiveCoachStore = create<ProactiveCoachState>()(
       },
 
       getUrgentMessages: () => {
-        return get()
-          .messages.filter(shouldShowMessage)
+        const msgs = get().messages;
+        return msgs
+          .filter(shouldShowMessage)
           .filter((m) => m.priority === 'urgent' || m.priority === 'high');
       },
     }),

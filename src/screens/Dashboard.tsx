@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Activity,
@@ -25,6 +26,7 @@ import { BiometricInsight } from '../components/dashboard/BiometricInsight';
 import { DailyBriefing } from '../components/dashboard/DailyBriefing';
 import { ReadinessGauge } from '../components/dashboard/ReadinessGauge';
 import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
+import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';
 import { P2PSyncModal } from '../components/social/P2PSyncModal';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -72,6 +74,18 @@ export default function Dashboard({
     chartDataWeight,
     acwr,
   } = data;
+
+  const [showCharts, setShowCharts] = React.useState(false);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setShowCharts(true), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const recentExercises = useMemo(() => {
+    return history
+      ?.flatMap((w) => w.exercises?.map((e: any) => e.name))
+      .filter((name: string) => name && !name.includes('Caminhada')) || [];
+  }, [history]);
 
   // --- STYLES INLINE (V7 Dark Neon Pattern) ---
   const glassCardStyle = {
@@ -246,6 +260,10 @@ export default function Dashboard({
           }
         />
       )}
+
+      {/* 🔥 RADAR DE CONSISTÊNCIA — Heatmap Premium (365 dias) 🔥 */}
+      {!isSystemEmpty && <ActivityHeatmap history={history} />}
+
       {/* 📡 TELEMETRIA BIOLÓGICA — HealthKit (RENPHO + Apple Watch) 📡 */}
       <BiometricInsight
         healthData={healthKitData as any}
@@ -500,25 +518,29 @@ export default function Dashboard({
                 Balanço Calórico (7 Dias)
               </h3>
             </div>
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
-                  <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#080b0f',
-                      borderRadius: '12px',
-                      borderColor: accentNeon,
-                      color: '#fff',
-                    }}
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#fff' }} />
-                  <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <div style={{ height: '300px', width: '100%', minWidth: 0, minHeight: 0 }}>
+              {showCharts ? (
+                <ResponsiveContainer width="99%" height="100%">
+                  <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+                    <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#080b0f',
+                        borderRadius: '12px',
+                        borderColor: accentNeon,
+                        color: '#fff',
+                      }}
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#fff' }} />
+                    <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
+              )}
             </div>
           </div>
 
@@ -581,36 +603,40 @@ export default function Dashboard({
                 Salvar
               </button>
             </form>
-            <div style={{ height: '200px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={chartDataWeight}
-                  margin={{ top: 5, right: 15, left: -25, bottom: 5 }}
-                >
-                  <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
-                  <YAxis
-                    stroke="#55626e"
-                    fontSize={10}
-                    domain={['dataMin - 2', 'dataMax + 2']}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#080b0f',
-                      borderRadius: '10px',
-                      borderColor: blueNeon,
-                      color: '#fff',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="peso"
-                    stroke={blueNeon}
-                    strokeWidth={3}
-                    dot={{ fill: blueNeon, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div style={{ height: '200px', width: '100%', minWidth: 0, minHeight: 0 }}>
+              {showCharts ? (
+                <ResponsiveContainer width="99%" height="100%">
+                  <LineChart
+                    data={chartDataWeight}
+                    margin={{ top: 5, right: 15, left: -25, bottom: 5 }}
+                  >
+                    <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
+                    <YAxis
+                      stroke="#55626e"
+                      fontSize={10}
+                      domain={['dataMin - 2', 'dataMax + 2']}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#080b0f',
+                        borderRadius: '10px',
+                        borderColor: blueNeon,
+                        color: '#fff',
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="peso"
+                      stroke={blueNeon}
+                      strokeWidth={3}
+                      dot={{ fill: blueNeon, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
+              )}
             </div>
           </div>
         </div>
@@ -648,13 +674,7 @@ export default function Dashboard({
             </p>
           </div>
           <div>
-            <TrendDashboardSection
-              recentExercises={
-                history
-                  ?.flatMap((w) => w.exercises?.map((e: any) => e.name))
-                  .filter((name: string) => name && !name.includes('Caminhada')) || []
-              }
-            />
+            <TrendDashboardSection recentExercises={recentExercises} />
           </div>
         </div>
       </StaggerList>
