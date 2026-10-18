@@ -72,3 +72,71 @@ export async function signInAnonymously(): Promise<string | null> {
     return null;
   }
 }
+
+/**
+ * 🔑 [PASSKEYS] - Inicia o registo de uma Passkey para o utilizador.
+ * O utilizador tem de estar autenticado primeiro (com PIN/Anónimo promovido).
+ * Encripta a chave AES e envia-a para o Supabase de forma segura.
+ */
+export async function registerPasskey(aesKeyData: string): Promise<boolean> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return false;
+
+  try {
+    // 1. Registar a Passkey (requer @supabase/supabase-js v2.105.0+)
+    // Usamos cast para 'any' porque a versão atual do lab (2.103.2) não tem os tipos
+    // O utilizador terá de correr npm install @supabase/supabase-js@latest
+    const authAny = supabase.auth as any;
+    const { error: passkeyError } = await authAny.passkey.register();
+    
+    if (passkeyError) {
+      console.error('[Supabase Browser] Erro no registo de Passkey:', passkeyError);
+      return false;
+    }
+
+    // 2. Guardar a chave AES encriptada nos metadados do utilizador (Key Escrow)
+    const { error: updateError } = await supabase.auth.updateUser({
+      data: { vault_key: aesKeyData }
+    });
+
+    if (updateError) {
+      console.error('[Supabase Browser] Erro ao guardar AES Key no Supabase:', updateError);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('[Supabase Browser] Exception no registo de Passkey:', err);
+    return false;
+  }
+}
+
+/**
+ * 🔑 [PASSKEYS] - Desbloqueia a sessão através do FaceID/Windows Hello.
+ * Retorna a chave AES encriptada (guardada nos metadados).
+ */
+export async function signInWithPasskey(): Promise<{ vault_key: string } | null> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return null;
+
+  try {
+    const authAny = supabase.auth as any;
+    const { data, error } = await authAny.passkey.authenticate();
+    
+    if (error || !data?.user) {
+      console.error('[Supabase Browser] Erro ao autenticar com Passkey:', error);
+      return null;
+    }
+
+    const vaultKey = data.user.user_metadata?.vault_key;
+    if (!vaultKey) {
+      console.error('[Supabase Browser] Passkey autenticou, mas sem vault_key guardada.');
+      return null;
+    }
+
+    return { vault_key: vaultKey };
+  } catch (err) {
+    console.error('[Supabase Browser] Exception na autenticação Passkey:', err);
+    return null;
+  }
+}

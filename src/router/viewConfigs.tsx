@@ -1,7 +1,7 @@
 import type React from 'react';
 import { lazy } from 'react';
 import { PageTransition } from '../components/ui/MotionComponents';
-import type { WorkoutSession } from '../db/schema';
+import type { WorkoutSessionData } from '../utils/schemas';
 import type { ViewName } from '../hooks/useFitnessData';
 import type { UserProfile, WorkoutPlan } from '../types';
 
@@ -9,6 +9,8 @@ import type { UserProfile, WorkoutPlan } from '../types';
 import { BeginnerGuide } from '../components/onboarding/BeginnerGuide';
 import { FitnessAssessment } from '../components/onboarding/FitnessAssessment';
 import { ProactiveMessageList } from '../components/ai/ProactiveMessage';
+
+import { toWorkoutData } from '../utils/workoutAdapters';
 
 // Lazy loaded components
 const Dashboard = lazy(() => import('../screens/Dashboard'));
@@ -45,15 +47,15 @@ export interface ViewConfigProps {
   view: ViewName;
   profile: UserProfile;
   setProfile: (p: UserProfile) => void;
-  history: WorkoutSession[];
+  history: WorkoutSessionData[];
   setView: (v: ViewName) => void;
   handleStartWorkout: (plan: WorkoutPlan | string) => void;
-  handleFinishWorkout: (data: WorkoutSession) => void;
+  handleFinishWorkout: (data: WorkoutSessionData) => void;
   handleFeedbackSubmit: (feedback: { difficulty: string; notes?: string }) => Promise<void>;
-  handleInstantSave: (data: WorkoutSession) => Promise<void>;
+  handleInstantSave: (data: WorkoutSessionData) => Promise<void>;
   handleReset: () => void;
   handleUnlock: (key: CryptoKey) => void;
-  workoutData: WorkoutSession | null;
+  workoutData: WorkoutSessionData | null;
   currentPlan: WorkoutPlan | string | null;
 }
 
@@ -194,7 +196,7 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
     ),
     walkingcoach: (
       <PageTransition viewKey="walkingcoach">
-        <WalkingCoachScreen onClose={() => setView('dashboard')} onFinish={handleInstantSave} />
+        <WalkingCoachScreen onClose={() => setView('dashboard')} onFinish={(session) => handleInstantSave(toWorkoutData(session))} />
       </PageTransition>
     ),
     community: (

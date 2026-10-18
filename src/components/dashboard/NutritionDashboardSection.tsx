@@ -86,8 +86,8 @@ export function NutritionDashboardSection({ profile }: { profile: any }) {
           <p style={{ fontSize: 13, color: C.text, fontWeight: 'bold', marginBottom: 12 }}>
             Balanço Calórico (Hoje)
           </p>
-          <div style={{ height: 120, width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
+          <div style={{ height: 120, width: '100%', minWidth: 0, minHeight: 0 }}>
+            <ResponsiveContainer width="99%" height="100%">
               <BarChart
                 layout="vertical"
                 data={calData}
@@ -134,8 +134,8 @@ export function NutritionDashboardSection({ profile }: { profile: any }) {
             <p style={{ fontSize: 13, color: C.text, fontWeight: 'bold', marginBottom: 12 }}>
               Evolução de Peso
             </p>
-            <div style={{ height: 120, width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ height: 120, width: '100%', minWidth: 0, minHeight: 0 }}>
+              <ResponsiveContainer width="99%" height="100%">
                 <LineChart data={weightData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <CartesianGrid
                     strokeDasharray="3 3"

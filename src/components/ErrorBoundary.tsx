@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import React from 'react';
 
 type Props = { children: React.ReactNode };
-type State = { hasError: boolean; error?: Error };
+type State = { hasError: boolean; error?: Error; componentStack?: string };
 
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -15,6 +15,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: any) {
+    this.setState({ componentStack: info.componentStack });
+    
+    // Send to our local python logger
+    fetch('http://localhost:9999', {
+      method: 'POST',
+      body: `ERROR: ${error.message}\nSTACK: ${error.stack}\nCOMPONENT STACK: ${info.componentStack}`
+    }).catch(e => console.error(e));
+
     if (import.meta.env.VITE_SENTRY_DSN) {
       Sentry.captureException(error, {
         contexts: {
@@ -86,6 +94,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 }}
               >
                 {String(this.state.error)}
+                {'\n\nComponent Stack:\n'}
+                {this.state.componentStack || this.state.error.stack}
               </pre>
             )}
           </div>

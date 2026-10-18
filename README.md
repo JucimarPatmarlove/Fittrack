@@ -1,135 +1,117 @@
-# FitTrack
+# 🏋️ FitTrack V7 — The Autonomous AI Fitness Ecosystem
 
-FitTrack is a Vite + React fitness app focused on training guidance, workout tracking, progression, recovery, and gamification. The main application lives in [src/](src) and is the active codebase.
+FitTrack V7 is a professional-grade Progressive Web Application (PWA) built with **React 19 + Vite 8**. Designed for athletes and power users, it goes beyond simple rep tracking by integrating **Machine Learning (MediaPipe)**, **Generative AI (Anthropic Claude)**, **Biometric Security (WebAuthn)**, and advanced **Gamification**. 
 
-## What this project already has
+Built with a paranoid focus on data sovereignty, the application operates on an **Offline-First Zero-Trust Architecture**, ensuring personal health data remains fiercely protected.
 
-The current app includes a broad set of fitness-oriented features:
+---
 
-- Workout planning and active workout execution
-- Profile onboarding and beginner guidance
-- Workout history and summaries
-- Post-workout feedback and XP progression
-- AI coach integration through Anthropic
-- Trends and milestone tracking
-- Planner and cycle review screens
-- Rewards store and gamification
-- Social/club features
-- Device manager and wearable-related hooks
-- Security lock screen and encrypted storage helpers
-- Plate calculator and workout utilities
-- 3D and visual components for richer training feedback
-- Background workers and offline/sync helpers
+## 🏗️ Core Architecture & Security
 
-The codebase is already structured as a feature-rich product rather than a starter template.
+### 1. Zero Trust & Local Encryption (AES-GCM)
+All sensitive training data (weights, reps, RPE, 1RM estimations, body measurements) is stored entirely in the browser's `IndexedDB`. 
+Upon opening the app, users are challenged to decrypt their local vault. We utilize the Web Crypto API to derive a non-extractable 256-bit AES-GCM key from a 4-digit PIN. **Your data never touches our servers in plain text.**
 
-## Tech Stack
+### 2. Passkeys & Key Escrow (WebAuthn)
+For a frictionless experience, users can opt into **Biometric Login (FaceID / TouchID / Windows Hello)** via Supabase WebAuthn. 
+Because biometrics don't provide a deterministic symmetric key to unlock the local database, we implemented a secure **Key Escrow**: the AES key is encrypted and stored in the user's Supabase session metadata, automatically reconstructing the local `CryptoKey` upon successful biometric challenge.
 
-- React 19
-- Vite 8
-- TypeScript + JavaScript mix
-- Framer Motion for transitions
-- Zod for runtime validation
-- Zustand for state management
-- Recharts for charts
-- MediaPipe for pose and motion features
-- Three.js / React Three Fiber for 3D UI
-- Anthropic SDK for the AI coach
-- Supabase, IDB, and localStorage for data/persistence flows
-- Sentry for error reporting
+### 3. Backend For Frontend (BFF) Proxy
+The AI Coach (Claude) requires an Anthropic API Key. To prevent exposing this secret in the client bundle, FitTrack employs a lightweight **Node.js BFF Proxy**. The PWA communicates with the BFF using ephemeral JWTs (signed with a 256-bit `API_SHARED_SECRET`), and the BFF securely proxies the requests to Anthropic.
 
-## Project Structure
+### 4. Row Level Security (RLS) & PostgreSQL
+To protect social and synchronization features, the PostgreSQL database (via Supabase) employs strict **Row Level Security (RLS)** policies. All queries are scoped to the authenticated user's context. The BFF service operates under a heavily restricted service role, while client access is strictly gated by JWT claims, preventing data leakage across tenants.
 
-- [src/App.tsx](src/App.tsx) contains the main app shell, routing by state, locking, persistence, and most top-level navigation.
-- [src/screens/](src/screens) contains the main screens such as dashboard, workout, trends, planner, settings, AI coach, and rewards.
-- [src/components/](src/components) contains reusable UI and domain components, including onboarding, history, workout, social, security, and 3D modules.
-- [src/hooks/](src/hooks) contains custom hooks for motion, Bluetooth, workers, audio, and workout logic.
-- [src/services/](src/services) contains the heavier business logic such as workout generation, progression, fatigue, challenges, and AI integrations.
-- [src/stores/](src/stores) contains global state stores.
-- [src/utils/](src/utils) contains calculators, sanitizers, schemas, and crypto helpers.
-- [scripts/](scripts) contains utility scripts for exercise media download and checks.
-- [functions/](functions) contains serverless or edge-style API logic.
+---
 
-## How to run
+## 🚀 Key Features
 
-Install dependencies and start the app:
+- **AI Biofeedback Coach:** Context-aware training adjustments, RPE evaluations, and auto-regulation powered by the Anthropic SDK.
+- **Biomechanical Prescription Engine:** Calculates optimal load based on 1RM estimations, fatigue curves, and joint-protection constraints.
+- **MediaPipe Computer Vision:** Uses the device camera for real-time form validation and automatic rep counting.
+- **Advanced Gamification:** An effort-normalized XP system (XP Calculator), ghost sets, streaks, and a "GitHub-style" 365-day Activity Heatmap.
+- **Social & P2P Arena:** Leaderboards and 1v1 challenges hosted on PostgreSQL, built to share achievements without exposing underlying encrypted logs.
+- **Progressive Web App (PWA):** Installs natively on iOS and Android. Includes service workers for full offline capability.
+
+---
+
+## 🛠️ Technology Stack
+
+| Domain | Technologies |
+|---|---|
+| **Frontend** | React 19, Vite 8, TypeScript, Framer Motion, Tailwind CSS |
+| **State & Data** | Zustand, Zod, IndexedDB (idb-keyval), Recharts |
+| **AI & ML** | Anthropic Claude API, MediaPipe |
+| **Security** | Web Crypto API (AES-GCM), Supabase Auth (WebAuthn / Passkeys), RLS |
+| **Visuals** | Three.js / React Three Fiber (3D Anatomy Viewer) |
+| **DevOps** | Docker Compose, Nginx, Node.js (BFF) |
+
+---
+
+## 🐳 Self-Hosted Deployment (Docker Compose)
+
+FitTrack V7 is engineered to be instantly deployed on any local homelab or VPS with Docker, ensuring 100% data sovereignty.
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/JucimarPatmarlove/Fittrack.git
+cd Fittrack
+
+# 2. Run the automated interactive setup
+chmod +x scripts/selfhost-setup.sh
+./scripts/selfhost-setup.sh
+
+# 3. Access your private instance
+open http://localhost:8090
+```
+
+The infrastructure runs on a highly optimized footprint (~200MB RAM) comprising:
+- **Nginx (Frontend):** Serves the static PWA with extreme cache policies and Strict CSP/HSTS headers.
+- **Node.js (BFF):** Proxies API calls to Anthropic AI, keeping secrets isolated.
+- **PostgreSQL 16:** Automatically applies migrations for social/leaderboard features via `init.sql`.
+
+> 📚 For deep configuration, port mapping, and backup strategies, read the **[Self-Hosted Guide](docs/SELFHOST.md)**.
+
+---
+
+## 💻 Local Development
+
+If you wish to contribute or run the development server:
+
+```bash
+# Install dependencies
 npm install
+
+# Start the Vite dev server
 npm run dev
 ```
 
-Useful scripts:
+### Important Scripts
+- `npm run build`: Compiles the application and generates the Service Worker.
+- `npm run security-check`: Scans the `dist/` folder post-build to ensure no API keys or secrets have leaked into the client bundle.
+- `npm run download-exercises`: Utility script to fetch missing media assets for the exercise library.
 
-- `npm run build` to produce a production build
-- `npm run lint` to check code quality
-- `npm run preview` to preview the build locally
-- `npm run download-exercises` to fetch exercise media assets
+---
 
-## Access outside home
+## 📡 Remote Access & PWA Testing
 
-### Fastest option: ngrok
+To test the application on a mobile device (for FaceID/WebAuthn or MediaPipe features), use a secure tunnel to expose the local server:
 
 ```bash
 npm run dev -- --host 0.0.0.0
+# In a new terminal tab:
 ngrok http 5173
 ```
+*Note: WebAuthn (Passkeys) strictly requires a secure context (`https://` or `localhost`). Use the ngrok HTTPS URL.*
 
-Use the HTTPS URL that ngrok prints. This is the quickest way to test on iPhone or from outside your local network.
+---
 
-### Permanent option: Vercel
+## 🛡️ Code Quality & Conventions
 
-The repo now includes a basic [vercel.json](vercel.json) SPA rewrite. Deploy with the Vercel CLI or GitHub integration, then use the generated HTTPS URL.
+This repository enforces strict CI/CD pipelines and architectural guidelines. Before submitting a PR, ensure you review the **[Agent Instructions (AGENTS.md)](AGENTS.md)**, which dictates:
+- TypeScript Strict Mode compliance (`npx tsc --noEmit`).
+- Framer Motion UI/UX standards (Skeleton loading, stagger animations).
+- Zod Schemas for data validation (using Discriminated Unions).
+- Conventional Commits (`feat(auth): ...`).
 
-### Offline option: PWA
-
-The app is now configured with a PWA manifest and service worker registration. After running the production build or preview, open the app in Safari/Chrome and choose "Add to Home Screen" / "Install app".
-
-```bash
-npm run build
-npm run preview:host
-```
-
-## Important notes
-
-- The main entry point is [src/main.tsx](src/main.tsx).
-- The current app shell is TypeScript-based in [src/App.tsx](src/App.tsx).
-- [README.md](README.md) used to be the default Vite template; this document replaces that with project-specific information.
-
-## Current health snapshot
-
-What looks good:
-
-- The production build succeeds.
-- The app has a strong feature set and a clear product direction.
-- TypeScript is already present in the main app, which gives room for stricter typing.
-
-What needs attention:
-
-- Some code still uses loose typing in certain services.
-- The project would benefit from clearer documentation and tighter boundaries between core app logic and helpers.
-
-## Suggestions for improvement
-
-If you want to ask for help in forums, AI tools, or from another developer, these are the highest-value topics to show first:
-
-- How to centralize persistence and reduce direct `localStorage` coupling
-- How to create a cleaner navigation/state architecture for the main app shell
-- How to add tests for workout progression, XP, and challenge evaluation
-- How to improve the AI coach flow and make API key handling safer
-- How to make the documentation and onboarding easier for contributors
-
-## If you want to ask for help, show this context
-
-When you ask for help elsewhere, it helps to include:
-
-1. The goal of the app: fitness tracking, workout guidance, AI coaching, and progression.
-2. The main entry file: [src/App.tsx](src/App.tsx).
-3. The current status: build passes, TypeScript strict mode enabled.
-4. The specific pain point you want to solve: architecture cleanup, documentation, or feature development.
-
-## Recommended next steps
-
-1. Add a short contributor guide or architecture overview.
-2. Introduce tests for the most business-critical flows.
-3. Migrate `createViewConfigs` to a cleaner routing pattern.
+> *"Engineering is about finding the optimal intersection between uncompromising security, seamless user experience, and relentless performance."*

@@ -12,11 +12,31 @@ import posthog from 'posthog-js';
 
 // ── 1. Initialize OpenTelemetry ────────────────────────────
 
+import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { Resource } from '@opentelemetry/resources';
+import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+
 export function initTelemetry() {
-  // 🔭 OpenTelemetry is configured to use the global no-op provider by default
-  // To enable actual tracing export, install the OTel SDK packages:
-  // npm install @opentelemetry/sdk-trace-web @opentelemetry/sdk-trace-base @opentelemetry/exporter-trace-otlp-http @opentelemetry/resources @opentelemetry/semantic-conventions
-  console.log('🔭 OpenTelemetry initialized (No-Op mode)');
+  try {
+    const provider = new WebTracerProvider({
+      resource: new Resource({
+        [SEMRESATTRS_SERVICE_NAME]: 'fittrack-v7-pwa',
+      }),
+    });
+
+    const exporter = new OTLPTraceExporter({
+      // url: 'http://localhost:4318/v1/traces', // Fallback/Local collector endpoint
+    });
+
+    provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+    provider.register();
+
+    console.log('🔭 OpenTelemetry initialized (WebTracerProvider active)');
+  } catch (error) {
+    console.error('Failed to initialize OpenTelemetry:', error);
+  }
 }
 
 // ── 2. Error Tracking ──────────────────────────────────────

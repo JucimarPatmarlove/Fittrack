@@ -1,4 +1,3 @@
-// @ts-nocheck
 // ============================================================
 // FitTrack V7 — useProactiveCoach Hook
 // ============================================================
@@ -9,10 +8,10 @@ import { useEffect, useCallback } from 'react';
 import { useProactiveCoachStore } from '../stores/useProactiveCoachStore';
 import { useInjuryStore } from '../stores/useInjuryStore';
 import type { TriggerContext } from '../services/aiCoach/proactiveEngine';
+import type { WorkoutSessionData } from '../utils/schemas';
 import type { UserProfile } from '../types';
-import type { WorkoutSession } from '../db/schema';
 
-export function useProactiveCoach(profile: UserProfile | null, history: WorkoutSession[]) {
+export function useProactiveCoach(profile: UserProfile | null, history: WorkoutSessionData[]) {
   const evaluate = useProactiveCoachStore((s) => s.evaluate);
   const lastReport = useInjuryStore((s) => s.lastReport);
   const recoveryData = useInjuryStore((s) => s.recoveryData);
@@ -30,7 +29,9 @@ export function useProactiveCoach(profile: UserProfile | null, history: WorkoutS
     // Calcular streak (simplificado)
     let streakDays = 0;
     for (let i = history.length - 1; i >= 0; i--) {
-      const workoutDate = new Date(history[i].date);
+      const entry = history[i];
+      if (!entry) break;
+      const workoutDate = new Date(entry.date);
       const daysDiff = Math.floor((now.getTime() - workoutDate.getTime()) / (1000 * 60 * 60 * 24));
       if (daysDiff <= streakDays + 1) {
         streakDays = daysDiff + 1;
@@ -41,13 +42,13 @@ export function useProactiveCoach(profile: UserProfile | null, history: WorkoutS
 
     const context: TriggerContext = {
       injuryReport: lastReport,
-      recoveryData: recoveryData as any,
+      recoveryData: recoveryData,
       lastWorkout,
       workoutHistory: history,
       streakDays,
       daysSinceLastWorkout,
       userBodyweight: profile.weight || 75,
-      userGoals: profile.goals || [],
+      userGoals: profile.goal ? [profile.goal] : [],
     };
 
     evaluate(context);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // ============================================================
 // FitTrack V7 — Proactive Message Component
 // ============================================================
@@ -9,9 +8,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, AlertTriangle, Flame, Trophy, Moon, Dumbbell } from 'lucide-react';
 import type { ProactiveMessage } from '../../services/aiCoach/proactiveEngine';
-import { getMessageIcon } from '../../services/aiCoach/proactiveEngine';
+import { getMessageIcon, shouldShowMessage } from '../../services/aiCoach/proactiveEngine';
 import { useProactiveCoachStore } from '../../stores/useProactiveCoachStore';
 import { InteractiveButton } from '../ui/MotionComponents';
+import { useShallow } from 'zustand/react/shallow';
 
 const PRIORITY_STYLES = {
   urgent: 'bg-red-50 border-red-300 text-red-900 shadow-red-100',
@@ -124,7 +124,9 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
 
 // Banner fixo no topo (para mensagens urgentes)
 export const ProactiveBanner: React.FC = () => {
-  const urgentMessages = useProactiveCoachStore((s) => s.getUrgentMessages());
+  const urgentMessages = useProactiveCoachStore(useShallow((s) => 
+    s.messages.filter(m => (m.priority === 'urgent' || m.priority === 'high') && !m.dismissed)
+  ));
   const dismissMessage = useProactiveCoachStore((s) => s.dismissMessage);
 
   const topMessage = urgentMessages[0];
@@ -158,7 +160,9 @@ export const ProactiveBanner: React.FC = () => {
 
 // Lista de mensagens (para uma tab/screen dedicada)
 export const ProactiveMessageList: React.FC = () => {
-  const messages = useProactiveCoachStore((s) => s.getActiveMessages());
+  const messages = useProactiveCoachStore(useShallow((s) => 
+    s.messages.filter(shouldShowMessage)
+  ));
   const unreadCount = useProactiveCoachStore((s) => s.unreadCount);
 
   return (

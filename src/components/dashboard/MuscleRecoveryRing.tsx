@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { C } from '../../data/constants';
 
 interface RecoveryData {
@@ -19,20 +19,27 @@ interface Props {
 export const MuscleRecoveryRing: React.FC<Props> = ({ recoveryData }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const nextMuscle = () => {
+  const nextMuscle = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % recoveryData.length);
-  };
+  }, [recoveryData.length]);
 
-  const current = recoveryData[currentIndex];
+  const prevMuscle = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? recoveryData.length - 1 : prev - 1));
+  }, [recoveryData.length]);
+
+  const current = useMemo(() => recoveryData[currentIndex], [recoveryData, currentIndex]);
   if (!current) return null;
 
   // SVG Ring Calculations
-  const size = 160;
-  const strokeWidth = 14;
-  const center = size / 2;
-  const radius = center - strokeWidth;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (current.recoveryPercentage / 100) * circumference;
+  const { size, strokeWidth, center, radius, circumference, offset } = useMemo(() => {
+    const size = 160;
+    const strokeWidth = 14;
+    const center = size / 2;
+    const radius = center - strokeWidth;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (current.recoveryPercentage / 100) * circumference;
+    return { size, strokeWidth, center, radius, circumference, offset };
+  }, [current.recoveryPercentage]);
 
   return (
     <div
@@ -117,9 +124,7 @@ export const MuscleRecoveryRing: React.FC<Props> = ({ recoveryData }) => {
       <div style={{ marginTop: 16, textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
           <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev === 0 ? recoveryData.length - 1 : prev - 1))
-            }
+            onClick={prevMuscle}
             style={{
               background: 'none',
               border: 'none',

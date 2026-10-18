@@ -151,8 +151,8 @@ export const DetailedHistory = ({
           </button>
         </div>
 
-        <div style={{ width: '100%', height: 250 }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div style={{ width: '100%', height: 250, minWidth: 0, minHeight: 0 }}>
+          <ResponsiveContainer width="99%" height="100%">
             <LineChart data={chartData}>
               <XAxis
                 dataKey="name"

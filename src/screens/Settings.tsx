@@ -1,6 +1,7 @@
 // @ts-nocheck
 import type React from 'react';
 import { HealthSyncSettings } from '../components/settings/HealthSyncSettings';
+import { PasskeyRegistration } from '../components/security/PasskeyRegistration';
 import { C, GOALS } from '../data/constants';
 import { sanitizeText } from '../utils/sanitize';
 
@@ -115,6 +116,8 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
       </button>
 
       <HealthSyncSettings />
+
+      <PasskeyRegistration />
 
       <div className="glass" style={{ padding: 14, marginBottom: 20 }}>
         <p

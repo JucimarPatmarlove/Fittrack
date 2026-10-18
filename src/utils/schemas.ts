@@ -93,3 +93,4 @@ export const WorkoutSchema = z.object({
 });
 
 export const HistorySchema = z.array(WorkoutSchema);
+export type WorkoutSessionData = z.infer<typeof WorkoutSchema>;

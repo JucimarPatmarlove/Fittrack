@@ -88,3 +88,56 @@ export async function decryptData(key: CryptoKey, base64Data: string): Promise<s
     throw new Error('Invalid PIN or corrupted data');
   }
 }
+
+// ─── WEBAUTHN / PASSKEYS HELPER FUNCTIONS ───────────────────────────────────────
+
+/**
+ * Helper para o registo de Passkey: 
+ * Deriva a chave raw a partir do PIN (para envio cifrado no Key Escrow)
+ */
+export async function deriveRawKeyBase64(pin: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('../workers/crypto.worker.ts', import.meta.url), {
+      type: 'module',
+    });
+
+    worker.onmessage = (e) => {
+      if (e.data.success) {
+        // Convert ArrayBuffer to Base64 string
+        const buffer = new Uint8Array(e.data.rawKey);
+        const b64 = btoa(String.fromCharCode(...buffer));
+        resolve(b64);
+      } else {
+        reject(new Error(e.data.error));
+      }
+      worker.terminate();
+    };
+
+    worker.onerror = (err) => {
+      reject(err);
+      worker.terminate();
+    };
+
+    worker.postMessage({ pin, salt: getOrCreateInstallSalt(), iterations: ITERATIONS });
+  });
+}
+
+/**
+ * Helper para o login com Passkey:
+ * Importa a chave raw (extraída do Key Escrow do Supabase) para um CryptoKey (não-extraível)
+ */
+export async function importKeyFromBase64(base64Data: string): Promise<CryptoKey> {
+  const binaryStr = atob(base64Data);
+  const bytes = new Uint8Array(binaryStr.length);
+  for (let i = 0; i < binaryStr.length; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
+  }
+  
+  return crypto.subtle.importKey(
+    'raw',
+    bytes.buffer,
+    { name: 'AES-GCM', length: 256 },
+    false, // Mantém a regra de Zero Trust (não extraível na Main Thread)
+    ['encrypt', 'decrypt']
+  );
+}

@@ -11,7 +11,8 @@ import { PredictiveChallenges } from '../services/predictiveChallenges';
 import type { UserProfile, WorkoutPlan } from '../types';
 import { initAudio } from '../utils/audio';
 import { getMasterKey, setMasterKey } from '../utils/cryptoEngine';
-import { HistorySchema, ProfileSchema } from '../utils/schemas';
+import { HistorySchema, ProfileSchema, WorkoutSessionData } from '../utils/schemas';
+import { toWorkoutSession } from '../utils/workoutAdapters';
 import { useLS } from './index';
 
 export type ViewName =
@@ -162,7 +163,7 @@ export function useFitnessData() {
     ProfileSchema,
     isUnlocked,
   );
-  const [history, setHistory] = useLS<WorkoutSession[]>(
+  const [history, setHistory] = useLS<WorkoutSessionData[]>(
     'fit_history',
     [],
     HistorySchema,
@@ -170,7 +171,7 @@ export function useFitnessData() {
     true,
   );
   const [currentPlan, setCurrentPlan] = useState<WorkoutPlan | string | null>(null);
-  const [workoutData, setWorkoutData] = useState<WorkoutSession | null>(null);
+  const [workoutData, setWorkoutData] = useState<WorkoutSessionData | null>(null);
   const [showClubModal, setShowClubModal] = useState(false);
   const [showFreeBuilder, setShowFreeBuilder] = useState(false);
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
@@ -216,24 +217,25 @@ export function useFitnessData() {
     setView('workout');
   }, []);
 
-  const handleFinishWorkout = useCallback((data: WorkoutSession) => {
+  const handleFinishWorkout = useCallback((data: WorkoutSessionData) => {
     setWorkoutData(data);
     setView('feedback');
   }, []);
 
   const handleFeedbackSubmit = useCallback(
     async (feedback: { difficulty: string; notes?: string }) => {
-      const finalData = { ...workoutData, feedback };
-      const newHistory = [...history, finalData as WorkoutSession];
+      const finalData = { ...workoutData, feedback } as WorkoutSessionData;
+      const newHistory = [...history, finalData];
 
       // Update challenges
-      updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
+      updateChallengesFromWorkout(toWorkoutSession(finalData), newHistory.map(toWorkoutSession));
+
 
       // Save history
       setHistory(newHistory);
 
-      // Sync XP
-      await syncXPAndCheckLevelUp(profile.xp || 0, workoutData?.id, setProfile);
+      // Sync XP (passando undefined no ID)
+      await syncXPAndCheckLevelUp(profile.xp || 0, undefined, setProfile);
 
       // Reset state
       setWorkoutData(null);
@@ -244,17 +246,19 @@ export function useFitnessData() {
   );
 
   const handleInstantSave = useCallback(
-    async (data: WorkoutSession) => {
+    async (data: WorkoutSessionData) => {
       const finalData = {
         ...data,
-        feedback: { difficulty: 'good', notes: 'Caminhada registada.' },
-      };
-      const newHistory = [...history, finalData as WorkoutSession];
+        feedback: { difficulty: 'medium', notes: 'Caminhada registada.' }, // Mudou para 'medium'
+      } as WorkoutSessionData;
+      const newHistory = [...history, finalData];
 
-      updateChallengesFromWorkout(finalData as WorkoutSession, newHistory);
+      updateChallengesFromWorkout(toWorkoutSession(finalData), newHistory.map(toWorkoutSession));
       setHistory(newHistory);
-      await syncXPAndCheckLevelUp(profile.xp || 0, data.id, setProfile);
-      setView('dashboard');
+
+      // Sync XP (usando undefined para o ID)
+      // Sync XP (passando undefined no ID)
+      await syncXPAndCheckLevelUp(profile.xp || 0, undefined, setProfile);
     },
     [history, profile, setHistory, setProfile],
   );
