@@ -10,6 +10,7 @@ interface ProfileScreenProps {
   setProfile: (p: UserProfile) => void;
   onBack?: () => void;
   onOpenSettings?: () => void;
+  streakData?: { currentStreak: number; longestStreak: number };
 }
 
 interface EditForm {
@@ -23,6 +24,7 @@ export default function ProfileScreen({
   setProfile,
   onBack,
   onOpenSettings,
+  streakData,
 }: ProfileScreenProps) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<EditForm>({
@@ -169,6 +171,80 @@ export default function ProfileScreen({
           {currentLevel.title} · Nível {currentLevel.level}
         </p>
       </div>
+
+      {/* 🔥 STREAK WIDGET */}
+      {streakData && streakData.currentStreak > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="glass"
+          style={{
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '16px',
+            padding: '16px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(232,200,74,0.15) 0%, rgba(232,200,74,0.05) 100%)',
+            border: '1px solid rgba(232,200,74,0.3)',
+            boxShadow: '0 4px 20px rgba(232,200,74,0.1)',
+          }}
+        >
+          <div style={{ fontSize: '32px', lineHeight: 1 }}>🔥</div>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontFamily: '"Bebas Neue", sans-serif',
+                fontSize: '3rem',
+                fontWeight: 900,
+                color: C.accent,
+                letterSpacing: '2px',
+                lineHeight: 1,
+              }}
+            >
+              {streakData.currentStreak}
+            </div>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: C.muted,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: 600,
+                marginTop: '2px',
+              }}
+            >
+              {streakData.currentStreak === 1 ? 'DIA CONSECUTIVO' : 'DIAS CONSECUTIVOS'}
+            </div>
+          </div>
+          {streakData.longestStreak > streakData.currentStreak && (
+            <div style={{ textAlign: 'right', marginLeft: 'auto' }}>
+              <div
+                style={{
+                  fontSize: '0.65rem',
+                  color: C.muted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                }}
+              >
+                Recorde
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Bebas Neue", sans-serif',
+                  fontSize: '1.5rem',
+                  fontWeight: 900,
+                  color: C.text,
+                  letterSpacing: '1px',
+                }}
+              >
+                {streakData.longestStreak}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
         <StatCard label="PESO" value={`${profile.weight ?? '—'} kg`} icon="⚖️" />

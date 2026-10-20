@@ -38,7 +38,8 @@ export default function Dashboard({
   history = [],
   onStartWorkout,
   onNavigateToPlanner,
-}: { history?: any[]; onStartWorkout?: any; onNavigateToPlanner?: () => void }) {
+  streakData,
+}: { history?: any[]; onStartWorkout?: any; onNavigateToPlanner?: () => void; streakData?: any }) {
   const data = useDashboardData(history);
   
   // Destructure needed values
@@ -163,6 +164,78 @@ export default function Dashboard({
           Sync P2P
         </button>
       </div>
+
+      {/* 🔥 STREAK WIDGET */}
+      {!isSystemEmpty && streakData && streakData.currentStreak > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '16px',
+            padding: '16px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(232,200,74,0.15) 0%, rgba(232,200,74,0.05) 100%)',
+            border: '1px solid rgba(232,200,74,0.3)',
+            boxShadow: '0 4px 20px rgba(232,200,74,0.1)',
+          }}
+        >
+          <div style={{ fontSize: '32px', lineHeight: 1 }}>🔥</div>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontFamily: '"Bebas Neue", sans-serif',
+                fontSize: '3rem',
+                fontWeight: 900,
+                color: accentNeon,
+                letterSpacing: '2px',
+                lineHeight: 1,
+              }}
+            >
+              {streakData.currentStreak}
+            </div>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255,255,255,0.6)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: 600,
+                marginTop: '2px',
+              }}
+            >
+              {streakData.currentStreak === 1 ? 'DIA CONSECUTIVO' : 'DIAS CONSECUTIVOS'}
+            </div>
+          </div>
+          {streakData.longestStreak > streakData.currentStreak && (
+            <div style={{ textAlign: 'right', marginLeft: 'auto' }}>
+              <div
+                style={{
+                  fontSize: '0.65rem',
+                  color: 'rgba(255,255,255,0.4)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                }}
+              >
+                Recorde
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Bebas Neue", sans-serif',
+                  fontSize: '1.5rem',
+                  fontWeight: 900,
+                  color: '#fff',
+                  letterSpacing: '1px',
+                }}
+              >
+                {streakData.longestStreak}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
 
       {lastReport && (
         <div style={{ marginBottom: '4px' }}>

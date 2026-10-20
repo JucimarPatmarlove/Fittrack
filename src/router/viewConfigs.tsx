@@ -58,6 +58,7 @@ export interface ViewConfigProps {
   handleUnlock: (key: CryptoKey) => void;
   workoutData: WorkoutSessionData | null;
   currentPlan: WorkoutPlan | string | null;
+  streakData?: any;
 }
 
 /** Build the NutritionPlanner view with required props */
@@ -84,6 +85,7 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
     handleReset,
     workoutData,
     currentPlan,
+    streakData,
   } = props;
 
   return {
@@ -92,6 +94,7 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
         <Dashboard
           history={history}
           onStartWorkout={handleStartWorkout}
+          streakData={streakData}
         />
       </PageTransition>
     ),

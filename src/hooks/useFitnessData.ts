@@ -15,6 +15,113 @@ import { HistorySchema, ProfileSchema, WorkoutSessionData } from '../utils/schem
 import { toWorkoutSession } from '../utils/workoutAdapters';
 import { useLS } from './index';
 
+// Streak utility functions
+const STREAK_KEY = 'fittrack_streak_data';
+
+interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastWorkoutDate: string | null; // YYYY-MM-DD format
+  freezeUsed: boolean;
+  freezeCount: number; // monthly freeze counter
+}
+
+/** Calculate streak based on last workout date */
+function calculateStreak(lastWorkoutDate: string | null): number {
+  if (!lastWorkoutDate) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const lastWorkout = new Date(lastWorkoutDate);
+  lastWorkout.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor((today.getTime() - lastWorkout.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    // Workout was today - streak maintained (will be incremented on next workout)
+    return 1; // placeholder, actual increment happens on workout completion
+  } else if (diffDays === 1) {
+    // Workout was yesterday - streak continues
+    return -1; // signal to increment
+  } else {
+    // Gap > 1 day - streak broken
+    return 0;
+  }
+}
+
+/** Get current streak data from localStorage */
+function getStreakData(): StreakData {
+  try {
+    const stored = localStorage.getItem(STREAK_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return {
+    currentStreak: 0,
+    longestStreak: 0,
+    lastWorkoutDate: null,
+    freezeUsed: false,
+    freezeCount: 0,
+  };
+}
+
+/** Save streak data to localStorage */
+function saveStreakData(data: StreakData): void {
+  localStorage.setItem(STREAK_KEY, JSON.stringify(data));
+}
+
+/** Update streak after a workout is completed */
+function updateStreakOnWorkout(): StreakData {
+  const streakData = getStreakData();
+  const today = new Date().toISOString().split('T')[0] as string;
+
+  // Don't double-count if already worked out today
+  if (streakData.lastWorkoutDate === today) {
+    return streakData;
+  }
+
+  const diffSignal = calculateStreak(streakData.lastWorkoutDate);
+
+  if (diffSignal === -1) {
+    // Yesterday - increment streak
+    streakData.currentStreak += 1;
+  } else if (diffSignal === 0) {
+    // Gap > 1 day - reset streak
+    streakData.currentStreak = 1;
+  } else if (diffSignal === 1 && streakData.currentStreak === 0) {
+    // First workout ever
+    streakData.currentStreak = 1;
+  }
+
+  // Update longest streak
+  if (streakData.currentStreak > streakData.longestStreak) {
+    streakData.longestStreak = streakData.currentStreak;
+  }
+
+  // Reset monthly freeze on new month
+  const lastWorkoutMonth = streakData.lastWorkoutDate ? new Date(streakData.lastWorkoutDate).getMonth() : -1;
+  const currentMonth = new Date().getMonth();
+  if (lastWorkoutMonth !== currentMonth) {
+    streakData.freezeUsed = false;
+    streakData.freezeCount = 0;
+  }
+
+  streakData.lastWorkoutDate = today;
+  saveStreakData(streakData);
+  return streakData;
+}
+
+/** Use streak freeze (once per month) - exported for future use */
+export function useStreakFreeze(): StreakData {
+  const streakData = getStreakData();
+  if (!streakData.freezeUsed && streakData.currentStreak > 0) {
+    streakData.freezeUsed = true;
+    streakData.freezeCount += 1;
+    saveStreakData(streakData);
+  }
+  return streakData;
+}
+
 export type ViewName =
   | 'dashboard'
   | 'workout'
@@ -177,6 +284,7 @@ export function useFitnessData() {
   const [showFreeBuilder, setShowFreeBuilder] = useState(false);
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
   const [pendingRestoreBackup, setPendingRestoreBackup] = useState<PendingBackup | null>(null);
+  const [streakData, setStreakData] = useState<StreakData>(() => getStreakData());
 
   // ── Auto-login e backup check ──
   useEffect(() => {
@@ -235,6 +343,10 @@ export function useFitnessData() {
       // Save history
       setHistory(newHistory);
 
+      // Update streak
+      const updatedStreak = updateStreakOnWorkout();
+      setStreakData(updatedStreak);
+
       // Sync XP (passando undefined no ID)
       await syncXPAndCheckLevelUp(profile.xp || 0, undefined, setProfile);
 
@@ -256,6 +368,10 @@ export function useFitnessData() {
 
       updateChallengesFromWorkout(toWorkoutSession(finalData), newHistory.map(toWorkoutSession));
       setHistory(newHistory);
+
+      // Update streak
+      const updatedStreak = updateStreakOnWorkout();
+      setStreakData(updatedStreak);
 
       // Sync XP (usando undefined para o ID)
       // Sync XP (passando undefined no ID)
@@ -300,6 +416,7 @@ export function useFitnessData() {
     showFreeBuilder,
     showWeeklyPlan,
     pendingRestoreBackup,
+    streakData,
 
     setView,
     setProfile,

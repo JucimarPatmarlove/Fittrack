@@ -63,12 +63,13 @@ describe('workoutAdapters', () => {
         dayLabel: 'Treino Teste',
         duration: 3600,
         totalVolume: 5000,
+        exercises: [],
       };
 
       const result = toWorkoutSession(data);
 
       expect(result.id).toBeDefined();
-      expect(result.date).toBe(1700000000000); // timestamp from date string
+      expect(result.date).toBe(1699920000000); // timestamp from date string (2023-11-14T00:00:00.000Z)
       expect(result.name).toBe('Treino Teste');
       expect(result.durationSeconds).toBe(3600);
       expect(result.totalVolumeKg).toBe(5000);
@@ -83,6 +84,7 @@ describe('workoutAdapters', () => {
         dayLabel: 'Treino Teste',
         duration: 3600,
         totalVolume: 5000,
+        exercises: [],
       };
 
       const result = toWorkoutSession(data);
@@ -95,6 +97,7 @@ describe('workoutAdapters', () => {
         dayLabel: 'Treino Teste',
         duration: 3600,
         totalVolume: 5000,
+        exercises: [],
       };
 
       const result1 = toWorkoutSession(data);
@@ -110,6 +113,7 @@ describe('workoutAdapters', () => {
         dayLabel: '',
         duration: 1800,
         totalVolume: 2500,
+        exercises: [],
       };
 
       const result = toWorkoutSession(data);

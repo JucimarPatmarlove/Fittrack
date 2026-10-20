@@ -30,6 +30,7 @@ export default function App() {
     showFreeBuilder,
     showWeeklyPlan,
     pendingRestoreBackup,
+    streakData,
     setView,
     setProfile,
     setShowClubModal,
@@ -75,6 +76,7 @@ export default function App() {
     handleUnlock,
     workoutData,
     currentPlan,
+    streakData,
   });
 
   const currentView = viewConfigs[view];
