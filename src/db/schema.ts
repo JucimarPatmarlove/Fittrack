@@ -154,12 +154,39 @@ export interface FitTrackDBSchema extends DBSchema {
 const DB_NAME = 'FitTrack_V7_Database';
 
 let dbPromise: Promise<IDBPDatabase<FitTrackDBSchema>> | null = null;
+let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
+const EXPECTED_STORES = [
+  'workouts',
+  'setLogs',
+  'personalRecords',
+  'recoveryMetrics',
+  'meals',
+  'hydration',
+  'weightHistory',
+] as const;
+
+async function verifyStores(db: IDBPDatabase<FitTrackDBSchema>): Promise<void> {
+  for (const store of EXPECTED_STORES) {
+    if (!db.objectStoreNames.contains(store)) {
+      throw new Error(`Store "${store}" not found after migration`);
+    }
+  }
+}
 
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
-  if (dbPromise) return dbPromise;
+  // Return cached verified instance immediately
+  if (dbInstance) return dbInstance;
 
+  // If connection is in-flight, wait for it
+  if (dbPromise) {
+    dbInstance = await dbPromise;
+    await verifyStores(dbInstance);
+    return dbInstance;
+  }
+
+  // Start new connection
   dbPromise = openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
-    async upgrade(db, oldVersion, newVersion) {
+    async upgrade(db, oldVersion, newVersion, transaction) {
       if (!db.objectStoreNames.contains('workouts')) {
         const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
         workoutStore.createIndex('by-date', 'date');
@@ -177,17 +204,30 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
         prStore.createIndex('by-lastTrained', 'lastTrainedAt');
       }
 
-      await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION);
+      // Pass the upgrade transaction to migrations so they can access existing stores
+      await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION, transaction);
     },
   });
 
   try {
-    return await dbPromise;
+    dbInstance = await dbPromise;
+    // Verify all expected stores exist (catches v3 stores on fresh installs)
+    await verifyStores(dbInstance);
+    return dbInstance;
   } catch (err) {
-    // If connection fails, clear the promise so future calls can retry
+    // On failure, clear both caches so future calls can retry
     dbPromise = null;
+    dbInstance = null;
     throw err;
   }
+}
+
+/**
+ * Wait for database to be fully initialized and migrated.
+ * Use this in components that need to guarantee DB readiness before first read.
+ */
+export async function ensureDBReady(): Promise<IDBPDatabase<FitTrackDBSchema>> {
+  return getDB();
 }
 
 // ─── OPERAÇÕES CRUD BÁSICAS ──────────────────────────────────────────────────

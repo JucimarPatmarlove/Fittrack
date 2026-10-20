@@ -91,8 +91,8 @@ async function performSilentBackup(): Promise<void> {
 /** Check IndexedDB integrity on session resume */
 async function checkDatabaseIntegrity(): Promise<void> {
   try {
-    const { getDB } = await import('../db/schema');
-    const db = await getDB();
+    const { ensureDBReady } = await import('../db/schema');
+    const db = await ensureDBReady();
     const count = await db.count('personalRecords');
     if (count === 0 && sessionStorage.getItem('fittrack_session_unlocked') === 'true') {
       console.warn('[App] IndexedDB vazia. O navegador limpou a base de dados.');
