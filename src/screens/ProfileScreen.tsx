@@ -70,7 +70,9 @@ export default function ProfileScreen({
     <div
       style={{
         padding: '20px 18px',
-        maxWidth: 480,
+        maxWidth: '100%',
+        width: '100%',
+        boxSizing: 'border-box',
         margin: '0 auto',
         paddingBottom: 100,
       }}

@@ -505,7 +505,7 @@ export default function Dashboard({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: '24px',
           }}
         >
@@ -518,7 +518,7 @@ export default function Dashboard({
                 Balanço Calórico (7 Dias)
               </h3>
             </div>
-            <div style={{ height: '300px', width: '100%', minWidth: 0, minHeight: 0 }}>
+            <div style={{ height: '300px', width: '100%', minWidth: 0, minHeight: '300px' }}>
               {showCharts ? (
                 <ResponsiveContainer width="99%" height="100%">
                   <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
@@ -603,7 +603,7 @@ export default function Dashboard({
                 Salvar
               </button>
             </form>
-            <div style={{ height: '200px', width: '100%', minWidth: 0, minHeight: 0 }}>
+            <div style={{ height: '200px', width: '100%', minWidth: 0, minHeight: '200px' }}>
               {showCharts ? (
                 <ResponsiveContainer width="99%" height="100%">
                   <LineChart

@@ -133,7 +133,7 @@ export default function Trends({ history }: any) {
               >
                 PRONTIDÃO VS VOLUME
               </h2>
-              <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 0 }}>
+              <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 300 }}>
                 <ResponsiveContainer width="99%" height="100%">
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -188,7 +188,7 @@ export default function Trends({ history }: any) {
               >
                 ⚖️ RÁCIO AGUDO/CRÓNICO (ACWR)
               </h2>
-              <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 0 }}>
+              <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 300 }}>
                 <ResponsiveContainer width="99%" height="100%">
                   <LineChart data={acwrData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -289,7 +289,7 @@ export default function Trends({ history }: any) {
                 >
                   🏃‍♂️ RADAR: DISTÂNCIA E RITMO
                 </h2>
-                <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 0 }}>
+                <div style={{ height: 300, width: '100%', minWidth: 0, minHeight: 300 }}>
                   <ResponsiveContainer width="99%" height="100%">
                     <LineChart data={walkingData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
