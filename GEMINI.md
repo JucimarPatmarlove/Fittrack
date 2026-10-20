@@ -7,3 +7,12 @@
 @./.agents/skills/superpowers/using-superpowers/references/gemini-tools.md
 
 <!-- SUPERPOWERS_END -->
+
+## Contexto de Memória do Projeto
+
+No início de cada sessão, deverás ler o ficheiro de memória mais recente na pasta `.agents/n8n_files/` executando o comando:
+```bash
+cat $(ls -t ~/Documentos/Fittrack/.agents/n8n_files/*.md | head -n 1)
+```
+
+Usa essa informação como contexto base do projeto.

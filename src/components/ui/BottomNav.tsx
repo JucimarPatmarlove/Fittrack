@@ -127,8 +127,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <NavButton
           icon="👤"
           label="Perfil"
-          isActive={view === 'settings'}
-          onClick={() => setView('settings')}
+          isActive={view === 'profile'}
+          onClick={() => setView('profile')}
         />
       </div>
     </div>

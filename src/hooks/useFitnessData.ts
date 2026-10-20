@@ -19,6 +19,7 @@ export type ViewName =
   | 'dashboard'
   | 'workout'
   | 'settings'
+  | 'profile'
   | 'assessment'
   | 'guide'
   | 'feedback'

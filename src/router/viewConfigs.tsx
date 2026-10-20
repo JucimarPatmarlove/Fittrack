@@ -16,6 +16,7 @@ import { toWorkoutData } from '../utils/workoutAdapters';
 const Dashboard = lazy(() => import('../screens/Dashboard'));
 const ActiveWorkout = lazy(() => import('../screens/ActiveWorkout'));
 const Settings = lazy(() => import('../screens/Settings'));
+const ProfileScreen = lazy(() => import('../screens/ProfileScreen'));
 const AICoach = lazy(() => import('../screens/AICoach'));
 const Trends = lazy(() => import('../screens/Trends'));
 const GymVibe = lazy(() => import('../screens/GymVibe'));
@@ -108,6 +109,16 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
     settings: (
       <PageTransition viewKey="set">
         <Settings profile={profile} setProfile={setProfile} onReset={handleReset} />
+      </PageTransition>
+    ),
+    profile: (
+      <PageTransition viewKey="profile">
+        <ProfileScreen
+          profile={profile}
+          setProfile={setProfile}
+          onBack={() => setView('dashboard')}
+          onOpenSettings={() => setView('settings')}
+        />
       </PageTransition>
     ),
     assessment: (
