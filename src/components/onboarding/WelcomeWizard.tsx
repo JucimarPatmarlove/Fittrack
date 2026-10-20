@@ -109,8 +109,8 @@ export const WelcomeWizard: React.FC<WelcomeWizardProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 30 }}>
               {[
                 { id: 'hipertrofia', label: 'Hipertrofia (Ganho Muscular)', icon: '💪' },
-                { id: 'resistencia', label: 'Resistência (Condicionamento)', icon: '🏃' },
-                { id: 'mobilidade', label: 'Mobilidade / Recuperação', icon: '🧘' },
+                { id: 'condicionamento', label: 'Resistência (Condicionamento)', icon: '🏃' },
+                { id: 'saude', label: 'Mobilidade / Saúde', icon: '🧘' },
               ].map((g) => (
                 <button
                   key={g.id}

@@ -1,4 +1,3 @@
-import basicSsl from '@vitejs/plugin-basic-ssl';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
@@ -7,7 +6,6 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     react(),
-    basicSsl(),
     process.env.ANALYZE === 'true' && visualizer({ open: true, filename: 'dist/stats.html' }),
     VitePWA({
       registerType: 'autoUpdate',
@@ -121,7 +119,7 @@ export default defineConfig({
   },
 
   server: {
-    https: true,
+    https: false,
     allowedHosts: true,
     host: true,
     proxy: {

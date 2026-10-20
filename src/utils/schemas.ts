@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const ProfileSchema = z
   .object({
     name: z.string().min(1, 'O nome não pode estar vazio').max(50),
-    goal: z.enum(['hipertrofia', 'forca', 'condicionamento', 'perda_peso', 'saude']),
+    goal: z.enum(['hipertrofia', 'forca', 'condicionamento', 'perda_peso', 'saude', 'resistencia', 'mobilidade', 'v_taper_aesthetics']),
     level: z.enum(['beginner', 'intermediate', 'advanced', 'pro']),
     weight: z.number().min(30).max(300),
     xp: z.number().min(0).default(0),

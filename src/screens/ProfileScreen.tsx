@@ -22,6 +22,7 @@ export default function ProfileScreen({
   profile,
   setProfile,
   onBack,
+  onOpenSettings,
 }: ProfileScreenProps) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<EditForm>({

@@ -153,12 +153,12 @@ export interface FitTrackDBSchema extends DBSchema {
 
 const DB_NAME = 'FitTrack_V7_Database';
 
-let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
+let dbPromise: Promise<IDBPDatabase<FitTrackDBSchema>> | null = null;
 
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
-  if (dbInstance) return dbInstance;
+  if (dbPromise) return dbPromise;
 
-  dbInstance = await openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
+  dbPromise = openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
     async upgrade(db, oldVersion, newVersion) {
       if (!db.objectStoreNames.contains('workouts')) {
         const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
@@ -181,7 +181,13 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
     },
   });
 
-  return dbInstance;
+  try {
+    return await dbPromise;
+  } catch (err) {
+    // If connection fails, clear the promise so future calls can retry
+    dbPromise = null;
+    throw err;
+  }
 }
 
 // ─── OPERAÇÕES CRUD BÁSICAS ──────────────────────────────────────────────────
