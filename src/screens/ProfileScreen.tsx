@@ -429,6 +429,21 @@ export default function ProfileScreen({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Atribuição obrigatória */}
+      <div
+        style={{
+          marginTop: 24,
+          padding: '12px 16px',
+          textAlign: 'center',
+          fontSize: 10,
+          color: C.muted,
+          lineHeight: 1.4,
+          borderTop: `1px solid ${C.border}`,
+        }}
+      >
+        Exercise media © Gym visual (gymvisual.com)
+      </div>
     </div>
   );
 }

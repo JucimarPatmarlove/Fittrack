@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUPS,
 } from '../../data/constants';
 import { getExerciseMedia } from '../../data/exerciseMedia';
+import { useExerciseStore } from '../../stores/useExerciseStore';
 
 // ── Colour per muscle group ─────────────────────────────────────────────────
 const MUSCLE_COLOR: Record<string, string> = {
@@ -31,22 +32,32 @@ const muscleColor = (m: string) => MUSCLE_COLOR[m] ?? '#e8c84a';
 // ── Thumbnail component — loads GIF / SVG / emoji fallback ─────────────────
 const ExerciseThumb = ({ name, emoji }: { name: string; emoji: string }) => {
   const media = getExerciseMedia(name);
+  const EXERCISE_DB = useExerciseStore((s) => s.exercises);
+  const dbEntry = (EXERCISE_DB as any)[name];
+  const dbGif = dbEntry?.media?.gif as string | undefined;
+  const gifUrl = dbGif || media.gifUrl;
+  const svgUrl = media.imageUrl.replace('.jpg', '.svg');
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try SVG first (smaller, offline-safe)
-    const svgUrl = media.imageUrl.replace('.jpg', '.svg');
-    const img = new Image();
-    img.src = svgUrl;
-    img.onload = () => setSrc(svgUrl);
-    img.onerror = () => {
-      if (media.gifUrl) {
-        const gif = new Image();
-        gif.src = media.gifUrl;
-        gif.onload = () => setSrc(media.gifUrl || null);
-      }
-    };
-  }, [name, media.imageUrl, media.gifUrl]);
+    // Try GIF first (primary — shows animation), then SVG fallback
+    if (gifUrl) {
+      const gif = new Image();
+      gif.src = gifUrl;
+      gif.onload = () => setSrc(gifUrl);
+      gif.onerror = () => {
+        // Fallback to SVG
+        const svg = new Image();
+        svg.src = svgUrl;
+        svg.onload = () => setSrc(svgUrl);
+      };
+    } else {
+      // No GIF — try SVG
+      const svg = new Image();
+      svg.src = svgUrl;
+      svg.onload = () => setSrc(svgUrl);
+    }
+  }, [name, gifUrl, svgUrl]);
 
   return (
     <div
@@ -90,6 +101,8 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
   const [selected, setSelected] = useState<string[]>([]);
   const [openFilter, setOpenFilter] = useState<'muscle' | 'equipment' | 'type' | null>(null);
   const [view, setView] = useState<ViewMode>('grid');
+  const INITIAL_PAGE = 50;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE);
 
   const filtered = useMemo(() => {
     return EXERCISE_LIBRARY.filter((ex) => {
@@ -100,6 +113,14 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
       return matchSearch && matchMuscle && matchEquip && matchType;
     });
   }, [search, muscle, equipment, actType]);
+
+  // Whenever the filters/search change, reset the visible window.
+  useEffect(() => {
+    setVisibleCount(INITIAL_PAGE);
+  }, [search, muscle, equipment, actType]);
+
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
 
   const toggle = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -392,7 +413,7 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
                   padding: '8px 16px',
                 }}
               >
-                {filtered.map((ex, idx) => {
+                {visible.map((ex, idx) => {
                   const isSel = selected.includes(ex.id);
                   const primaryMuscle = ex.muscles[0] ?? '';
                   const color = muscleColor(primaryMuscle);
@@ -516,7 +537,7 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
             ) : (
               // ── LIST VIEW ─────────────────────────────────────────────────
               <div>
-                {filtered.map((ex, idx) => {
+                {visible.map((ex, idx) => {
                   const isSel = selected.includes(ex.id);
                   const primaryMuscle = ex.muscles[0] ?? '';
                   const color = muscleColor(primaryMuscle);
@@ -617,6 +638,43 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
                     </motion.div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* ── Ver Mais / load more ──────────────────────────────────────── */}
+            {hasMore && (
+              <div style={{ padding: '12px 16px 8px', textAlign: 'center' }}>
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + INITIAL_PAGE)}
+                  style={{
+                    background: 'none',
+                    border: `1px solid ${C.border}`,
+                    color: C.text,
+                    padding: '12px 24px',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: 'all 0.2s',
+                    width: '100%',
+                    maxWidth: 320,
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = `${C.accent}18`;
+                    (e.currentTarget as HTMLElement).style.borderColor = C.accent;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'none';
+                    (e.currentTarget as HTMLElement).style.borderColor = C.border;
+                  }}
+                >
+                  Ver Mais ({filtered.length - visibleCount} restantes)
+                </button>
+              </div>
+            )}
+            {!hasMore && filtered.length > INITIAL_PAGE && (
+              <div style={{ padding: '10px 16px', textAlign: 'center', color: C.muted, fontSize: 11 }}>
+                · Mostrados todos os {filtered.length} exercícios ·
               </div>
             )}
 

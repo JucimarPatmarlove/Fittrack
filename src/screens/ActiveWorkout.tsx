@@ -68,7 +68,7 @@ export interface ActiveWorkoutProps {
 }
 
 type SetArray = Array<Array<{ reps: number; weight: number; rpe: number; done: boolean }>>;
-type LocalExercise = { name: string; muscle: string; [key: string]: any };
+type LocalExercise = { name: string; muscle: string;[key: string]: any };
 
 // ── HELPERS PUROS (extraídos com complexidade baixa) ──────────────────────
 
@@ -291,7 +291,8 @@ export default function ActiveWorkout({
   onFinish,
   onCancel,
 }: ActiveWorkoutProps) {
-  const { exercises: EXERCISE_DB, fetchExercises } = useExerciseStore();
+  const EXERCISE_DB = useExerciseStore((state) => state.exercises);
+  const fetchExercises = useExerciseStore((state) => state.fetchExercises);
   useEffect(() => {
     fetchExercises();
   }, [fetchExercises]);
@@ -440,13 +441,13 @@ export default function ActiveWorkout({
     const interval = setInterval(() => setEmomRemainingSeconds((p) => p - 1), 1000);
     return () => clearInterval(interval);
   }, [workoutMode, emomRunning, emomRemainingSeconds]);
+  const dbSize = Object.keys(EXERCISE_DB).length;
 
   useEffect(() => {
-    if (Object.keys(EXERCISE_DB).length > 0 && localExs.some((e) => !e.equipment)) {
+    if (dbSize > 0 && localExs.some((e) => !e.equipment)) {
       setLocalExs((prev) => prev.map((e) => ({ ...e, ...(EXERCISE_DB[e.name] || {}) })));
     }
-  }, [EXERCISE_DB]);
-
+  }, [dbSize, localExs]); // Depende do tamanho (primitivo) e da lista local
   // Handlers
   const handleRepDetected = () => {
     if (!profile.proMode && navigator.vibrate) navigator.vibrate(20);
@@ -519,7 +520,7 @@ export default function ActiveWorkout({
   const toggle = (ei: number, si: number) => {
     const currentSet = sets[ei]?.[si];
     if (!currentSet) return;
-    
+
     if (!currentSet.done && currentSet.weight > 0 && currentSet.reps > 0) {
       handlePRAndSaveLog(ei, si, currentSet, localExs[ei]?.name || '');
     }
@@ -1031,10 +1032,10 @@ export default function ActiveWorkout({
               localExs={
                 isHighImpactPainful
                   ? localExs.map((ex) => ({
-                      ...ex,
-                      name: DemographicEngine.replaceHighImpactExercise(ex.name),
-                      _originalName: ex.name,
-                    }))
+                    ...ex,
+                    name: DemographicEngine.replaceHighImpactExercise(ex.name),
+                    _originalName: ex.name,
+                  }))
                   : localExs
               }
               sets={sets}
