@@ -16,11 +16,11 @@ import {
   Legend,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { ChartContainer } from '../components/ui/ChartContainer';
 import { BiometricDeltaCard } from '../components/dashboard/BiometricDeltaCard';
 import { BiometricInsight } from '../components/dashboard/BiometricInsight';
 import { DailyBriefing } from '../components/dashboard/DailyBriefing';
@@ -87,6 +87,10 @@ export default function Dashboard({
       ?.flatMap((w) => w.exercises?.map((e: any) => e.name))
       .filter((name: string) => name && !name.includes('Caminhada')) || [];
   }, [history]);
+
+  // Memoized chart margins to prevent new object creation on each render
+  const chartMarginCal = useMemo(() => ({ top: 10, right: 10, left: -20, bottom: 5 }), []);
+  const chartMarginWeight = useMemo(() => ({ top: 5, right: 15, left: -25, bottom: 5 }), []);
 
   // --- STYLES INLINE (V7 Dark Neon Pattern) ---
   const glassCardStyle = {
@@ -593,8 +597,8 @@ export default function Dashboard({
             </div>
             <div style={{ height: '300px', width: '100%', minWidth: 0, minHeight: '300px' }}>
               {showCharts ? (
-                <ResponsiveContainer width="99%" height="100%">
-                  <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+                <ChartContainer minWidth={300} minHeight={300}>
+                  <BarChart data={chartDataCal} margin={chartMarginCal}>
                     <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
                     <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
                     <Tooltip
@@ -610,7 +614,7 @@ export default function Dashboard({
                     <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
                   </BarChart>
-                </ResponsiveContainer>
+                </ChartContainer>
               ) : (
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
               )}
@@ -678,10 +682,10 @@ export default function Dashboard({
             </form>
             <div style={{ height: '200px', width: '100%', minWidth: 0, minHeight: '200px' }}>
               {showCharts ? (
-                <ResponsiveContainer width="99%" height="100%">
+                <ChartContainer minWidth={300} minHeight={200}>
                   <LineChart
                     data={chartDataWeight}
-                    margin={{ top: 5, right: 15, left: -25, bottom: 5 }}
+                    margin={chartMarginWeight}
                   >
                     <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
                     <YAxis
@@ -706,7 +710,7 @@ export default function Dashboard({
                       dot={{ fill: blueNeon, r: 4 }}
                     />
                   </LineChart>
-                </ResponsiveContainer>
+                </ChartContainer>
               ) : (
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
               )}
