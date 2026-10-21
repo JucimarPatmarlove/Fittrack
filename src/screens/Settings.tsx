@@ -559,6 +559,22 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
           🗑 APAGAR TUDO E RECOMEÇAR
         </button>
       </div>
+
+      <div
+        style={{
+          background: 'rgba(100,116,139,0.04)',
+          border: '1px solid rgba(100,116,139,0.1)',
+          borderRadius: 8,
+          padding: 10,
+          marginTop: 16,
+          fontSize: 10,
+          color: C.muted,
+          lineHeight: 1.4,
+          textAlign: 'center',
+        }}
+      >
+        Exercise media © Gym visual (gymvisual.com)
+      </div>
     </div>
   );
 }
