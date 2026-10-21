@@ -4,7 +4,7 @@
 // src/components/ai/ProactiveMessage.tsx
 // ============================================================
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, AlertTriangle, Flame, Trophy, Moon, Dumbbell } from 'lucide-react';
 import type { ProactiveMessage } from '../../services/aiCoach/proactiveEngine';
@@ -124,9 +124,14 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
 
 // Banner fixo no topo (para mensagens urgentes)
 export const ProactiveBanner: React.FC = () => {
-  const urgentMessages = useProactiveCoachStore(useShallow((s) =>
-    s.messages.filter(m => (m.priority === 'urgent' || m.priority === 'high') && !m.dismissed)
-  ));
+  const allMessages = useProactiveCoachStore(useShallow((s) => s.messages));
+  const urgentMessages = useMemo(
+    () =>
+      allMessages.filter(
+        (m) => (m.priority === 'urgent' || m.priority === 'high') && !m.dismissed,
+      ),
+    [allMessages],
+  );
   const dismissMessage = useProactiveCoachStore((s) => s.dismissMessage);
 
   const topMessage = urgentMessages[0];
@@ -159,9 +164,8 @@ export const ProactiveBanner: React.FC = () => {
 
 // Lista de mensagens (para uma tab/screen dedicada)
 export const ProactiveMessageList: React.FC = () => {
-  const messages = useProactiveCoachStore(useShallow((s) =>
-    s.messages.filter(shouldShowMessage)
-  ));
+  const allMessages = useProactiveCoachStore(useShallow((s) => s.messages));
+  const messages = useMemo(() => allMessages.filter(shouldShowMessage), [allMessages]);
   const unreadCount = useProactiveCoachStore((s) => s.unreadCount);
 
   return (

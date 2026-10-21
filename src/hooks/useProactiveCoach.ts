@@ -4,7 +4,7 @@
 // src/hooks/useProactiveCoach.ts
 // ============================================================
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useProactiveCoachStore } from '../stores/useProactiveCoachStore';
 import { useInjuryStore } from '../stores/useInjuryStore';
 import type { TriggerContext } from '../services/aiCoach/proactiveEngine';

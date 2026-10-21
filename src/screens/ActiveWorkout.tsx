@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 
 import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';
 import { GlobalBackground } from '../components/ui/GlobalBackground';
 import { C, ME } from '../data/constants';
@@ -321,9 +321,13 @@ export default function ActiveWorkout({
   const [showRiskPanel, setShowRiskPanel] = useState(true);
   const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
   const { generateReport } = useInjuryStore();
-  const proactiveMessages = useProactiveCoachStore(useShallow((s) => s.getActiveMessages()));
-  const injuryMsgs = proactiveMessages.filter(
-    (m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical',
+  const allProactiveMessages = useProactiveCoachStore(useShallow((s) => s.messages));
+  const injuryMsgs = useMemo(
+    () =>
+      allProactiveMessages
+        .filter((m) => !m.dismissed)
+        .filter((m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical'),
+    [allProactiveMessages],
   );
   const [newPRData, setNewPRData] = useState<{ exerciseName: string; weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{
@@ -445,11 +449,15 @@ export default function ActiveWorkout({
   }, [workoutMode, emomRunning, emomRemainingSeconds]);
   const dbSize = Object.keys(EXERCISE_DB).length;
 
+  const mergeDoneRef = useRef(false);
+
   useEffect(() => {
+    if (mergeDoneRef.current) return;
     if (dbSize > 0 && localExs.some((e) => !e.equipment)) {
       setLocalExs((prev) => prev.map((e) => ({ ...e, ...(EXERCISE_DB[e.name] || {}) })));
+      mergeDoneRef.current = true;
     }
-  }, [dbSize, localExs]); // Depende do tamanho (primitivo) e da lista local
+  }, [dbSize]);
   // Handlers
   const handleRepDetected = () => {
     if (!profile.proMode && navigator.vibrate) navigator.vibrate(20);
