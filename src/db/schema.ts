@@ -147,6 +147,10 @@ export interface FitTrackDBSchema extends DBSchema {
     key: string;
     value: WeightLog;
   };
+  keyval: {
+    key: string;
+    value: unknown;
+  };
 }
 
 // ─── SINGLETON DA BASE DE DADOS ──────────────────────────────────────────────
@@ -163,6 +167,7 @@ const EXPECTED_STORES = [
   'meals',
   'hydration',
   'weightHistory',
+  'keyval',
 ] as const;
 
 async function verifyStores(db: IDBPDatabase<FitTrackDBSchema>): Promise<void> {

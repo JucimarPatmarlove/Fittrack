@@ -3,7 +3,7 @@
 import type { IDBPDatabase, IDBTransaction } from 'idb';
 import type { FitTrackDBSchema } from './schema';
 
-export const CURRENT_DB_VERSION = 3;
+export const CURRENT_DB_VERSION = 4;
 
 interface Migration {
   version: number;
@@ -56,6 +56,15 @@ const migrations: Migration[] = [
       }
     },
   },
+  {
+    version: 4,
+    name: 'Adiciona keyval store para Zustand persist',
+    up: (db) => {
+      if (!db.objectStoreNames.contains('keyval')) {
+        db.createObjectStore('keyval');
+      }
+    },
+  },
 ];
 
 export async function runMigrations(
@@ -94,6 +103,7 @@ export async function checkSchemaHealth(): Promise<{
     'meals',
     'hydration',
     'weightHistory',
+    'keyval',
   ];
   const missing = expected.filter((s: string) => !db.objectStoreNames.contains(s as any));
   return {
