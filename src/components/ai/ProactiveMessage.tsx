@@ -13,6 +13,7 @@ import { useProactiveCoachStore } from '../../stores/useProactiveCoachStore';
 import { InteractiveButton } from '../ui/MotionComponents';
 import { useShallow } from 'zustand/react/shallow';
 
+
 const PRIORITY_STYLES = {
   urgent: 'bg-red-50 border-red-300 text-red-900 shadow-red-100',
   high: 'bg-orange-50 border-orange-300 text-orange-900 shadow-orange-100',
@@ -97,13 +98,12 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
         <div className="mt-3 flex gap-2">
           <InteractiveButton
             onClick={() => onAction?.(message)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition ${
-              message.priority === 'urgent'
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition ${message.priority === 'urgent'
                 ? 'bg-red-600 text-white hover:bg-red-700'
                 : message.priority === 'high'
                   ? 'bg-orange-600 text-white hover:bg-orange-700'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
+              }`}
           >
             {message.actionLabel}
             <ChevronRight className="w-4 h-4" />
@@ -124,7 +124,7 @@ export const ProactiveMessageCard: React.FC<ProactiveMessageProps> = ({
 
 // Banner fixo no topo (para mensagens urgentes)
 export const ProactiveBanner: React.FC = () => {
-  const urgentMessages = useProactiveCoachStore(useShallow((s) => 
+  const urgentMessages = useProactiveCoachStore(useShallow((s) =>
     s.messages.filter(m => (m.priority === 'urgent' || m.priority === 'high') && !m.dismissed)
   ));
   const dismissMessage = useProactiveCoachStore((s) => s.dismissMessage);
@@ -139,9 +139,8 @@ export const ProactiveBanner: React.FC = () => {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
-        className={`sticky top-0 z-50 p-3 ${
-          topMessage.priority === 'urgent' ? 'bg-red-600' : 'bg-orange-500'
-        } text-white`}
+        className={`sticky top-0 z-50 p-3 ${topMessage.priority === 'urgent' ? 'bg-red-600' : 'bg-orange-500'
+          } text-white`}
       >
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <span className="text-xl">{getMessageIcon(topMessage.trigger)}</span>
@@ -160,7 +159,7 @@ export const ProactiveBanner: React.FC = () => {
 
 // Lista de mensagens (para uma tab/screen dedicada)
 export const ProactiveMessageList: React.FC = () => {
-  const messages = useProactiveCoachStore(useShallow((s) => 
+  const messages = useProactiveCoachStore(useShallow((s) =>
     s.messages.filter(shouldShowMessage)
   ));
   const unreadCount = useProactiveCoachStore((s) => s.unreadCount);

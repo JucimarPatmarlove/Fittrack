@@ -58,6 +58,8 @@ import { useMilestonesStore } from '../stores/useMilestonesStore';
 import { useProgressionStore } from '../stores/useProgressionStore';
 import { calculateWorkoutEffort } from '../utils/xpCalculator';
 
+import { useShallow } from 'zustand/react/shallow';
+
 // ── TYPES ──────────────────────────────────────────────────────────────────
 export interface ActiveWorkoutProps {
   todayPlan: any;
@@ -319,7 +321,7 @@ export default function ActiveWorkout({
   const [showRiskPanel, setShowRiskPanel] = useState(true);
   const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
   const { generateReport } = useInjuryStore();
-  const proactiveMessages = useProactiveCoachStore((s) => s.getActiveMessages());
+  const proactiveMessages = useProactiveCoachStore(useShallow((s) => s.getActiveMessages()));
   const injuryMsgs = proactiveMessages.filter(
     (m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical',
   );
