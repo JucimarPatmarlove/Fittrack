@@ -180,11 +180,22 @@ async function verifyStores(db: IDBPDatabase<FitTrackDBSchema>): Promise<void> {
 
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
   // Return cached verified instance immediately
-  if (dbInstance) return dbInstance;
+  if (dbInstance) {
+    // Ensure keyval store exists even for cached instances (handles upgrades)
+    if (!dbInstance.objectStoreNames.contains('keyval')) {
+      await dbInstance.createObjectStore('keyval');
+    }
+    await verifyStores(dbInstance);
+    return dbInstance;
+  }
 
   // If connection is in-flight, wait for it
   if (dbPromise) {
     dbInstance = await dbPromise;
+    // Ensure keyval store exists even for in-flight connections
+    if (!dbInstance.objectStoreNames.contains('keyval')) {
+      await dbInstance.createObjectStore('keyval');
+    }
     await verifyStores(dbInstance);
     return dbInstance;
   }
@@ -219,6 +230,11 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
 
   try {
     dbInstance = await dbPromise;
+    // Ensure keyval store exists (handles edge case where DB was created at v4
+    // without the keyval store via the upgrade handler)
+    if (!dbInstance.objectStoreNames.contains('keyval')) {
+      await dbInstance.createObjectStore('keyval');
+    }
     // Verify all expected stores exist (catches v3 stores on fresh installs)
     await verifyStores(dbInstance);
     return dbInstance;
