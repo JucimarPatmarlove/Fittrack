@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useShallow } from 'react';
 import { getTodayDateString } from '../services/nutritionEngine';
 import { useDualWorkoutStore } from '../stores/useDualWorkoutStore';
 import { useHealthStore } from '../stores/useHealthStore';
@@ -35,8 +35,7 @@ export function useDashboardData(history: any[] = []) {
 
   const { lastReport, generateReport } = useInjuryStore();
   
-  // TODO: we should use useShallow, but let's just do a manual check if needed. Actually we can just use the store directly or extract messages and filter locally.
-  const allMessages = useProactiveCoachStore((s) => s.messages);
+  const allMessages = useProactiveCoachStore(useShallow((s) => s.messages));
   const urgentMessagesMemo = useMemo(() => {
     return allMessages
       .filter((m: any) => m.priority === 'urgent' || m.priority === 'high');
