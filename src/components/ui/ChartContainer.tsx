@@ -23,7 +23,7 @@ export function ChartContainer({
 }: ChartContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -41,7 +41,7 @@ export function ChartContainer({
       rafRef.current = requestAnimationFrame(() => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
-          setDimensions((prev) => ({
+          setDimensions(() => ({
             width: Math.max(width, minWidth),
             height: Math.max(height, minHeight),
           }));
@@ -87,7 +87,7 @@ export function ChartContainer({
         minHeight,
       }}
     >
-      {React.cloneElement(children, {
+      {React.cloneElement(children as React.ReactElement<any>, {
         width: dimensions.width,
         height: dimensions.height,
       })}

@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__n8n__search_workflows",
+      "mcp__n8n__get_workflow_sdk_reference",
+      "mcp__n8n__validate_workflow",
+      "mcp__n8n__create_workflow_from_code",
+      "mcp__n8n__search_nodes",
+      "mcp__n8n__get_node_types",
+      "mcp__n8n__execute_workflow",
+      "mcp__n8n__get_workflow_details",
+      "mcp__n8n__update_workflow",
+      "mcp__pmcp__gateway_request_capability",
+      "mcp__pmcp__gateway_describe",
+      "mcp__pmcp__gateway_invoke",
+      "Bash(echo \"---EXIT $?---\")",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(npx playwright *)",
+      "Bash(PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/home/kali/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome node *)",
+      "mcp__pmcp__gateway_provision",
+      "WebFetch(domain:hevy.com)",
+      "WebFetch(domain:hevyapp.com)",
+      "WebFetch(domain:strong.app)",
+      "WebSearch",
+      "Bash(npm test *)",
+      "Bash(python3 *)",
+      "Bash(git checkout *)",
+      "Bash(node *)",
+      "mcp__rea__list_browser_targets",
+      "mcp__rea__capture_browser_scenario",
+      "Read(//usr/bin/**)",
+      "Bash(ls /Applications/*.app/Contents/MacOS/*)",
+      "Bash(TaskStop kp5sxpqcl *)",
+      "Bash(TaskStop k211x97om *)",
+      "Bash(TaskStop kottuavuw *)",
+      "Bash(TaskStop k9wtr8er3 *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "pmcp"
+  ],
+  "disabledMcpjsonServers": [
+    "n8n",
+    "playwright"
+  ]
+}
