@@ -179,69 +179,53 @@ async function verifyStores(db: IDBPDatabase<FitTrackDBSchema>): Promise<void> {
 }
 
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
-  // Return cached verified instance immediately
-  if (dbInstance) {
-    // Ensure keyval store exists even for cached instances (handles upgrades)
-    if (!dbInstance.objectStoreNames.contains('keyval')) {
-      await dbInstance.createObjectStore('keyval');
+  // Always ensure keyval store exists, even for cached instances
+  // This handles: (a) fresh installs where DB is being created, (b) upgrades from v3→v4,
+  // (c) edge case where DB was at v4 without keyval store via the upgrade handler
+  const ensureKeyval = async (db: IDBPDatabase<FitTrackDBSchema>): Promise<void> => {
+    if (!db.objectStoreNames.contains('keyval')) {
+      db.createObjectStore('keyval');
     }
-    await verifyStores(dbInstance);
-    return dbInstance;
+  };
+
+  // Start new connection — this is the only path that creates the DB from scratch
+  if (!dbPromise) {
+    dbPromise = openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
+      async upgrade(db, oldVersion, newVersion, transaction) {
+        if (!db.objectStoreNames.contains('workouts')) {
+          const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
+          workoutStore.createIndex('by-date', 'date');
+          workoutStore.createIndex('by-completed', 'isCompleted');
+        }
+        if (!db.objectStoreNames.contains('setLogs')) {
+          const setLogStore = db.createObjectStore('setLogs', { keyPath: 'id' });
+          setLogStore.createIndex('by-workoutId', 'workoutId');
+          setLogStore.createIndex('by-exerciseName', 'exerciseName');
+          setLogStore.createIndex('by-timestamp', 'timestamp');
+          setLogStore.createIndex('by-exercise-timestamp', ['exerciseName', 'timestamp']);
+        }
+        if (!db.objectStoreNames.contains('personalRecords')) {
+          const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
+          prStore.createIndex('by-lastTrained', 'lastTrainedAt');
+        }
+        if (!db.objectStoreNames.contains('keyval')) {
+          db.createObjectStore('keyval');
+        }
+
+        // Pass the upgrade transaction to migrations so they can access existing stores
+        await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION, transaction);
+      },
+    });
   }
-
-  // If connection is in-flight, wait for it
-  if (dbPromise) {
-    dbInstance = await dbPromise;
-    // Ensure keyval store exists even for in-flight connections
-    if (!dbInstance.objectStoreNames.contains('keyval')) {
-      await dbInstance.createObjectStore('keyval');
-    }
-    await verifyStores(dbInstance);
-    return dbInstance;
-  }
-
-  // Start new connection
-  dbPromise = openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
-    async upgrade(db, oldVersion, newVersion, transaction) {
-      if (!db.objectStoreNames.contains('workouts')) {
-        const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
-        workoutStore.createIndex('by-date', 'date');
-        workoutStore.createIndex('by-completed', 'isCompleted');
-      }
-      if (!db.objectStoreNames.contains('setLogs')) {
-        const setLogStore = db.createObjectStore('setLogs', { keyPath: 'id' });
-        setLogStore.createIndex('by-workoutId', 'workoutId');
-        setLogStore.createIndex('by-exerciseName', 'exerciseName');
-        setLogStore.createIndex('by-timestamp', 'timestamp');
-        setLogStore.createIndex('by-exercise-timestamp', ['exerciseName', 'timestamp']);
-      }
-      if (!db.objectStoreNames.contains('personalRecords')) {
-        const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
-        prStore.createIndex('by-lastTrained', 'lastTrainedAt');
-      }
-      if (!db.objectStoreNames.contains('keyval')) {
-        db.createObjectStore('keyval');
-      }
-
-      // Pass the upgrade transaction to migrations so they can access existing stores
-      await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION, transaction);
-    },
-  });
 
   try {
-    dbInstance = await dbPromise;
-    // Ensure keyval store exists (handles edge case where DB was created at v4
-    // without the keyval store via the upgrade handler)
-    if (!dbInstance.objectStoreNames.contains('keyval')) {
-      await dbInstance.createObjectStore('keyval');
-    }
-    // Verify all expected stores exist (catches v3 stores on fresh installs)
-    await verifyStores(dbInstance);
-    return dbInstance;
+    const db = await dbPromise;
+    await ensureKeyval(db);
+    await verifyStores(db);
+    return db;
   } catch (err) {
-    // On failure, clear both caches so future calls can retry
+    // On failure, clear the promise so future calls can retry
     dbPromise = null;
-    dbInstance = null;
     throw err;
   }
 }
