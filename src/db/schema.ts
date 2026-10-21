@@ -208,6 +208,9 @@ export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
         const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
         prStore.createIndex('by-lastTrained', 'lastTrainedAt');
       }
+      if (!db.objectStoreNames.contains('keyval')) {
+        db.createObjectStore('keyval');
+      }
 
       // Pass the upgrade transaction to migrations so they can access existing stores
       await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION, transaction);
