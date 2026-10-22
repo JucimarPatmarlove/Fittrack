@@ -60,8 +60,15 @@ const migrations: Migration[] = [
     version: 4,
     name: 'Adiciona keyval store para Zustand persist',
     up: (db) => {
+      // Ensure keyval store exists; idb-keyval expects this store to be present
       if (!db.objectStoreNames.contains('keyval')) {
-        db.createObjectStore('keyval');
+        try {
+          db.createObjectStore('keyval');
+        } catch (e) {
+          // If creation fails (e.g. store already exists in concurrent upgrade),
+          // that's OK — the store will be ensured on next open.
+          console.warn('[Migration v4] Could not create keyval store:', e);
+        }
       }
     },
   },

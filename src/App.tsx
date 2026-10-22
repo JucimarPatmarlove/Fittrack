@@ -1,5 +1,6 @@
 import ErrorBoundary from './components/ErrorBoundary';
 import { LazyLoad } from './components/ui/MotionComponents';
+// AnimatePresence removed to prevent render loop
 
 import { LockScreen } from './components/security/LockScreen';
 import { SocialModal } from './components/social/SocialModal';

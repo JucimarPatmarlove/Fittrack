@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useShallow } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { getTodayDateString } from '../services/nutritionEngine';
 import { useDualWorkoutStore } from '../stores/useDualWorkoutStore';
 import { useHealthStore } from '../stores/useHealthStore';
