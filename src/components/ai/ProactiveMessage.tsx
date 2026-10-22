@@ -5,8 +5,8 @@
 // ============================================================
 
 import React, { useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight, AlertTriangle, Flame, Trophy, Moon, Dumbbell } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { X, ChevronRight, AlertTriangle, Flame, Moon, Dumbbell } from 'lucide-react';
 import type { ProactiveMessage } from '../../services/aiCoach/proactiveEngine';
 import { getMessageIcon, shouldShowMessage } from '../../services/aiCoach/proactiveEngine';
 import { useProactiveCoachStore } from '../../stores/useProactiveCoachStore';
@@ -138,27 +138,25 @@ export const ProactiveBanner: React.FC = () => {
   if (!topMessage) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        key={topMessage.id}
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -50 }}
-        className={`sticky top-0 z-50 p-3 ${topMessage.priority === 'urgent' ? 'bg-red-600' : 'bg-orange-500'
-          } text-white`}
-      >
-        <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <span className="text-xl">{getMessageIcon(topMessage.trigger)}</span>
-          <p className="flex-1 text-sm font-medium">{topMessage.title}</p>
-          <button
-            onClick={() => dismissMessage(topMessage.id)}
-            className="p-1 hover:bg-white/20 rounded-full"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={topMessage.id}
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50 }}
+      className={`sticky top-0 z-50 p-3 ${topMessage.priority === 'urgent' ? 'bg-red-600' : 'bg-orange-500'
+        } text-white`}
+    >
+      <div className="flex items-center gap-3 max-w-lg mx-auto">
+        <span className="text-xl">{getMessageIcon(topMessage.trigger)}</span>
+        <p className="flex-1 text-sm font-medium">{topMessage.title}</p>
+        <button
+          onClick={() => dismissMessage(topMessage.id)}
+          className="p-1 hover:bg-white/20 rounded-full"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </motion.div>
   );
 };
 
@@ -179,20 +177,7 @@ export const ProactiveMessageList: React.FC = () => {
         )}
       </div>
 
-      <AnimatePresence mode="popLayout">
-        {messages.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 text-gray-400"
-          >
-            <Trophy className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>Tudo em ordem! Nenhum alerta ativo.</p>
-          </motion.div>
-        ) : (
-          messages.map((msg) => <ProactiveMessageCard key={msg.id} message={msg} />)
-        )}
-      </AnimatePresence>
+      {messages.map((msg) => <ProactiveMessageCard key={msg.id} message={msg} />)}
     </div>
   );
 };
