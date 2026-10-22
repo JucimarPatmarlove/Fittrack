@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 
 import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';
 import { GlobalBackground } from '../components/ui/GlobalBackground';
 import { C, ME } from '../data/constants';
@@ -58,6 +58,8 @@ import { useMilestonesStore } from '../stores/useMilestonesStore';
 import { useProgressionStore } from '../stores/useProgressionStore';
 import { calculateWorkoutEffort } from '../utils/xpCalculator';
 
+import { useShallow } from 'zustand/react/shallow';
+
 // ── TYPES ──────────────────────────────────────────────────────────────────
 export interface ActiveWorkoutProps {
   todayPlan: any;
@@ -68,7 +70,7 @@ export interface ActiveWorkoutProps {
 }
 
 type SetArray = Array<Array<{ reps: number; weight: number; rpe: number; done: boolean }>>;
-type LocalExercise = { name: string; muscle: string; [key: string]: any };
+type LocalExercise = { name: string; muscle: string;[key: string]: any };
 
 // ── HELPERS PUROS (extraídos com complexidade baixa) ──────────────────────
 
@@ -291,7 +293,8 @@ export default function ActiveWorkout({
   onFinish,
   onCancel,
 }: ActiveWorkoutProps) {
-  const { exercises: EXERCISE_DB, fetchExercises } = useExerciseStore();
+  const EXERCISE_DB = useExerciseStore((state) => state.exercises);
+  const fetchExercises = useExerciseStore((state) => state.fetchExercises);
   useEffect(() => {
     fetchExercises();
   }, [fetchExercises]);
@@ -318,9 +321,13 @@ export default function ActiveWorkout({
   const [showRiskPanel, setShowRiskPanel] = useState(true);
   const [riskReport, setRiskReport] = useState<InjuryRiskReport | null>(null);
   const { generateReport } = useInjuryStore();
-  const proactiveMessages = useProactiveCoachStore((s) => s.getActiveMessages());
-  const injuryMsgs = proactiveMessages.filter(
-    (m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical',
+  const allProactiveMessages = useProactiveCoachStore(useShallow((s) => s.messages));
+  const injuryMsgs = useMemo(
+    () =>
+      allProactiveMessages
+        .filter((m) => !m.dismissed)
+        .filter((m) => m.trigger === 'injury_risk_high' || m.trigger === 'injury_risk_critical'),
+    [allProactiveMessages],
   );
   const [newPRData, setNewPRData] = useState<{ exerciseName: string; weight: number } | null>(null);
   const [autoregulationMessage, setAutoregulationMessage] = useState<{
@@ -440,13 +447,17 @@ export default function ActiveWorkout({
     const interval = setInterval(() => setEmomRemainingSeconds((p) => p - 1), 1000);
     return () => clearInterval(interval);
   }, [workoutMode, emomRunning, emomRemainingSeconds]);
+  const dbSize = Object.keys(EXERCISE_DB).length;
+
+  const mergeDoneRef = useRef(false);
 
   useEffect(() => {
-    if (Object.keys(EXERCISE_DB).length > 0 && localExs.some((e) => !e.equipment)) {
+    if (mergeDoneRef.current) return;
+    if (dbSize > 0 && localExs.some((e) => !e.equipment)) {
       setLocalExs((prev) => prev.map((e) => ({ ...e, ...(EXERCISE_DB[e.name] || {}) })));
+      mergeDoneRef.current = true;
     }
-  }, [EXERCISE_DB]);
-
+  }, [dbSize]);
   // Handlers
   const handleRepDetected = () => {
     if (!profile.proMode && navigator.vibrate) navigator.vibrate(20);
@@ -519,7 +530,7 @@ export default function ActiveWorkout({
   const toggle = (ei: number, si: number) => {
     const currentSet = sets[ei]?.[si];
     if (!currentSet) return;
-    
+
     if (!currentSet.done && currentSet.weight > 0 && currentSet.reps > 0) {
       handlePRAndSaveLog(ei, si, currentSet, localExs[ei]?.name || '');
     }
@@ -1031,10 +1042,10 @@ export default function ActiveWorkout({
               localExs={
                 isHighImpactPainful
                   ? localExs.map((ex) => ({
-                      ...ex,
-                      name: DemographicEngine.replaceHighImpactExercise(ex.name),
-                      _originalName: ex.name,
-                    }))
+                    ...ex,
+                    name: DemographicEngine.replaceHighImpactExercise(ex.name),
+                    _originalName: ex.name,
+                  }))
                   : localExs
               }
               sets={sets}

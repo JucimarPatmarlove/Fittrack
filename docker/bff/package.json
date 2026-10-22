@@ -1,0 +1,10 @@
+{
+  "name": "fittrack-bff",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "FitTrack V7 BFF Proxy Server (Zero Trust)",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0"
+  }
+}

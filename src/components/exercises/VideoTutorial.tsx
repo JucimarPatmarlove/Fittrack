@@ -109,9 +109,13 @@ export const VideoTutorial = ({
   const EXERCISE_DB = useExerciseStore((s) => s.exercises);
   const dbEntry = (EXERCISE_DB as any)[exerciseName];
   const videoSrc = dbEntry?.media?.video;
+  // GIF de origem prioritário: primeiro o registado na base de dados (exercise.media.gif),
+  // depois o mapeamento local de media.
+  const dbGif = dbEntry?.media?.gif as string | undefined;
 
   const media = getExerciseMedia(exerciseName);
   const svgUrl = media.imageUrl.replace('.jpg', '.svg');
+  const gifUrl = dbGif || media.gifUrl;
   const [mediaState, setMediaState] = useState<'loading' | 'gif' | 'svg' | 'video' | 'error'>(
     'loading',
   );
@@ -174,16 +178,16 @@ export const VideoTutorial = ({
     imgSvg.src = svgUrl;
     imgSvg.onload = () => setMediaState('svg');
     imgSvg.onerror = () => {
-      if (media.gifUrl) {
+      if (gifUrl) {
         const imgGif = new Image();
-        imgGif.src = media.gifUrl;
+        imgGif.src = gifUrl;
         imgGif.onload = () => setMediaState('gif');
         imgGif.onerror = () => setMediaState('error');
       } else {
         setMediaState('error');
       }
     };
-  }, [exerciseName, svgUrl, media.gifUrl, videoSrc]);
+  }, [exerciseName, svgUrl, gifUrl, videoSrc]);
 
   const stepsCompleted = stepDone.filter(Boolean).length;
   const progressPct = steps.length > 0 ? (stepsCompleted / steps.length) * 100 : 0;
@@ -389,7 +393,7 @@ export const VideoTutorial = ({
               {(mediaState === 'gif' || mediaState === 'svg') && (
                 <>
                   <img
-                    src={mediaState === 'gif' ? media.gifUrl : svgUrl}
+                    src={mediaState === 'gif' ? gifUrl : svgUrl}
                     alt={`Execução de ${exerciseName}`}
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                   />

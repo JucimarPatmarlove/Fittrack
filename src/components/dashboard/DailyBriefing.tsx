@@ -3,9 +3,10 @@ import { motion } from 'framer-motion';
 import { Calendar, CalendarPlus, CheckCircle, ChevronRight, Dumbbell, Zap } from 'lucide-react';
 import type React from 'react';
 import { useMemo } from 'react';
+import type { WorkoutSessionData } from '../../utils/schemas';
 
 interface DailyBriefingProps {
-  history: any[];
+  history: WorkoutSessionData[];
   plannedWorkoutToday?: {
     title: string;
     period: 'Manhã' | 'Tarde' | 'Noite';
@@ -27,7 +28,7 @@ export const DailyBriefing: React.FC<DailyBriefingProps> = ({
   const yesterdaysWorkout = useMemo(() => {
     const yesterdayString = format(subDays(new Date(), 1), 'yyyy-MM-dd');
     return history.find(
-      (w) => w.date === yesterdayString || w.startTime?.startsWith(yesterdayString),
+      (w) => w.date === yesterdayString,
     );
   }, [history]);
 
@@ -98,18 +99,18 @@ export const DailyBriefing: React.FC<DailyBriefingProps> = ({
               }}
             >
               <CheckCircle size={20} color="#ccff00" />
-              {yesterdaysWorkout.name || 'Treino Concluído'}
+              {yesterdaysWorkout.dayLabel || 'Treino Concluído'}
             </h4>
             <p
               style={{ fontSize: '0.85rem', color: '#9ca3af', margin: 0, fontFamily: 'monospace' }}
             >
               {Math.floor(
-                yesterdaysWorkout.totalCalories || yesterdaysWorkout.caloriesBurned || 300,
+                yesterdaysWorkout.totalVolume || 300,
               )}{' '}
               kcal •{' '}
               <span style={{ color: '#00ff88' }}>
-                {yesterdaysWorkout.durationSeconds
-                  ? Math.floor(yesterdaysWorkout.durationSeconds / 60)
+                {yesterdaysWorkout.duration
+                  ? Math.floor(yesterdaysWorkout.duration / 60)
                   : 45}{' '}
                 min
               </span>

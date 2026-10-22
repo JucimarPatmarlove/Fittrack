@@ -147,41 +147,95 @@ export interface FitTrackDBSchema extends DBSchema {
     key: string;
     value: WeightLog;
   };
+  keyval: {
+    key: string;
+    value: unknown;
+  };
 }
 
 // ─── SINGLETON DA BASE DE DADOS ──────────────────────────────────────────────
 
 const DB_NAME = 'FitTrack_V7_Database';
 
+let dbPromise: Promise<IDBPDatabase<FitTrackDBSchema>> | null = null;
 let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
+const EXPECTED_STORES = [
+  'workouts',
+  'setLogs',
+  'personalRecords',
+  'recoveryMetrics',
+  'meals',
+  'hydration',
+  'weightHistory',
+  'keyval',
+] as const;
+
+async function verifyStores(db: IDBPDatabase<FitTrackDBSchema>): Promise<void> {
+  for (const store of EXPECTED_STORES) {
+    if (!db.objectStoreNames.contains(store)) {
+      throw new Error(`Store "${store}" not found after migration`);
+    }
+  }
+}
 
 export async function getDB(): Promise<IDBPDatabase<FitTrackDBSchema>> {
-  if (dbInstance) return dbInstance;
+  // Always ensure keyval store exists, even for cached instances
+  // This handles: (a) fresh installs where DB is being created, (b) upgrades from v3→v4,
+  // (c) edge case where DB was at v4 without keyval store via the upgrade handler
+  const ensureKeyval = async (db: IDBPDatabase<FitTrackDBSchema>): Promise<void> => {
+    if (!db.objectStoreNames.contains('keyval')) {
+      db.createObjectStore('keyval');
+    }
+  };
 
-  dbInstance = await openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
-    async upgrade(db, oldVersion, newVersion) {
-      if (!db.objectStoreNames.contains('workouts')) {
-        const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
-        workoutStore.createIndex('by-date', 'date');
-        workoutStore.createIndex('by-completed', 'isCompleted');
-      }
-      if (!db.objectStoreNames.contains('setLogs')) {
-        const setLogStore = db.createObjectStore('setLogs', { keyPath: 'id' });
-        setLogStore.createIndex('by-workoutId', 'workoutId');
-        setLogStore.createIndex('by-exerciseName', 'exerciseName');
-        setLogStore.createIndex('by-timestamp', 'timestamp');
-        setLogStore.createIndex('by-exercise-timestamp', ['exerciseName', 'timestamp']);
-      }
-      if (!db.objectStoreNames.contains('personalRecords')) {
-        const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
-        prStore.createIndex('by-lastTrained', 'lastTrainedAt');
-      }
+  // Start new connection — this is the only path that creates the DB from scratch
+  if (!dbPromise) {
+    dbPromise = openDB<FitTrackDBSchema>(DB_NAME, CURRENT_DB_VERSION, {
+      async upgrade(db, oldVersion, newVersion, transaction) {
+        if (!db.objectStoreNames.contains('workouts')) {
+          const workoutStore = db.createObjectStore('workouts', { keyPath: 'id' });
+          workoutStore.createIndex('by-date', 'date');
+          workoutStore.createIndex('by-completed', 'isCompleted');
+        }
+        if (!db.objectStoreNames.contains('setLogs')) {
+          const setLogStore = db.createObjectStore('setLogs', { keyPath: 'id' });
+          setLogStore.createIndex('by-workoutId', 'workoutId');
+          setLogStore.createIndex('by-exerciseName', 'exerciseName');
+          setLogStore.createIndex('by-timestamp', 'timestamp');
+          setLogStore.createIndex('by-exercise-timestamp', ['exerciseName', 'timestamp']);
+        }
+        if (!db.objectStoreNames.contains('personalRecords')) {
+          const prStore = db.createObjectStore('personalRecords', { keyPath: 'exerciseName' });
+          prStore.createIndex('by-lastTrained', 'lastTrainedAt');
+        }
+        if (!db.objectStoreNames.contains('keyval')) {
+          db.createObjectStore('keyval');
+        }
 
-      await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION);
-    },
-  });
+        // Pass the upgrade transaction to migrations so they can access existing stores
+        await runMigrations(db, oldVersion, newVersion || CURRENT_DB_VERSION, transaction);
+      },
+    });
+  }
 
-  return dbInstance;
+  try {
+    const db = await dbPromise;
+    await ensureKeyval(db);
+    await verifyStores(db);
+    return db;
+  } catch (err) {
+    // On failure, clear the promise so future calls can retry
+    dbPromise = null;
+    throw err;
+  }
+}
+
+/**
+ * Wait for database to be fully initialized and migrated.
+ * Use this in components that need to guarantee DB readiness before first read.
+ */
+export async function ensureDBReady(): Promise<IDBPDatabase<FitTrackDBSchema>> {
+  return getDB();
 }
 
 // ─── OPERAÇÕES CRUD BÁSICAS ──────────────────────────────────────────────────

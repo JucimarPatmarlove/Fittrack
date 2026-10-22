@@ -1,4 +1,3 @@
-import { AnimatePresence } from 'framer-motion';
 import ErrorBoundary from './components/ErrorBoundary';
 import { LazyLoad } from './components/ui/MotionComponents';
 
@@ -31,6 +30,7 @@ export default function App() {
     showFreeBuilder,
     showWeeklyPlan,
     pendingRestoreBackup,
+    streakData,
     setView,
     setProfile,
     setShowClubModal,
@@ -76,6 +76,7 @@ export default function App() {
     handleUnlock,
     workoutData,
     currentPlan,
+    streakData,
   });
 
   const currentView = viewConfigs[view];
@@ -104,7 +105,7 @@ export default function App() {
 
       <ErrorBoundary>
         <LazyLoad skeleton="card" skeletonClassName="mt-20 mx-4">
-          <AnimatePresence mode="wait">{currentView}</AnimatePresence>
+          {currentView}
         </LazyLoad>
       </ErrorBoundary>
 

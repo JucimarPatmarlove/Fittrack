@@ -1,14 +1,19 @@
-// @ts-nocheck
 // ============================================================
 // FitTrack V7 — AI Coach Proativo Engine
 // ============================================================
 // src/services/aiCoach/proactiveEngine.ts
 // ============================================================
 
-import type { InjuryRiskReport, _StressReading } from '../../types/injury';
+import type { InjuryRiskReport } from '../../types/injury';
 import type { RecoveryInput } from '../../types/injury';
-import type { WorkoutSession } from '../../types';
 import { trackEvent } from '../../utils/telemetry';
+import { z } from 'zod';
+import { WorkoutSchema, ExerciseSchema, SetSchema } from '../../utils/schemas';
+
+export type AnySet = z.infer<typeof SetSchema>;
+export type ExerciseEntry = z.infer<typeof ExerciseSchema>;
+export type WorkoutSessionData = z.infer<typeof WorkoutSchema>;
+
 
 // ── 1. Tipos do Sistema Proativo ───────────────────────────
 
@@ -50,8 +55,8 @@ export interface ProactiveMessage {
 export interface TriggerContext {
   injuryReport: InjuryRiskReport | null;
   recoveryData: RecoveryInput | null;
-  lastWorkout: WorkoutSession | null;
-  workoutHistory: WorkoutSession[];
+  lastWorkout: WorkoutSessionData | null;
+  workoutHistory: WorkoutSessionData[];
   streakDays: number;
   daysSinceLastWorkout: number;
   userBodyweight: number;
@@ -93,7 +98,7 @@ const TRIGGER_RULES: TriggerRule[] = [
   {
     type: 'injury_risk_high',
     condition: (ctx) =>
-      ctx.injuryReport?.overallRisk === 'high' && ctx.injuryReport?.overallRisk !== 'critical',
+      ctx.injuryReport?.overallRisk === 'high',
     priority: 'high',
     generateMessage: (ctx) => {
       const mods = ctx.injuryReport?.suggestedModifications || [];
@@ -141,7 +146,7 @@ const TRIGGER_RULES: TriggerRule[] = [
       const highACWR = ctx.injuryReport?.flaggedRegions.some((r) => r.acuteChronicRatio > 1.3);
       const highRPE = ctx.workoutHistory
         .slice(-7)
-        .every((w) => w.exercises.some((e) => e.sets.some((s: any) => (s.rpe || 5) > 8)));
+        .every((w) => w.exercises.some((e) => e.sets.some((s: AnySet) => (s.rpe || 5) > 8)));
       return !!highACWR && highRPE;
     },
     priority: 'high',
@@ -185,27 +190,30 @@ const TRIGGER_RULES: TriggerRule[] = [
       const last = ctx.lastWorkout;
       if (!last) return false;
       // Detectar se algum set foi PR (lógica simplificada)
-      return last.exercises.some((ex: any) =>
-        ex.sets.some((set: any) => {
+      return last.exercises.some((ex: ExerciseEntry) =>
+        ex.sets.some((set: AnySet) => {
           if (set.type !== 'weighted') return false;
           // Comparar com histórico (simplificado)
           const historicalMax = ctx.workoutHistory
             .filter((w) => w.date < last.date)
             .flatMap((w) => w.exercises)
-            .filter((e: any) => e.name === ex.name)
-            .flatMap((e: any) => e.sets)
-            .filter((s: any) => s.type === 'weighted')
-            .reduce((max: number, s: any) => Math.max(max, s.weight || 0), 0);
+            .filter((e: ExerciseEntry) => e.name === ex.name)
+            .flatMap((e: ExerciseEntry) => e.sets)
+            .filter((s: AnySet) => s.type === 'weighted')
+            .reduce((max: number, s: AnySet) => {
+              if (s.type === 'weighted') return Math.max(max, s.weight || 0);
+              return max;
+            }, 0);
           return (set.weight || 0) > historicalMax && historicalMax > 0;
         }),
       );
     },
     priority: 'medium',
     generateMessage: (ctx) => {
-      const prExercise = ctx.lastWorkout?.exercises.find((ex: any) =>
-        ex.sets.some((set: any) => set.type === 'weighted' && set.isPR),
+      const prExercise = ctx.lastWorkout?.exercises.find((ex: ExerciseEntry) =>
+        ex.sets.some((set: AnySet) => set.type === 'weighted' && (set as any).isPR),
       );
-      const prSet = prExercise?.sets.find((s: any) => s.isPR);
+      const prSet = prExercise?.sets.find((s: AnySet) => s.type === 'weighted' && (s as any).isPR) as Extract<AnySet, { type: 'weighted' }> | undefined;
       return {
         trigger: 'pr_achieved',
         priority: 'medium',

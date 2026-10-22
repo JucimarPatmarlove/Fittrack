@@ -3,6 +3,7 @@ import { Check, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { estimateCaloriesBurned } from '../../services/fitnessMechanics';
+import { calculate1RM } from '../../utils/fitnessMath';
 import { useCommunityStore } from '../../stores/useCommunityStore';
 import { MuscleHeatmap } from '../stats/MuscleHeatmap';
 
@@ -151,8 +152,8 @@ export const DetailedHistory = ({
           </button>
         </div>
 
-        <div style={{ width: '100%', height: 250 }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div style={{ width: '100%', height: 250, minWidth: 0, minHeight: 250 }}>
+          <ResponsiveContainer width="99%" height="100%">
             <LineChart data={chartData}>
               <XAxis
                 dataKey="name"
@@ -236,7 +237,46 @@ export const DetailedHistory = ({
                 </div>
               </div>
               <div style={{ color: '#eceae4', fontSize: 12, lineHeight: 1.4 }}>
-                {w.exercises?.map((ex: any) => `${ex.name} (${ex.sets?.length || 0}s)`).join(', ')}
+                {w.exercises?.map((ex: any) =>
+                  ex.sets?.map((set: any, si: number) => (
+                    <div
+                      key={si}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span style={{ color: '#8892a2', fontSize: 11 }}>
+                        {ex.name} set {si + 1}
+                      </span>
+                      {set.weight > 0 && set.reps > 0 ? (
+                        <span
+                          style={{
+                            background: '#2d4a22',
+                            color: '#a8d896',
+                            padding: '2px 6px',
+                            borderRadius: 8,
+                            fontSize: 10,
+                            marginLeft: 4,
+                            fontFamily: "'DM Mono'",
+                          }}
+                        >
+                          1RM Est.: {calculate1RM(set.weight, set.reps)} kg
+                        </span>
+                      ) : null}
+                      {set.weight === 0 && set.reps === 0 ? null : (
+                        <span style={{ color: '#55626e', fontSize: 12 }}>
+                          Nenhuma série registrada
+                        </span>
+                      )}
+                    </div>
+                  )) || (
+                    <span style={{ color: '#55626e', fontSize: 12 }}>
+                      Nenhuma série registrada
+                    </span>
+                  ))}
               </div>
               {onStartWorkout && (
                 <button

@@ -16,6 +16,10 @@ export const ExerciseTutorialExt = ({ exercise }: ExerciseTutorialProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const media = getExerciseMedia(exercise.name);
   const svgUrl = media.imageUrl.replace('.jpg', '.svg');
+  // GIF de origem prioritário: primeiro o registado na base de dados (exercise.media.gif),
+  // depois o mapeamento local de media.
+  const dbGif = (exercise as any)?.media?.gif as string | undefined;
+  const gifUrl = dbGif || media.gifUrl;
 
   // 'loading' -> 'gif' -> 'svg' -> 'error'
   const [mediaState, setMediaState] = useState<'loading' | 'gif' | 'svg' | 'error'>('loading');
@@ -24,18 +28,18 @@ export const ExerciseTutorialExt = ({ exercise }: ExerciseTutorialProps) => {
     if (!isOpen) return;
     setMediaState('loading');
 
-    // Testa o GIF
+    // Testa o GIF (animação do exercício)
     const imgGif = new Image();
-    imgGif.src = media.gifUrl || '';
+    imgGif.src = gifUrl || '';
     imgGif.onload = () => setMediaState('gif');
     imgGif.onerror = () => {
-      // Falhou o GIF, tenta o SVG
+      // Falhou o GIF, tenta a imagem estática (SVG)
       const imgSvg = new Image();
       imgSvg.src = svgUrl;
       imgSvg.onload = () => setMediaState('svg');
       imgSvg.onerror = () => setMediaState('error');
     };
-  }, [isOpen, exercise.name, media.gifUrl, svgUrl]);
+  }, [isOpen, exercise.name, gifUrl, svgUrl]);
 
   const handleOpen = (e: any) => {
     e.stopPropagation();
@@ -160,7 +164,7 @@ export const ExerciseTutorialExt = ({ exercise }: ExerciseTutorialProps) => {
                   </div>
                 )}
 
-                {mediaState === 'gif' && (
+                {mediaState === 'gif' && gifUrl && (
                   <div
                     style={{
                       width: '100%',
@@ -172,7 +176,7 @@ export const ExerciseTutorialExt = ({ exercise }: ExerciseTutorialProps) => {
                     }}
                   >
                     <img
-                      src={media.gifUrl}
+                      src={gifUrl}
                       alt={`${exercise.name} execução`}
                       style={{ width: '100%', height: 'auto', display: 'block' }}
                     />

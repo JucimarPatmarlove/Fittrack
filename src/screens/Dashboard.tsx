@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Activity,
@@ -15,16 +16,17 @@ import {
   Legend,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { ChartContainer } from '../components/ui/ChartContainer';
 import { BiometricDeltaCard } from '../components/dashboard/BiometricDeltaCard';
 import { BiometricInsight } from '../components/dashboard/BiometricInsight';
 import { DailyBriefing } from '../components/dashboard/DailyBriefing';
 import { ReadinessGauge } from '../components/dashboard/ReadinessGauge';
 import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
+import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';
 import { P2PSyncModal } from '../components/social/P2PSyncModal';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -36,7 +38,8 @@ export default function Dashboard({
   history = [],
   onStartWorkout,
   onNavigateToPlanner,
-}: { history?: any[]; onStartWorkout?: any; onNavigateToPlanner?: () => void }) {
+  streakData,
+}: { history?: any[]; onStartWorkout?: any; onNavigateToPlanner?: () => void; streakData?: any }) {
   const data = useDashboardData(history);
   
   // Destructure needed values
@@ -72,6 +75,22 @@ export default function Dashboard({
     chartDataWeight,
     acwr,
   } = data;
+
+  const [showCharts, setShowCharts] = React.useState(false);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setShowCharts(true), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const recentExercises = useMemo(() => {
+    return history
+      ?.flatMap((w) => w.exercises?.map((e: any) => e.name))
+      .filter((name: string) => name && !name.includes('Caminhada')) || [];
+  }, [history]);
+
+  // Memoized chart margins to prevent new object creation on each render
+  const chartMarginCal = useMemo(() => ({ top: 10, right: 10, left: -20, bottom: 5 }), []);
+  const chartMarginWeight = useMemo(() => ({ top: 5, right: 15, left: -25, bottom: 5 }), []);
 
   // --- STYLES INLINE (V7 Dark Neon Pattern) ---
   const glassCardStyle = {
@@ -149,6 +168,78 @@ export default function Dashboard({
           Sync P2P
         </button>
       </div>
+
+      {/* 🔥 STREAK WIDGET */}
+      {!isSystemEmpty && streakData && streakData.currentStreak > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '16px',
+            padding: '16px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(232,200,74,0.15) 0%, rgba(232,200,74,0.05) 100%)',
+            border: '1px solid rgba(232,200,74,0.3)',
+            boxShadow: '0 4px 20px rgba(232,200,74,0.1)',
+          }}
+        >
+          <div style={{ fontSize: '32px', lineHeight: 1 }}>🔥</div>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontFamily: '"Bebas Neue", sans-serif',
+                fontSize: '3rem',
+                fontWeight: 900,
+                color: accentNeon,
+                letterSpacing: '2px',
+                lineHeight: 1,
+              }}
+            >
+              {streakData.currentStreak}
+            </div>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255,255,255,0.6)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: 600,
+                marginTop: '2px',
+              }}
+            >
+              {streakData.currentStreak === 1 ? 'DIA CONSECUTIVO' : 'DIAS CONSECUTIVOS'}
+            </div>
+          </div>
+          {streakData.longestStreak > streakData.currentStreak && (
+            <div style={{ textAlign: 'right', marginLeft: 'auto' }}>
+              <div
+                style={{
+                  fontSize: '0.65rem',
+                  color: 'rgba(255,255,255,0.4)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                }}
+              >
+                Recorde
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Bebas Neue", sans-serif',
+                  fontSize: '1.5rem',
+                  fontWeight: 900,
+                  color: '#fff',
+                  letterSpacing: '1px',
+                }}
+              >
+                {streakData.longestStreak}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
 
       {lastReport && (
         <div style={{ marginBottom: '4px' }}>
@@ -246,6 +337,10 @@ export default function Dashboard({
           }
         />
       )}
+
+      {/* 🔥 RADAR DE CONSISTÊNCIA — Heatmap Premium (365 dias) 🔥 */}
+      {!isSystemEmpty && <ActivityHeatmap history={history} />}
+
       {/* 📡 TELEMETRIA BIOLÓGICA — HealthKit (RENPHO + Apple Watch) 📡 */}
       <BiometricInsight
         healthData={healthKitData as any}
@@ -487,7 +582,7 @@ export default function Dashboard({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: '24px',
           }}
         >
@@ -500,25 +595,29 @@ export default function Dashboard({
                 Balanço Calórico (7 Dias)
               </h3>
             </div>
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartDataCal} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
-                  <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#080b0f',
-                      borderRadius: '12px',
-                      borderColor: accentNeon,
-                      color: '#fff',
-                    }}
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#fff' }} />
-                  <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <div style={{ height: '300px', width: '100%', minWidth: 0, minHeight: '300px' }}>
+              {showCharts ? (
+                <ChartContainer minWidth={300} minHeight={300}>
+                  <BarChart data={chartDataCal} margin={chartMarginCal}>
+                    <XAxis dataKey="name" stroke="#55626e" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#55626e" fontSize={11} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#080b0f',
+                        borderRadius: '12px',
+                        borderColor: accentNeon,
+                        color: '#fff',
+                      }}
+                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#fff' }} />
+                    <Bar dataKey="Consumidas" fill={successNeon} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Gastas" fill={accentNeon} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ChartContainer>
+              ) : (
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
+              )}
             </div>
           </div>
 
@@ -581,36 +680,40 @@ export default function Dashboard({
                 Salvar
               </button>
             </form>
-            <div style={{ height: '200px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={chartDataWeight}
-                  margin={{ top: 5, right: 15, left: -25, bottom: 5 }}
-                >
-                  <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
-                  <YAxis
-                    stroke="#55626e"
-                    fontSize={10}
-                    domain={['dataMin - 2', 'dataMax + 2']}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#080b0f',
-                      borderRadius: '10px',
-                      borderColor: blueNeon,
-                      color: '#fff',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="peso"
-                    stroke={blueNeon}
-                    strokeWidth={3}
-                    dot={{ fill: blueNeon, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div style={{ height: '200px', width: '100%', minWidth: 0, minHeight: '200px' }}>
+              {showCharts ? (
+                <ChartContainer minWidth={300} minHeight={200}>
+                  <LineChart
+                    data={chartDataWeight}
+                    margin={chartMarginWeight}
+                  >
+                    <XAxis dataKey="name" stroke="#55626e" fontSize={10} tickLine={false} />
+                    <YAxis
+                      stroke="#55626e"
+                      fontSize={10}
+                      domain={['dataMin - 2', 'dataMax + 2']}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#080b0f',
+                        borderRadius: '10px',
+                        borderColor: blueNeon,
+                        color: '#fff',
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="peso"
+                      stroke={blueNeon}
+                      strokeWidth={3}
+                      dot={{ fill: blueNeon, r: 4 }}
+                    />
+                  </LineChart>
+                </ChartContainer>
+              ) : (
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>A carregar gráfico...</div>
+              )}
             </div>
           </div>
         </div>
@@ -648,13 +751,7 @@ export default function Dashboard({
             </p>
           </div>
           <div>
-            <TrendDashboardSection
-              recentExercises={
-                history
-                  ?.flatMap((w) => w.exercises?.map((e: any) => e.name))
-                  .filter((name: string) => name && !name.includes('Caminhada')) || []
-              }
-            />
+            <TrendDashboardSection recentExercises={recentExercises} />
           </div>
         </div>
       </StaggerList>

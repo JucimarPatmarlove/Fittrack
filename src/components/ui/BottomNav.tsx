@@ -84,11 +84,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         className="glass"
         style={{
           display: 'flex',
-          gap: '20px',
-          padding: '12px 24px',
+          gap: '12px',
+          padding: '12px 16px',
           borderRadius: '32px',
           pointerEvents: 'auto',
           boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+          maxWidth: 'calc(100vw - 32px)',
+          overflow: 'hidden',
         }}
       >
         {NAV_ITEMS.map((item) => (
@@ -127,8 +129,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <NavButton
           icon="👤"
           label="Perfil"
-          isActive={view === 'settings'}
-          onClick={() => setView('settings')}
+          isActive={view === 'profile'}
+          onClick={() => setView('profile')}
         />
       </div>
     </div>

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { create } from 'zustand';
+import { ensureDBReady } from '../db/schema';
 import {
   getAllWeightLogsDecrypted,
   getDailyMealLogDecrypted,
@@ -89,6 +90,9 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
   loadNutritionData: async (date: string) => {
     set({ isLoading: true });
     try {
+      // Ensure DB is fully migrated before first read
+      await ensureDBReady();
+
       const [mealLog, hydrationLog] = await Promise.all([
         getDailyMealLogDecrypted(date),
         getHydrationLogDecrypted(date),
@@ -186,6 +190,9 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
 
   loadAllWeightLogs: async () => {
     try {
+      // Ensure DB is fully migrated before first read
+      await ensureDBReady();
+
       const logs = await getAllWeightLogsDecrypted();
       set({ weightHistory: logs.sort((a, b) => a.date.localeCompare(b.date)) });
     } catch (err) {

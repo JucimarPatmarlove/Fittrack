@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useShallow } from 'react';
 import { getTodayDateString } from '../services/nutritionEngine';
 import { useDualWorkoutStore } from '../stores/useDualWorkoutStore';
 import { useHealthStore } from '../stores/useHealthStore';
@@ -34,7 +34,12 @@ export function useDashboardData(history: any[] = []) {
   } = useHealthStore();
 
   const { lastReport, generateReport } = useInjuryStore();
-  const urgentMessages = useProactiveCoachStore((s) => s.getUrgentMessages());
+  
+  const allMessages = useProactiveCoachStore(useShallow((s) => s.messages));
+  const urgentMessagesMemo = useMemo(() => {
+    return allMessages
+      .filter((m: any) => m.priority === 'urgent' || m.priority === 'high');
+  }, [allMessages]);
 
   useEffect(() => {
     if (history && profile) {
@@ -153,8 +158,8 @@ export function useDashboardData(history: any[] = []) {
     });
   }, [meals, history]);
 
-  const chartDataWeight =
-    weightHistory.length === 0
+  const chartDataWeight = useMemo(() => {
+    return weightHistory.length === 0
       ? [{ name: 'Hoje', peso: profile?.weight }]
       : [...weightHistory]
           .sort((a: any, b: any) => a.date.localeCompare(b.date))
@@ -163,6 +168,7 @@ export function useDashboardData(history: any[] = []) {
             name: w.date.split('-').slice(1).reverse().join('/'),
             peso: w.weight,
           }));
+  }, [weightHistory, profile?.weight]);
 
   // Calcular ACWR (Acute: 7 dias / Chronic: 28 dias)
   const acwr = useMemo(() => {
@@ -194,7 +200,7 @@ export function useDashboardData(history: any[] = []) {
     setShowP2P,
     isSystemEmpty,
     lastReport,
-    urgentMessages,
+    urgentMessages: urgentMessagesMemo,
     plannedWorkoutToday,
     getWorkoutsForDate,
     currentPlan,

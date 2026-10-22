@@ -1,3 +1,0 @@
-src/screens/ActiveWorkout.tsx(912,17): error TS2532: Object is possibly 'undefined'.
-src/screens/ActiveWorkout.tsx(913,19): error TS2532: Object is possibly 'undefined'.
-src/screens/ActiveWorkout.tsx(914,16): error TS2532: Object is possibly 'undefined'.

@@ -7,7 +7,8 @@ import {
   SENSITIVE_STORE_NAMES,
   migrateLocalStorageToEncrypted,
 } from '../../stores/encryptedPersist';
-import { decryptData, deriveKey } from '../../utils/cryptoEngine';
+import { decryptData, deriveKey, importKeyFromBase64 } from '../../utils/cryptoEngine';
+import { signInWithPasskey } from '../../lib/supabaseBrowser';
 
 interface LockScreenProps {
   onUnlock: (key: CryptoKey) => void;
@@ -64,6 +65,40 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
     } catch {
       setError('PIN incorreto ou dados corrompidos');
       setPin('');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ── Handler: Desbloquear com Passkey ─────────────────────────────────────────
+  const handlePasskeyUnlock = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await signInWithPasskey();
+      if (!result || !result.vault_key) {
+        throw new Error('Não foi possível autenticar ou a chave não foi encontrada.');
+      }
+
+      // Reconstruir a CryptoKey a partir do AES Escrow (b64)
+      const key = await importKeyFromBase64(result.vault_key);
+
+      if (!isFirstTime) {
+        const encryptedProfile = localStorage.getItem('fit_profile_enc');
+        if (encryptedProfile) {
+          await decryptData(key, encryptedProfile);
+        }
+      }
+
+      await migrateLocalStorageToEncrypted(key, [...SENSITIVE_STORE_NAMES]);
+      localStorage.setItem('fittrack_initialized', Date.now().toString());
+      sessionStorage.setItem('fittrack_session_unlocked', 'true');
+
+      onUnlock(key);
+    } catch (err) {
+      console.error(err);
+      setError('Falha na autenticação biométrica.');
     } finally {
       setLoading(false);
     }
@@ -207,6 +242,43 @@ export function LockScreen({ onUnlock, isFirstTime }: LockScreenProps) {
               {loading ? 'A VERIFICAR...' : isFirstTime ? 'ENCRIPTAR DISCO' : 'DESBLOQUEAR'}
             </button>
           </form>
+
+          {!isFirstTime && (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+                <span style={{ margin: '0 12px', color: C.muted, fontSize: 12, fontFamily: "'Inter'" }}>OU</span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.1)' }} />
+              </div>
+
+              <button
+                type="button"
+                onClick={handlePasskeyUnlock}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  color: '#fff',
+                  border: `1px solid rgba(255,255,255,0.2)`,
+                  borderRadius: 12,
+                  padding: 16,
+                  fontFamily: "'Bebas Neue'",
+                  fontSize: 20,
+                  letterSpacing: 1,
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 12
+                }}
+              >
+                <span style={{ fontSize: 24 }}>🛡️</span>
+                Desbloquear com Biometria
+              </button>
+            </>
+          )}
 
           {/* Link para mudar PIN — só se não for primeira vez */}
           {!isFirstTime && (

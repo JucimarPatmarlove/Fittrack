@@ -1,6 +1,7 @@
 // @ts-nocheck
 import type React from 'react';
 import { HealthSyncSettings } from '../components/settings/HealthSyncSettings';
+import { PasskeyRegistration } from '../components/security/PasskeyRegistration';
 import { C, GOALS } from '../data/constants';
 import { sanitizeText } from '../utils/sanitize';
 
@@ -115,6 +116,8 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
       </button>
 
       <HealthSyncSettings />
+
+      <PasskeyRegistration />
 
       <div className="glass" style={{ padding: 14, marginBottom: 20 }}>
         <p
@@ -468,6 +471,37 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
           >
             📦 EXPORTAR
           </button>
+
+          <button
+            onClick={() => {
+              const dataUri = exportWorkoutsToCSV();
+              const link = document.createElement('a');
+              link.href = dataUri;
+              link.download = `workouts_${new Date().toISOString().split('T')[0]}.csv`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            style={{
+              flex: 1,
+              background: `linear-gradient(135deg, ${C.surface}, ${C.bg})`,
+              color: C.accent,
+              border: `1px solid ${C.accent}`,
+              borderRadius: 8,
+              padding: 10,
+              cursor: 'pointer',
+              fontFamily: "'Bebas Neue'",
+              fontSize: 18,
+              letterSpacing: 1,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>📥 Exportar Dados (CSV)</span>
+            <span>&gt;</span>
+          </button>
+
           <label
             style={{
               flex: 1,
@@ -524,6 +558,22 @@ export default function Settings({ profile, setProfile, onReset }: SettingsProps
         >
           🗑 APAGAR TUDO E RECOMEÇAR
         </button>
+      </div>
+
+      <div
+        style={{
+          background: 'rgba(100,116,139,0.04)',
+          border: '1px solid rgba(100,116,139,0.1)',
+          borderRadius: 8,
+          padding: 10,
+          marginTop: 16,
+          fontSize: 10,
+          color: C.muted,
+          lineHeight: 1.4,
+          textAlign: 'center',
+        }}
+      >
+        Exercise media © Gym visual (gymvisual.com)
       </div>
     </div>
   );

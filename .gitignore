@@ -46,3 +46,7 @@ package_temp.json
 *.log
 *_err.txt
 cyclomatic_complexity_report.md
+
+# Superpowers skills
+.agents
+AntigravitySwissKnife/

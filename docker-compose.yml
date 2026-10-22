@@ -1,0 +1,97 @@
+# ════════════════════════════════════════════════════════════════
+# FitTrack V7 — Docker Compose (Self-Hosted)
+# ════════════════════════════════════════════════════════════════
+#
+#   docker compose up -d        → Levantar tudo
+#   docker compose logs -f      → Ver logs em tempo real
+#   docker compose down         → Parar tudo
+#   docker compose down -v      → Parar e apagar dados da BD
+#
+# ════════════════════════════════════════════════════════════════
+
+services:
+  # ─── FRONTEND: Nginx a servir a PWA estática ──────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-}
+        - VITE_POSTHOG_KEY=${VITE_POSTHOG_KEY:-}
+        - VITE_POSTHOG_HOST=${VITE_POSTHOG_HOST:-}
+        - VITE_SENTRY_DSN=${VITE_SENTRY_DSN:-}
+    container_name: fittrack-frontend
+    ports:
+      - "${FRONTEND_PORT:-8090}:80"
+    depends_on:
+      bff:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - fittrack-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ─── BFF PROXY: Node.js com server.js (API Claude, JWT) ──────
+  bff:
+    build:
+      context: .
+      dockerfile: docker/bff/Dockerfile
+    container_name: fittrack-bff
+    ports:
+      - "${BFF_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - API_SHARED_SECRET=${API_SHARED_SECRET:-}
+      - PINECONE_API_KEY=${PINECONE_API_KEY:-}
+      - BRAVE_SEARCH_API_KEY=${BRAVE_SEARCH_API_KEY:-}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fittrack-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ─── DATABASE: PostgreSQL com migrations automáticas ──────────
+  supabase-db:
+    image: postgres:16-alpine
+    container_name: fittrack-db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fittrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fittrack_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-fittrack_v7}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    restart: unless-stopped
+    networks:
+      - fittrack-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack} -d ${POSTGRES_DB:-fittrack_v7}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# ─── VOLUMES ─────────────────────────────────────────────────────
+volumes:
+  db-data:
+    driver: local
+
+# ─── REDE INTERNA ────────────────────────────────────────────────
+networks:
+  fittrack-net:
+    driver: bridge
