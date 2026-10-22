@@ -38,8 +38,12 @@ export function useLS<T>(
             // Poderá não estar encriptado (legacy), ou corrompido
             if (!rawStr.startsWith('{') && !rawStr.startsWith('[')) {
               console.warn(`Dados corrompidos ou chave inválida para ${key}`);
+              sv(def);  // Reset state to default instead of returning early
               return;
             }
+            // Se caiu aqui, rawStr é JSON legível mas desencriptou falhou
+            // Tenta fazer parse como dado legacy (sem encriptação)
+            jsonStr = rawStr;
           }
         }
 
