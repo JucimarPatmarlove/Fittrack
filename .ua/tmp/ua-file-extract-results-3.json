@@ -1,0 +1,155 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "filesUnreadable": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 1,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "results": [
+    {
+      "path": "supabase/migrations/001_social.sql",
+      "language": "sql",
+      "fileCategory": "data",
+      "totalLines": 283,
+      "nonEmptyLines": 233,
+      "definitions": [
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "id",
+            "username",
+            "display_name",
+            "avatar_url",
+            "bio",
+            "created_at"
+          ],
+          "startLine": 18,
+          "endLine": 25
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "follower_id",
+            "followee_id",
+            "created_at"
+          ],
+          "startLine": 46,
+          "endLine": 52
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "id",
+            "user_id",
+            "exercise_name",
+            "metric_type",
+            "value",
+            "unit",
+            "reps",
+            "note",
+            "visibility",
+            "created_at"
+          ],
+          "startLine": 73,
+          "endLine": 84
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "id",
+            "creator_id",
+            "exercise_name",
+            "metric_type",
+            "title",
+            "starts_at",
+            "ends_at",
+            "status",
+            "created_at"
+          ],
+          "startLine": 121,
+          "endLine": 132
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "challenge_id",
+            "user_id",
+            "best_value",
+            "joined_at"
+          ],
+          "startLine": 153,
+          "endLine": 159
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "id",
+            "name",
+            "code",
+            "owner_id",
+            "weekly_goal_xp",
+            "is_official",
+            "created_at"
+          ],
+          "startLine": 204,
+          "endLine": 212
+        },
+        {
+          "name": "public",
+          "kind": "table",
+          "fields": [
+            "club_id",
+            "user_id",
+            "xp_this_week",
+            "joined_at"
+          ],
+          "startLine": 232,
+          "endLine": 238
+        },
+        {
+          "name": "public",
+          "kind": "view",
+          "fields": [],
+          "startLine": 181,
+          "endLine": 181
+        },
+        {
+          "name": "activities_exercise_value_idx",
+          "kind": "index",
+          "fields": [],
+          "startLine": 86,
+          "endLine": 86
+        },
+        {
+          "name": "activities_user_created_idx",
+          "kind": "index",
+          "fields": [],
+          "startLine": 89,
+          "endLine": 89
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 10
+      }
+    }
+  ]
+}

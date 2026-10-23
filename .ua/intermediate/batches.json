@@ -1,0 +1,5091 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 546,
+  "totalBatches": 40,
+  "exportsByPath": {
+    ".claude/settings.local.json.tmp.289024.84ce0ad365d2": [],
+    ".geminiignore": [],
+    ".gitmodules": [],
+    ".husky/pre-commit": [],
+    ".swift-version": [],
+    "agent/skills/core-typescript/assets/eslint.config.js": [],
+    "agent/skills/test-quality/assets/builder.template.ts": [
+      "makeThing",
+      "makeThings"
+    ],
+    "api/claude.ts": [
+      "handler"
+    ],
+    "api/coach.ts": [
+      "handler"
+    ],
+    "api/cron/weekly-report.ts": [
+      "handler"
+    ],
+    "api/generate-workout.ts": [
+      "handler"
+    ],
+    "api/health.ts": [
+      "handler"
+    ],
+    "api/request-token.ts": [
+      "handler"
+    ],
+    "api/workout/complete.ts": [
+      "handler"
+    ],
+    "capacitor.config.ts": [],
+    "commitlint.config.js": [],
+    "dev-dist/registerSW.js": [],
+    "dev-dist/sw.js": [],
+    "dev-dist/workbox-25613826.js": [],
+    "dev-dist/workbox-7e5eb42b.js": [],
+    "dev-dist/workbox-8648bc04.js": [],
+    "dev-dist/workbox-b1bafff1.js": [],
+    "docker/frontend/nginx.conf": [],
+    "eslint.config.js": [],
+    "fix_db.js": [],
+    "fix_exerciseDB.js": [],
+    "fix_newlines.py": [],
+    "fix_row.js": [],
+    "fix_ts.py": [],
+    "generate_exercises.py": [],
+    "playwright.config.ts": [],
+    "proxy/worker.js": [],
+    "ruvector.db": [],
+    "scripts/audit-stores.js": [],
+    "scripts/checkExerciseMedia.js": [],
+    "scripts/check_exercise_keys.js": [],
+    "scripts/cleanGifs.js": [],
+    "scripts/downloadAllExerciseMedia.js": [],
+    "scripts/downloadExerciseMedia.js": [],
+    "scripts/fetchOpenSourceExercises.js": [],
+    "scripts/fetch_metadata.js": [],
+    "scripts/generateAnimatedSVGs.js": [],
+    "scripts/generateExerciseGifs.js": [],
+    "scripts/generateSvgPlaceholders.js": [],
+    "scripts/migrate-exercise-db.js": [],
+    "scripts/migrate-exercises.cjs": [],
+    "scripts/read_error.js": [],
+    "scripts/upgradeExerciseDB.js": [],
+    "scripts/validate-exercise-db.js": [],
+    "social.patch": [],
+    "src/App.tsx": [
+      "App"
+    ],
+    "src/App.tsx.oFwECRe": [],
+    "src/App.tsx.ofYZxbO": [],
+    "src/__tests__/setup.ts": [],
+    "src/ai/cacheLayer.ts": [
+      "getCachedWorkout",
+      "cacheWorkout"
+    ],
+    "src/components/3d/MuscleSphere.tsx": [
+      "MuscleSphere"
+    ],
+    "src/components/3d/MuscleViewer.tsx": [
+      "MuscleViewer"
+    ],
+    "src/components/3d/SmartCamera.tsx": [
+      "SmartCamera"
+    ],
+    "src/components/ErrorBoundary.tsx": [
+      "ErrorBoundary"
+    ],
+    "src/components/GhostSetComparison.tsx": [
+      "GhostSetComparison"
+    ],
+    "src/components/GhostToggle.tsx": [
+      "GhostToggle"
+    ],
+    "src/components/PlateCalculator/PlateCalculator.tsx": [
+      "PlateCalculator"
+    ],
+    "src/components/PlateCalculator/PlateVisualizer.tsx": [
+      "PlateVisualizer"
+    ],
+    "src/components/WatchSyncIndicator.tsx": [
+      "WatchSyncIndicator"
+    ],
+    "src/components/ai/ProactiveMessage.tsx": [
+      "ProactiveMessageCard",
+      "ProactiveBanner",
+      "ProactiveMessageList"
+    ],
+    "src/components/challenges/ActiveChallenges.tsx": [
+      "ActiveChallenges"
+    ],
+    "src/components/challenges/DeadHangWidget.tsx": [
+      "DeadHangWidget"
+    ],
+    "src/components/dashboard/ActivityHeatmap.tsx": [
+      "ActivityHeatmap"
+    ],
+    "src/components/dashboard/BiometricDeltaCard.tsx": [
+      "BiometricDeltaCard"
+    ],
+    "src/components/dashboard/BiometricInsight.tsx": [
+      "BiometricInsight"
+    ],
+    "src/components/dashboard/ClinicalAnalytics.tsx": [
+      "ClinicalAnalytics"
+    ],
+    "src/components/dashboard/CycleTracker.tsx": [
+      "CycleTracker"
+    ],
+    "src/components/dashboard/DailyBriefing.tsx": [
+      "DailyBriefing"
+    ],
+    "src/components/dashboard/MuscleRecoveryRing.tsx": [
+      "MuscleRecoveryRing"
+    ],
+    "src/components/dashboard/NutritionDashboardSection.tsx": [
+      "NutritionDashboardSection"
+    ],
+    "src/components/dashboard/PhaseCard.tsx": [
+      "PhaseCard"
+    ],
+    "src/components/dashboard/ReadinessGauge.tsx": [
+      "ReadinessGauge"
+    ],
+    "src/components/dashboard/RecoveryRoulette.tsx": [
+      "REWARDS",
+      "spinRoulette",
+      "RecoveryRoulette"
+    ],
+    "src/components/dashboard/TrendDashboardSection.tsx": [
+      "TrendDashboardSection"
+    ],
+    "src/components/dashboard/TrendStatusBadge.tsx": [
+      "TrendStatusBadge"
+    ],
+    "src/components/dashboard/TrendWidget.tsx": [
+      "TrendWidget"
+    ],
+    "src/components/dashboard/VTaperWidget.tsx": [
+      "VTaperWidget"
+    ],
+    "src/components/dashboard/VirtualPet.tsx": [
+      "VirtualPet"
+    ],
+    "src/components/dashboard/WeekCalendar.tsx": [
+      "WeekCalendar"
+    ],
+    "src/components/dashboard/WorkoutSummaryCard.tsx": [
+      "WorkoutSummaryCard"
+    ],
+    "src/components/exercises/ExerciseTutorialExt.tsx": [
+      "ExerciseTutorialExt"
+    ],
+    "src/components/exercises/VideoTutorial.tsx": [
+      "VideoTutorial"
+    ],
+    "src/components/history/DetailedHistory.tsx": [
+      "DetailedHistory"
+    ],
+    "src/components/injury/BodyMap.tsx": [
+      "BodyMap"
+    ],
+    "src/components/injury/InjuryRiskPanel.tsx": [
+      "InjuryRiskPanel"
+    ],
+    "src/components/injury/RiskBadge.tsx": [
+      "RiskBadge"
+    ],
+    "src/components/injury/WorkoutModifications.tsx": [
+      "WorkoutModifications"
+    ],
+    "src/components/onboarding/BeginnerGuide.tsx": [
+      "BeginnerGuide"
+    ],
+    "src/components/onboarding/FitnessAssessment.tsx": [
+      "FitnessAssessment"
+    ],
+    "src/components/onboarding/WelcomeWizard.tsx": [
+      "WelcomeWizard"
+    ],
+    "src/components/planner/Challenge90Days.tsx": [
+      "Challenge90Days"
+    ],
+    "src/components/planner/DualWorkoutCalendar.tsx": [
+      "DualWorkoutCalendar"
+    ],
+    "src/components/recovery/HRVInput.tsx": [
+      "HRVInput"
+    ],
+    "src/components/recovery/MoodTracker.tsx": [
+      "MoodTracker"
+    ],
+    "src/components/recovery/SleepInput.tsx": [
+      "SleepInput"
+    ],
+    "src/components/recovery/SorenessMap.tsx": [
+      "SorenessMap"
+    ],
+    "src/components/rival/RivalRace.tsx": [
+      "RivalRace"
+    ],
+    "src/components/rival/RivalResult.tsx": [
+      "RivalResult"
+    ],
+    "src/components/security/LockScreen.tsx": [
+      "LockScreen"
+    ],
+    "src/components/security/PasskeyRegistration.tsx": [
+      "PasskeyRegistration"
+    ],
+    "src/components/settings/HealthSyncSettings.tsx": [
+      "HealthSyncSettings"
+    ],
+    "src/components/social/AuthModal.tsx": [
+      "AuthModal"
+    ],
+    "src/components/social/ClubModal.tsx": [],
+    "src/components/social/ClubTab.tsx": [
+      "ClubTab"
+    ],
+    "src/components/social/DuelsTab.tsx": [
+      "DuelsTab"
+    ],
+    "src/components/social/GymVibeWidget.tsx": [
+      "GymVibeWidget"
+    ],
+    "src/components/social/LeaderboardTab.tsx": [
+      "LeaderboardTab"
+    ],
+    "src/components/social/P2PSyncModal.tsx": [
+      "P2PSyncModal"
+    ],
+    "src/components/social/QRSyncModal.tsx": [
+      "QRSyncModal"
+    ],
+    "src/components/social/ShareWorkoutModal.tsx": [
+      "ShareWorkoutModal"
+    ],
+    "src/components/social/SocialModal.tsx": [
+      "SocialModal"
+    ],
+    "src/components/stats/MuscleHeatmap.tsx": [
+      "MuscleHeatmap"
+    ],
+    "src/components/stats/RecoveryRing.tsx": [
+      "RecoveryRing"
+    ],
+    "src/components/ui/BackupRestoreModal.tsx": [
+      "BackupRestoreModal"
+    ],
+    "src/components/ui/BottomNav.tsx": [
+      "BottomNav"
+    ],
+    "src/components/ui/ChartContainer.tsx": [
+      "ChartContainer"
+    ],
+    "src/components/ui/EmptyState.tsx": [
+      "EmptyState"
+    ],
+    "src/components/ui/GlassCard.tsx": [
+      "GlassCard"
+    ],
+    "src/components/ui/GlobalBackground.tsx": [
+      "GlobalBackground"
+    ],
+    "src/components/ui/GlowInput.tsx": [
+      "GlowInput"
+    ],
+    "src/components/ui/GradientButton.tsx": [
+      "GradientButton"
+    ],
+    "src/components/ui/MotionComponents.tsx": [
+      "Skeleton",
+      "SkeletonText",
+      "SkeletonCard",
+      "SkeletonBodyMap",
+      "LazyLoad",
+      "FadeIn",
+      "SlideUp",
+      "SlideIn",
+      "ScaleIn",
+      "StaggerList",
+      "ScrollReveal",
+      "PageTransition",
+      "AnimatedPanel",
+      "InteractiveButton",
+      "InteractiveCard",
+      "ProgressBar",
+      "usePrefersReducedMotion",
+      "AccessibleMotion"
+    ],
+    "src/components/ui/Tooltip.tsx": [
+      "TOOLTIP_TEXTS",
+      "Tooltip",
+      "LabelWithTooltip"
+    ],
+    "src/components/workout/AutoRepToggle.tsx": [
+      "AutoRepToggle"
+    ],
+    "src/components/workout/CircuitProgress.tsx": [
+      "CircuitProgress"
+    ],
+    "src/components/workout/DynamicRPESlider.tsx": [
+      "DynamicRPESlider"
+    ],
+    "src/components/workout/EffortTracker.tsx": [
+      "EffortTracker"
+    ],
+    "src/components/workout/ExerciseLibrary.tsx": [
+      "ExerciseLibrary"
+    ],
+    "src/components/workout/FreeWorkoutBuilder.tsx": [
+      "FreeWorkoutBuilder"
+    ],
+    "src/components/workout/GhostSetBar.tsx": [
+      "GhostSetBar"
+    ],
+    "src/components/workout/MobilityTimer.tsx": [
+      "MobilityTimer"
+    ],
+    "src/components/workout/NextWorkoutSuggestion.tsx": [
+      "NextWorkoutSuggestion"
+    ],
+    "src/components/workout/PRTracker.tsx": [
+      "PRTracker"
+    ],
+    "src/components/workout/PaceTracker.tsx": [
+      "PaceTracker"
+    ],
+    "src/components/workout/PostWorkoutFeedback.tsx": [
+      "PostWorkoutFeedback"
+    ],
+    "src/components/workout/RestTimer.tsx": [
+      "RestTimer"
+    ],
+    "src/components/workout/WalkingMap.tsx": [
+      "WalkingMap"
+    ],
+    "src/components/workout/WeeklyPlanGenerator.tsx": [
+      "WeeklyPlanGenerator"
+    ],
+    "src/components/workout/WorkoutControls.tsx": [
+      "WorkoutControls"
+    ],
+    "src/components/workout/WorkoutExerciseList.tsx": [
+      "WorkoutExerciseList"
+    ],
+    "src/components/workout/WorkoutHeader.tsx": [
+      "WorkoutHeader"
+    ],
+    "src/components/workout/WorkoutModeSelector.tsx": [
+      "WorkoutModeSelector"
+    ],
+    "src/components/workout/WorkoutSetRow.tsx": [
+      "WorkoutSetRow"
+    ],
+    "src/components/workout/huds/AmrapHUD.tsx": [
+      "AmrapHUD"
+    ],
+    "src/components/workout/huds/AutoregulationBanner.tsx": [
+      "AutoregulationBanner"
+    ],
+    "src/components/workout/huds/EmomHUD.tsx": [
+      "EmomHUD"
+    ],
+    "src/data/constants.ts": [
+      "C",
+      "GOALS",
+      "WORKOUT_PLANS",
+      "ME",
+      "MUSCLE_GROUPS",
+      "EQUIPMENT_TYPES",
+      "ACTIVITY_TYPES",
+      "EXERCISE_LIBRARY",
+      "V2_LOAD_PCT"
+    ],
+    "src/data/exerciseClassifier.ts": [
+      "exerciseCategoryMap",
+      "getExerciseCategory"
+    ],
+    "src/data/exerciseDB.ts": [
+      "EXERCISE_DB"
+    ],
+    "src/data/exerciseMedia.ts": [
+      "exerciseMediaMap",
+      "getExerciseMedia"
+    ],
+    "src/data/exercises-generated.ts": [
+      "EXERCISE_LIBRARY"
+    ],
+    "src/data/utils.ts": [
+      "calculate1RM",
+      "estimateCaloriesBurned",
+      "calculateRecovery",
+      "bmi",
+      "bmiLabel",
+      "checkAutoProgression"
+    ],
+    "src/db/encryptedDb.ts": [
+      "saveSetLog",
+      "getSetLogsDecrypted",
+      "getRecentSetLogsDecrypted",
+      "saveWorkoutSession",
+      "updatePersonalRecord",
+      "saveDailyMealLog",
+      "getDailyMealLogDecrypted",
+      "saveHydrationLog",
+      "getHydrationLogDecrypted",
+      "saveWeightLog",
+      "getWeightLogDecrypted",
+      "getAllWeightLogsDecrypted",
+      "getPersonalRecord",
+      "getAllPersonalRecords",
+      "getAllWorkouts",
+      "getAllExercisesFromHistory",
+      "generateId"
+    ],
+    "src/db/migrations.ts": [
+      "CURRENT_DB_VERSION",
+      "runMigrations",
+      "checkSchemaHealth"
+    ],
+    "src/db/schema.ts": [
+      "getDB",
+      "ensureDBReady",
+      "addWorkoutSession",
+      "getWorkoutSession",
+      "getAllWorkouts",
+      "addSetLog",
+      "getSetLogsByWorkout",
+      "getSetLogsByExercise",
+      "getRecentSetLogsByExercise",
+      "getPersonalRecord",
+      "upsertPersonalRecord",
+      "getAllPersonalRecords",
+      "getAllUniqueExercises",
+      "addRecoveryMetric",
+      "getRecoveryMetricsByDateRange",
+      "getLatestRecoveryMetric",
+      "getDailyMealLog",
+      "upsertDailyMealLog",
+      "getHydrationLog",
+      "upsertHydrationLog",
+      "getWeightLog",
+      "upsertWeightLog",
+      "getAllWeightLogs",
+      "generateId"
+    ],
+    "src/hooks/audioMachine.ts": [
+      "audioMachine"
+    ],
+    "src/hooks/index.ts": [
+      "useGhostMode",
+      "useFitnessData",
+      "useLS",
+      "useWakeLock",
+      "useBeep",
+      "useStopwatch"
+    ],
+    "src/hooks/useAudioCoach.ts": [
+      "useAudioCoach"
+    ],
+    "src/hooks/useBluetoothHRM.ts": [
+      "useBluetoothHRM"
+    ],
+    "src/hooks/useChallenges.ts": [
+      "useChallenges"
+    ],
+    "src/hooks/useDashboardData.ts": [
+      "useDashboardData"
+    ],
+    "src/hooks/useFitnessData.ts": [
+      "useStreakFreeze",
+      "useFitnessData"
+    ],
+    "src/hooks/useFitnessMachine.ts": [
+      "useFitnessMachine"
+    ],
+    "src/hooks/useGhostMode.ts": [
+      "useGhostMode"
+    ],
+    "src/hooks/useMachine.ts": [
+      "createMachine",
+      "useMachine"
+    ],
+    "src/hooks/useMotionCounter.ts": [
+      "useMotionCounter"
+    ],
+    "src/hooks/usePoseCounter.ts": [
+      "usePoseCounter"
+    ],
+    "src/hooks/useProactiveCoach.ts": [
+      "useProactiveCoach"
+    ],
+    "src/hooks/useProgressiveHaptics.ts": [
+      "useProgressiveHaptics"
+    ],
+    "src/hooks/useRobustTimer.ts": [
+      "useRobustTimer"
+    ],
+    "src/hooks/useWalkingCoach.ts": [
+      "useWalkingCoach"
+    ],
+    "src/hooks/useWorkerPoseDetection.ts": [
+      "useWorkerPoseDetection"
+    ],
+    "src/jobs/weeklyReport.ts": [
+      "startWeeklyReportJob"
+    ],
+    "src/lib/persistence.ts": [
+      "idbStorage"
+    ],
+    "src/lib/supabaseBrowser.ts": [
+      "getSupabaseBrowser",
+      "isSupabaseConfigured",
+      "signInAnonymously",
+      "registerPasskey",
+      "signInWithPasskey"
+    ],
+    "src/machines/bluetoothMachine.ts": [
+      "bluetoothReducer"
+    ],
+    "src/main.jsx": [],
+    "src/main.tsx": [],
+    "src/middleware/auth.ts": [
+      "aiRateLimiter",
+      "verifyJWT",
+      "protectApi"
+    ],
+    "src/middleware/rateLimiter.ts": [
+      "aiRateLimiter"
+    ],
+    "src/router/viewConfigs.tsx": [
+      "buildNutritionView",
+      "createViewConfigs"
+    ],
+    "src/screens/AICoach.tsx": [
+      "AICoach"
+    ],
+    "src/screens/ActiveWorkout.tsx": [
+      "ActiveWorkout"
+    ],
+    "src/screens/BackupScreen.tsx": [
+      "BackupScreen"
+    ],
+    "src/screens/CommunityFeed.tsx": [
+      "CommunityFeed"
+    ],
+    "src/screens/CompeteScreen.tsx": [
+      "CompeteScreen"
+    ],
+    "src/screens/CycleReview.tsx": [
+      "CycleReview"
+    ],
+    "src/screens/Dashboard.tsx": [
+      "Dashboard"
+    ],
+    "src/screens/DeviceManager.tsx": [
+      "DeviceManager"
+    ],
+    "src/screens/GymVibe.tsx": [
+      "GymVibe"
+    ],
+    "src/screens/Milestones.tsx": [
+      "Milestones"
+    ],
+    "src/screens/NutritionPlanner.tsx": [],
+    "src/screens/Planner.tsx": [
+      "Planner"
+    ],
+    "src/screens/ProfileScreen.tsx": [
+      "ProfileScreen"
+    ],
+    "src/screens/RecoveryScreen.tsx": [
+      "RecoveryScreen"
+    ],
+    "src/screens/RewardsStore.tsx": [
+      "RewardsStore"
+    ],
+    "src/screens/Settings.tsx": [
+      "Settings"
+    ],
+    "src/screens/Trends.tsx": [
+      "Trends"
+    ],
+    "src/screens/WalkingCoachScreen.tsx": [
+      "WalkingCoachScreen"
+    ],
+    "src/services/ProgressionSystem.ts": [
+      "ProgressionSystem"
+    ],
+    "src/services/__tests__/gamificationEngine.test.ts": [],
+    "src/services/__tests__/injuryPredictionEngine.test.ts": [],
+    "src/services/__tests__/nutritionEngine.test.ts": [],
+    "src/services/__tests__/offlineWorkoutEngine.test.ts": [],
+    "src/services/__tests__/recoveryEngine.test.ts": [],
+    "src/services/__tests__/trendAnalyzer.test.ts": [],
+    "src/services/advancedFeatures.ts": [
+      "AdvancedFilters"
+    ],
+    "src/services/aiCoach/proactiveEngine.ts": [
+      "evaluateTriggers",
+      "shouldShowMessage",
+      "dismissMessage",
+      "getMessageIcon"
+    ],
+    "src/services/aiGenerator.ts": [
+      "AIWorkoutGenerator"
+    ],
+    "src/services/anthropicService.ts": [
+      "generateWorkout",
+      "AnthropicService"
+    ],
+    "src/services/backupService.ts": [
+      "exportEncryptedBackup",
+      "importEncryptedBackup",
+      "checkForNewerBackup"
+    ],
+    "src/services/demographicEngine.ts": [
+      "HIGH_IMPACT_REPLACEMENTS",
+      "DemographicEngine"
+    ],
+    "src/services/fitnessMechanics.ts": [
+      "calculate1RM",
+      "estimateCaloriesBurned",
+      "getWarmupSets",
+      "calculateRecovery"
+    ],
+    "src/services/gamificationEngine.ts": [
+      "LEVEL_THRESHOLDS",
+      "getCurrentLevel",
+      "calculateWorkoutXP",
+      "detectNewExercises",
+      "syncUserStats"
+    ],
+    "src/services/googleDrive.ts": [
+      "initGoogleDrive",
+      "signInToGoogleDrive",
+      "signOutFromGoogleDrive",
+      "getStoredToken",
+      "uploadBackup",
+      "listBackups",
+      "downloadBackup"
+    ],
+    "src/services/healthBridge.ts": [
+      "HealthBridge",
+      "healthBridge"
+    ],
+    "src/services/healthKitService.ts": [
+      "healthKit"
+    ],
+    "src/services/injuryPrediction/exerciseRegionMap.ts": [
+      "EXERCISE_REGION_MAP"
+    ],
+    "src/services/injuryPrediction/index.ts": [
+      "runInjuryPrediction",
+      "calculateSessionStress",
+      "calculateACRatio",
+      "calculateRecoveryScore",
+      "estimateRecoveryTime"
+    ],
+    "src/services/injuryPrediction/recoveryTracker.ts": [
+      "calculateRecoveryScore",
+      "estimateRecoveryTime"
+    ],
+    "src/services/injuryPrediction/riskModel.ts": [
+      "calculateInjuryRisk"
+    ],
+    "src/services/injuryPrediction/stressCalculator.ts": [
+      "calculateSetStress",
+      "calculateSessionStress",
+      "calculateACRatio"
+    ],
+    "src/services/injuryPredictionEngine.ts": [
+      "generateInjuryRiskReport",
+      "preWorkoutSafetyCheck"
+    ],
+    "src/services/injuryPredictor.ts": [
+      "analyzeInjuryRisk"
+    ],
+    "src/services/jwtEngine.ts": [
+      "generateShortLivedToken",
+      "invalidateToken"
+    ],
+    "src/services/keyRotationService.ts": [
+      "rotateMasterKey"
+    ],
+    "src/services/macrocycleEngine.ts": [
+      "MacrocycleEngine"
+    ],
+    "src/services/neuralFatigue.ts": [
+      "NeuralFatigue",
+      "getEnhancedReadinessScore"
+    ],
+    "src/services/nutritionEngine.ts": [
+      "calculateMacros",
+      "translateGoal",
+      "translateActivityLevel",
+      "PRESET_FOODS",
+      "getTodayDateString"
+    ],
+    "src/services/offlineWorkoutEngine.ts": [
+      "OfflineWorkoutEngine"
+    ],
+    "src/services/p2pSync.ts": [
+      "p2pSync"
+    ],
+    "src/services/predictiveChallenges.ts": [
+      "PredictiveChallenges"
+    ],
+    "src/services/recoveryEngine.ts": [
+      "calculateReadinessScore",
+      "logHRV",
+      "logSleep",
+      "logSoreness",
+      "logMood"
+    ],
+    "src/services/rivalAI.ts": [
+      "RivalAI"
+    ],
+    "src/services/supabaseClient.ts": [
+      "getSocialClient",
+      "isSocialConfigured"
+    ],
+    "src/services/tools/agentLoop.ts": [],
+    "src/services/tools/braveSearch.ts": [],
+    "src/services/tools/githubAudit.ts": [],
+    "src/services/tools/supabaseQuery.ts": [],
+    "src/services/tools/toolDefinitions.ts": [],
+    "src/services/trendAnalyzer.ts": [
+      "analyzeExerciseTrend",
+      "analyzeMultipleExercises"
+    ],
+    "src/services/vectorMemory.ts": [],
+    "src/services/webrtcEngine.ts": [
+      "WebRTCEngine"
+    ],
+    "src/services/workoutGenerator.ts": [
+      "WorkoutGenerator"
+    ],
+    "src/stores/encryptedPersist.ts": [
+      "createEncryptedStorage",
+      "migrateLocalStorageToEncrypted",
+      "SENSITIVE_STORE_NAMES"
+    ],
+    "src/stores/useChallengeStore.ts": [
+      "useChallengeStore"
+    ],
+    "src/stores/useCommunityStore.ts": [
+      "useCommunityStore"
+    ],
+    "src/stores/useCompeteStore.ts": [
+      "useCompeteStore"
+    ],
+    "src/stores/useDeviceStore.ts": [
+      "useDeviceStore"
+    ],
+    "src/stores/useDualWorkoutStore.ts": [
+      "useDualWorkoutStore"
+    ],
+    "src/stores/useEffortStore.ts": [
+      "useEffortStore"
+    ],
+    "src/stores/useExerciseStore.ts": [
+      "useExerciseStore"
+    ],
+    "src/stores/useGhostStore.ts": [
+      "useGhostStore"
+    ],
+    "src/stores/useHealthStore.ts": [
+      "useHealthStore"
+    ],
+    "src/stores/useInjuryStore.ts": [
+      "useInjuryStore"
+    ],
+    "src/stores/useMilestonesStore.ts": [
+      "useMilestonesStore",
+      "calculateStreak"
+    ],
+    "src/stores/useNutritionStore.ts": [
+      "useNutritionStore"
+    ],
+    "src/stores/usePlanStore.ts": [
+      "usePlanStore"
+    ],
+    "src/stores/useProactiveCoachStore.ts": [
+      "useProactiveCoachStore"
+    ],
+    "src/stores/useProgressionStore.ts": [
+      "useProgressionStore"
+    ],
+    "src/stores/useRoutineStore.ts": [
+      "DEFAULT_ROUTINES",
+      "useRoutineStore"
+    ],
+    "src/stores/useSocialStore.ts": [
+      "useSocialStore"
+    ],
+    "src/stores/useVibeStore.ts": [
+      "useVibeStore"
+    ],
+    "src/types.ts": [],
+    "src/types/exercise.ts": [],
+    "src/types/fitness.ts": [],
+    "src/types/ghost.ts": [],
+    "src/types/injury.ts": [],
+    "src/utils/__tests__/cryptoEngine.test.ts": [],
+    "src/utils/__tests__/loadCalculator.test.ts": [],
+    "src/utils/__tests__/prescriptionEngine.test.ts": [],
+    "src/utils/__tests__/validation.test.ts": [],
+    "src/utils/audio.ts": [
+      "initAudio",
+      "playBeep"
+    ],
+    "src/utils/bluetoothParser.ts": [
+      "parseHeartRateMeasurement",
+      "parseFTMSMeasurement"
+    ],
+    "src/utils/cryptoEngine.ts": [
+      "getOrCreateInstallSalt",
+      "deriveKey",
+      "setMasterKey",
+      "getMasterKey",
+      "encryptData",
+      "decryptData",
+      "deriveRawKeyBase64",
+      "importKeyFromBase64"
+    ],
+    "src/utils/cryptoHelpers.ts": [
+      "encryptJSON",
+      "decryptJSON"
+    ],
+    "src/utils/dailyAdjustment.ts": [
+      "calculateDailyAdjustments"
+    ],
+    "src/utils/exerciseClassifier.ts": [
+      "exerciseCategoryMap",
+      "DEFAULT_CATEGORY",
+      "getExerciseCategory"
+    ],
+    "src/utils/fitnessMath.ts": [
+      "calculate1RM",
+      "exportWorkoutsToCSV"
+    ],
+    "src/utils/loadCalculator.ts": [
+      "calculateSuggestedWeight"
+    ],
+    "src/utils/missedDaysDetector.ts": [
+      "getMissedDays",
+      "getCurrentStreak"
+    ],
+    "src/utils/oneRMCalculator.ts": [
+      "calculateEPLEY"
+    ],
+    "src/utils/plateCalculator.ts": [
+      "DISCS",
+      "DISC_COLORS",
+      "calculatePlates"
+    ],
+    "src/utils/prescriptionEngine.ts": [
+      "getPrescription"
+    ],
+    "src/utils/sanitize.ts": [
+      "sanitizeText",
+      "sanitizeUrl"
+    ],
+    "src/utils/schemas.ts": [
+      "ProfileSchema",
+      "SetSchema",
+      "ExerciseSchema",
+      "WorkoutSchema",
+      "HistorySchema"
+    ],
+    "src/utils/silentAudio.ts": [
+      "startSilentAudio",
+      "stopSilentAudio",
+      "isSilentAudioActive"
+    ],
+    "src/utils/telemetry.ts": [
+      "initTelemetry",
+      "initializeErrorTracking",
+      "reportWebVitals",
+      "initWebVitals",
+      "createSpan",
+      "withSpan",
+      "trackEvent",
+      "createErrorBoundarySpan"
+    ],
+    "src/utils/validation.ts": [
+      "MealItemSchema",
+      "ExerciseSetSchema",
+      "ProfileFieldsSchema",
+      "WaterInputSchema",
+      "validateMealItem",
+      "validateExerciseSet",
+      "validateProfileFields"
+    ],
+    "src/utils/workoutAdapters.test.ts": [],
+    "src/utils/workoutAdapters.ts": [
+      "toWorkoutData",
+      "toWorkoutSession"
+    ],
+    "src/utils/xpCalculator.ts": [
+      "calculateSetEffort",
+      "calculateWorkoutEffort"
+    ],
+    "src/vite-env.d.ts": [],
+    "src/workers/crypto.worker.ts": [],
+    "src/workers/poseDetection.worker.ts": [],
+    "src/workers/syncWorker.ts": [],
+    "test-jsdom.js": [],
+    "tests/e2e/auth.spec.ts": [],
+    "tests/e2e/fitness-flow.spec.ts": [],
+    "tests/e2e/progression.spec.ts": [],
+    "tests/e2e/workout.spec.ts": [],
+    "update_svgs.py": [],
+    "vite.config.js": [],
+    "vitest.config.ts": []
+  },
+  "batches": [
+    {
+      "batchIndex": 1,
+      "files": [
+        {
+          "path": "docker/bff/Dockerfile",
+          "language": "dockerfile",
+          "sizeLines": 26,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        "docker/bff/Dockerfile": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "docker/frontend/Dockerfile",
+          "language": "dockerfile",
+          "sizeLines": 55,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        "docker/frontend/Dockerfile": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 3,
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "language": "yaml",
+          "sizeLines": 60,
+          "fileCategory": "infra"
+        },
+        {
+          "path": ".github/workflows/sync-labels.yml",
+          "language": "yaml",
+          "sizeLines": 15,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        ".github/workflows/ci.yml": [],
+        ".github/workflows/sync-labels.yml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 4,
+      "files": [
+        {
+          "path": "supabase/migrations/001_social.sql",
+          "language": "sql",
+          "sizeLines": 282,
+          "fileCategory": "data"
+        }
+      ],
+      "batchImportData": {
+        "supabase/migrations/001_social.sql": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 5,
+      "files": [
+        {
+          "path": ".dockerignore",
+          "language": "unknown",
+          "sizeLines": 25,
+          "fileCategory": "infra"
+        },
+        {
+          "path": ".env.example",
+          "language": "config",
+          "sizeLines": 79,
+          "fileCategory": "config"
+        },
+        {
+          "path": "AGENTS.md",
+          "language": "markdown",
+          "sizeLines": 670,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "API.md",
+          "language": "markdown",
+          "sizeLines": 114,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "ARCHITECTURE.md",
+          "language": "markdown",
+          "sizeLines": 0,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "CLAUDE.md",
+          "language": "markdown",
+          "sizeLines": 21,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "FITTRACK_EVOLUTION.md",
+          "language": "markdown",
+          "sizeLines": 461,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "FITTRACK_GAP_ANALYSIS_REPORT.md",
+          "language": "markdown",
+          "sizeLines": 218,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "GEMINI.md",
+          "language": "markdown",
+          "sizeLines": 18,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "LICENSE.txt",
+          "language": "txt",
+          "sizeLines": 202,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "PRD.md",
+          "language": "markdown",
+          "sizeLines": 0,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 117,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "ROADMAP.md",
+          "language": "markdown",
+          "sizeLines": 19,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "TESTING.md",
+          "language": "markdown",
+          "sizeLines": 0,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "biome.json",
+          "language": "json",
+          "sizeLines": 38,
+          "fileCategory": "config"
+        },
+        {
+          "path": "capacitor.config.json",
+          "language": "json",
+          "sizeLines": 10,
+          "fileCategory": "config"
+        },
+        {
+          "path": "compete_schema.sql",
+          "language": "sql",
+          "sizeLines": 64,
+          "fileCategory": "data"
+        },
+        {
+          "path": "docker-compose.yml",
+          "language": "yaml",
+          "sizeLines": 97,
+          "fileCategory": "infra"
+        },
+        {
+          "path": "fittrack_briefing.md",
+          "language": "markdown",
+          "sizeLines": 1745,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "gemini-extension.json",
+          "language": "json",
+          "sizeLines": 6,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".dockerignore": [],
+        ".env.example": [],
+        "AGENTS.md": [],
+        "API.md": [],
+        "ARCHITECTURE.md": [],
+        "CLAUDE.md": [],
+        "FITTRACK_EVOLUTION.md": [],
+        "FITTRACK_GAP_ANALYSIS_REPORT.md": [],
+        "GEMINI.md": [],
+        "LICENSE.txt": [],
+        "PRD.md": [],
+        "README.md": [],
+        "ROADMAP.md": [],
+        "TESTING.md": [],
+        "biome.json": [],
+        "capacitor.config.json": [],
+        "compete_schema.sql": [],
+        "docker-compose.yml": [],
+        "fittrack_briefing.md": [],
+        "gemini-extension.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 6,
+      "files": [
+        {
+          "path": "index.html",
+          "language": "html",
+          "sizeLines": 118,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "knip.json",
+          "language": "json",
+          "sizeLines": 6,
+          "fileCategory": "config"
+        },
+        {
+          "path": "package.json",
+          "language": "json",
+          "sizeLines": 99,
+          "fileCategory": "config"
+        },
+        {
+          "path": "save_memory.sh",
+          "language": "shell",
+          "sizeLines": 6,
+          "fileCategory": "script"
+        },
+        {
+          "path": "skills-lock.json",
+          "language": "json",
+          "sizeLines": 1583,
+          "fileCategory": "config"
+        },
+        {
+          "path": "tsconfig.json",
+          "language": "json",
+          "sizeLines": 36,
+          "fileCategory": "config"
+        },
+        {
+          "path": "vercel.json",
+          "language": "json",
+          "sizeLines": 28,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "index.html": [],
+        "knip.json": [],
+        "package.json": [],
+        "save_memory.sh": [],
+        "skills-lock.json": [],
+        "tsconfig.json": [],
+        "vercel.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 7,
+      "files": [
+        {
+          "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+          "language": "yaml",
+          "sizeLines": 80,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+          "language": "yaml",
+          "sizeLines": 40,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/improvement.yml",
+          "language": "yaml",
+          "sizeLines": 39,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/security_report.yml",
+          "language": "yaml",
+          "sizeLines": 31,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".github/ISSUE_TEMPLATE/bug_report.yml": [],
+        ".github/ISSUE_TEMPLATE/feature_request.yml": [],
+        ".github/ISSUE_TEMPLATE/improvement.yml": [],
+        ".github/ISSUE_TEMPLATE/security_report.yml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 8,
+      "files": [
+        {
+          "path": "agent/skills/accessibility/references/forms.md",
+          "language": "markdown",
+          "sizeLines": 25,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/keyboard-focus.md",
+          "language": "markdown",
+          "sizeLines": 21,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/live-regions.md",
+          "language": "markdown",
+          "sizeLines": 15,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/names-aria.md",
+          "language": "markdown",
+          "sizeLines": 20,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/perceivable.md",
+          "language": "markdown",
+          "sizeLines": 19,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/structure.md",
+          "language": "markdown",
+          "sizeLines": 16,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/testing.md",
+          "language": "markdown",
+          "sizeLines": 16,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 36,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/accessibility/references/forms.md": [],
+        "agent/skills/accessibility/references/keyboard-focus.md": [],
+        "agent/skills/accessibility/references/live-regions.md": [],
+        "agent/skills/accessibility/references/names-aria.md": [],
+        "agent/skills/accessibility/references/perceivable.md": [],
+        "agent/skills/accessibility/references/structure.md": [],
+        "agent/skills/accessibility/references/testing.md": [],
+        "agent/skills/accessibility/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 9,
+      "files": [
+        {
+          "path": "agent/skills/angular/references/bootstrap.md",
+          "language": "markdown",
+          "sizeLines": 55,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/components.md",
+          "language": "markdown",
+          "sizeLines": 37,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/dependency-injection.md",
+          "language": "markdown",
+          "sizeLines": 20,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/forms.md",
+          "language": "markdown",
+          "sizeLines": 14,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/inputs-outputs.md",
+          "language": "markdown",
+          "sizeLines": 15,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/rendering-ssr.md",
+          "language": "markdown",
+          "sizeLines": 18,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/routing.md",
+          "language": "markdown",
+          "sizeLines": 21,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/rxjs.md",
+          "language": "markdown",
+          "sizeLines": 23,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/signals.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/templates.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/testing.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 52,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/angular/references/bootstrap.md": [],
+        "agent/skills/angular/references/components.md": [],
+        "agent/skills/angular/references/dependency-injection.md": [],
+        "agent/skills/angular/references/forms.md": [],
+        "agent/skills/angular/references/inputs-outputs.md": [],
+        "agent/skills/angular/references/rendering-ssr.md": [],
+        "agent/skills/angular/references/routing.md": [],
+        "agent/skills/angular/references/rxjs.md": [],
+        "agent/skills/angular/references/signals.md": [],
+        "agent/skills/angular/references/templates.md": [],
+        "agent/skills/angular/references/testing.md": [],
+        "agent/skills/angular/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 10,
+      "files": [
+        {
+          "path": "agent/skills/architecture-and-design/references/clean-architecture.md",
+          "language": "markdown",
+          "sizeLines": 17,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/clean-code.md",
+          "language": "markdown",
+          "sizeLines": 68,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/ddd.md",
+          "language": "markdown",
+          "sizeLines": 52,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/expressive-logic.md",
+          "language": "markdown",
+          "sizeLines": 148,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/forms.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/frontend-practices.md",
+          "language": "markdown",
+          "sizeLines": 46,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/micro-frontends.md",
+          "language": "markdown",
+          "sizeLines": 24,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/patterns.md",
+          "language": "markdown",
+          "sizeLines": 62,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/security.md",
+          "language": "markdown",
+          "sizeLines": 19,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/solid.md",
+          "language": "markdown",
+          "sizeLines": 126,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/state-and-data.md",
+          "language": "markdown",
+          "sizeLines": 55,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/structure.md",
+          "language": "markdown",
+          "sizeLines": 61,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/testing.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/type-safety.md",
+          "language": "markdown",
+          "sizeLines": 84,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/architecture-and-design/references/clean-architecture.md": [],
+        "agent/skills/architecture-and-design/references/clean-code.md": [],
+        "agent/skills/architecture-and-design/references/ddd.md": [],
+        "agent/skills/architecture-and-design/references/expressive-logic.md": [],
+        "agent/skills/architecture-and-design/references/forms.md": [],
+        "agent/skills/architecture-and-design/references/frontend-practices.md": [],
+        "agent/skills/architecture-and-design/references/micro-frontends.md": [],
+        "agent/skills/architecture-and-design/references/patterns.md": [],
+        "agent/skills/architecture-and-design/references/security.md": [],
+        "agent/skills/architecture-and-design/references/solid.md": [],
+        "agent/skills/architecture-and-design/references/state-and-data.md": [],
+        "agent/skills/architecture-and-design/references/structure.md": [],
+        "agent/skills/architecture-and-design/references/testing.md": [],
+        "agent/skills/architecture-and-design/references/type-safety.md": [],
+        "agent/skills/architecture-and-design/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 11,
+      "files": [
+        {
+          "path": "agent/skills/component-api-design/references/compound-components.md",
+          "language": "markdown",
+          "sizeLines": 39,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/references/controlled-uncontrolled.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/references/props-contract.md",
+          "language": "markdown",
+          "sizeLines": 41,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/references/slots-vs-config.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/references/versioning.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 37,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/component-api-design/references/compound-components.md": [],
+        "agent/skills/component-api-design/references/controlled-uncontrolled.md": [],
+        "agent/skills/component-api-design/references/props-contract.md": [],
+        "agent/skills/component-api-design/references/slots-vs-config.md": [],
+        "agent/skills/component-api-design/references/versioning.md": [],
+        "agent/skills/component-api-design/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 12,
+      "files": [
+        {
+          "path": "agent/skills/core-typescript/references/async.md",
+          "language": "markdown",
+          "sizeLines": 38,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/compiler-config.md",
+          "language": "markdown",
+          "sizeLines": 41,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/data-modeling.md",
+          "language": "markdown",
+          "sizeLines": 50,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/errors.md",
+          "language": "markdown",
+          "sizeLines": 34,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/functions.md",
+          "language": "markdown",
+          "sizeLines": 22,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/generics.md",
+          "language": "markdown",
+          "sizeLines": 26,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/inference.md",
+          "language": "markdown",
+          "sizeLines": 21,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/language-hygiene.md",
+          "language": "markdown",
+          "sizeLines": 10,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/lint.md",
+          "language": "markdown",
+          "sizeLines": 9,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/modules.md",
+          "language": "markdown",
+          "sizeLines": 19,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/narrowing.md",
+          "language": "markdown",
+          "sizeLines": 27,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/nullability.md",
+          "language": "markdown",
+          "sizeLines": 16,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/unsafe-types.md",
+          "language": "markdown",
+          "sizeLines": 19,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/utility-types.md",
+          "language": "markdown",
+          "sizeLines": 22,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 33,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/core-typescript/references/async.md": [],
+        "agent/skills/core-typescript/references/compiler-config.md": [],
+        "agent/skills/core-typescript/references/data-modeling.md": [],
+        "agent/skills/core-typescript/references/errors.md": [],
+        "agent/skills/core-typescript/references/functions.md": [],
+        "agent/skills/core-typescript/references/generics.md": [],
+        "agent/skills/core-typescript/references/inference.md": [],
+        "agent/skills/core-typescript/references/language-hygiene.md": [],
+        "agent/skills/core-typescript/references/lint.md": [],
+        "agent/skills/core-typescript/references/modules.md": [],
+        "agent/skills/core-typescript/references/narrowing.md": [],
+        "agent/skills/core-typescript/references/nullability.md": [],
+        "agent/skills/core-typescript/references/unsafe-types.md": [],
+        "agent/skills/core-typescript/references/utility-types.md": [],
+        "agent/skills/core-typescript/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 13,
+      "files": [
+        {
+          "path": "agent/skills/e2e-testing/references/flake-triage.md",
+          "language": "markdown",
+          "sizeLines": 38,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/network.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/reliability.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/scope.md",
+          "language": "markdown",
+          "sizeLines": 37,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/selectors.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/test-data.md",
+          "language": "markdown",
+          "sizeLines": 41,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/waiting.md",
+          "language": "markdown",
+          "sizeLines": 30,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 36,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/e2e-testing/references/flake-triage.md": [],
+        "agent/skills/e2e-testing/references/network.md": [],
+        "agent/skills/e2e-testing/references/reliability.md": [],
+        "agent/skills/e2e-testing/references/scope.md": [],
+        "agent/skills/e2e-testing/references/selectors.md": [],
+        "agent/skills/e2e-testing/references/test-data.md": [],
+        "agent/skills/e2e-testing/references/waiting.md": [],
+        "agent/skills/e2e-testing/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 14,
+      "files": [
+        {
+          "path": "agent/skills/frontend-code-review/references/dedup.md",
+          "language": "markdown",
+          "sizeLines": 39,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/frontend-code-review/references/merging.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/frontend-code-review/references/routing.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/frontend-code-review/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 46,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/frontend-code-review/references/dedup.md": [],
+        "agent/skills/frontend-code-review/references/merging.md": [],
+        "agent/skills/frontend-code-review/references/routing.md": [],
+        "agent/skills/frontend-code-review/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 15,
+      "files": [
+        {
+          "path": "agent/skills/i18n-and-localization/references/catalog.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/formatting.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/locale-routing.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/messages.md",
+          "language": "markdown",
+          "sizeLines": 28,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/plurals-gender.md",
+          "language": "markdown",
+          "sizeLines": 28,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/rtl-bidi.md",
+          "language": "markdown",
+          "sizeLines": 33,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/i18n-and-localization/references/catalog.md": [],
+        "agent/skills/i18n-and-localization/references/formatting.md": [],
+        "agent/skills/i18n-and-localization/references/locale-routing.md": [],
+        "agent/skills/i18n-and-localization/references/messages.md": [],
+        "agent/skills/i18n-and-localization/references/plurals-gender.md": [],
+        "agent/skills/i18n-and-localization/references/rtl-bidi.md": [],
+        "agent/skills/i18n-and-localization/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 16,
+      "files": [
+        {
+          "path": "agent/skills/react/references/context.md",
+          "language": "markdown",
+          "sizeLines": 21,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/data-fetching.md",
+          "language": "markdown",
+          "sizeLines": 30,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/effects.md",
+          "language": "markdown",
+          "sizeLines": 46,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/forms.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/hooks.md",
+          "language": "markdown",
+          "sizeLines": 28,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/purity.md",
+          "language": "markdown",
+          "sizeLines": 48,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/refs.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/rendering.md",
+          "language": "markdown",
+          "sizeLines": 25,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/server-client.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/state.md",
+          "language": "markdown",
+          "sizeLines": 27,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/testing.md",
+          "language": "markdown",
+          "sizeLines": 23,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/react/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 46,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/react/references/context.md": [],
+        "agent/skills/react/references/data-fetching.md": [],
+        "agent/skills/react/references/effects.md": [],
+        "agent/skills/react/references/forms.md": [],
+        "agent/skills/react/references/hooks.md": [],
+        "agent/skills/react/references/purity.md": [],
+        "agent/skills/react/references/refs.md": [],
+        "agent/skills/react/references/rendering.md": [],
+        "agent/skills/react/references/server-client.md": [],
+        "agent/skills/react/references/state.md": [],
+        "agent/skills/react/references/testing.md": [],
+        "agent/skills/react/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 17,
+      "files": [
+        {
+          "path": "agent/skills/skill-name/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 136,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/skill-name/reference.md",
+          "language": "markdown",
+          "sizeLines": 31,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/skill-name/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/skill-name/SKILL.md": [],
+        "agent/skills/skill-name/reference.md": [],
+        "agent/skills/skill-name/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 18,
+      "files": [
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/architecture.md",
+          "language": "markdown",
+          "sizeLines": 33,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/container-queries.md",
+          "language": "markdown",
+          "sizeLines": 33,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/fluid-type.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/methodology.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/responsive-layout.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/theming.md",
+          "language": "markdown",
+          "sizeLines": 44,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/tokens.md",
+          "language": "markdown",
+          "sizeLines": 37,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 44,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/styling-and-design-tokens/references/architecture.md": [],
+        "agent/skills/styling-and-design-tokens/references/container-queries.md": [],
+        "agent/skills/styling-and-design-tokens/references/fluid-type.md": [],
+        "agent/skills/styling-and-design-tokens/references/methodology.md": [],
+        "agent/skills/styling-and-design-tokens/references/responsive-layout.md": [],
+        "agent/skills/styling-and-design-tokens/references/theming.md": [],
+        "agent/skills/styling-and-design-tokens/references/tokens.md": [],
+        "agent/skills/styling-and-design-tokens/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 19,
+      "files": [
+        {
+          "path": "agent/skills/test-quality/references/assertions.md",
+          "language": "markdown",
+          "sizeLines": 111,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/behavior-not-implementation.md",
+          "language": "markdown",
+          "sizeLines": 94,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/coverage.md",
+          "language": "markdown",
+          "sizeLines": 53,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/determinism.md",
+          "language": "markdown",
+          "sizeLines": 71,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/structure-and-naming.md",
+          "language": "markdown",
+          "sizeLines": 76,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/test-data.md",
+          "language": "markdown",
+          "sizeLines": 51,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/test-doubles.md",
+          "language": "markdown",
+          "sizeLines": 88,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 85,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/test-quality/references/assertions.md": [],
+        "agent/skills/test-quality/references/behavior-not-implementation.md": [],
+        "agent/skills/test-quality/references/coverage.md": [],
+        "agent/skills/test-quality/references/determinism.md": [],
+        "agent/skills/test-quality/references/structure-and-naming.md": [],
+        "agent/skills/test-quality/references/test-data.md": [],
+        "agent/skills/test-quality/references/test-doubles.md": [],
+        "agent/skills/test-quality/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 20,
+      "files": [
+        {
+          "path": "agent/skills/vue/references/components.md",
+          "language": "markdown",
+          "sizeLines": 39,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/composables.md",
+          "language": "markdown",
+          "sizeLines": 36,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/forms.md",
+          "language": "markdown",
+          "sizeLines": 35,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/reactivity.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/rendering.md",
+          "language": "markdown",
+          "sizeLines": 28,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/server.md",
+          "language": "markdown",
+          "sizeLines": 29,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/state.md",
+          "language": "markdown",
+          "sizeLines": 39,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/templates.md",
+          "language": "markdown",
+          "sizeLines": 33,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/testing.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 41,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/vue/references/components.md": [],
+        "agent/skills/vue/references/composables.md": [],
+        "agent/skills/vue/references/forms.md": [],
+        "agent/skills/vue/references/reactivity.md": [],
+        "agent/skills/vue/references/rendering.md": [],
+        "agent/skills/vue/references/server.md": [],
+        "agent/skills/vue/references/state.md": [],
+        "agent/skills/vue/references/templates.md": [],
+        "agent/skills/vue/references/testing.md": [],
+        "agent/skills/vue/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 21,
+      "files": [
+        {
+          "path": "agent/skills/web-performance/references/assets.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/budgets.md",
+          "language": "markdown",
+          "sizeLines": 30,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/cls.md",
+          "language": "markdown",
+          "sizeLines": 27,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/inp.md",
+          "language": "markdown",
+          "sizeLines": 34,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/javascript.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/lcp.md",
+          "language": "markdown",
+          "sizeLines": 29,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/rum.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/references/worked-example.md",
+          "language": "markdown",
+          "sizeLines": 37,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/web-performance/references/assets.md": [],
+        "agent/skills/web-performance/references/budgets.md": [],
+        "agent/skills/web-performance/references/cls.md": [],
+        "agent/skills/web-performance/references/inp.md": [],
+        "agent/skills/web-performance/references/javascript.md": [],
+        "agent/skills/web-performance/references/lcp.md": [],
+        "agent/skills/web-performance/references/rum.md": [],
+        "agent/skills/web-performance/references/worked-example.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 22,
+      "files": [
+        {
+          "path": "docs/agents/domain.md",
+          "language": "markdown",
+          "sizeLines": 12,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "language": "markdown",
+          "sizeLines": 4,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docs/agents/triage-labels.md",
+          "language": "markdown",
+          "sizeLines": 12,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "docs/agents/domain.md": [],
+        "docs/agents/issue-tracker.md": [],
+        "docs/agents/triage-labels.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 23,
+      "files": [
+        {
+          "path": "public/data/bodyweight-exercises.json",
+          "language": "json",
+          "sizeLines": 272,
+          "fileCategory": "config"
+        },
+        {
+          "path": "public/data/exercises-dataset.json",
+          "language": "json",
+          "sizeLines": 145883,
+          "fileCategory": "config"
+        },
+        {
+          "path": "public/data/exercises.json",
+          "language": "json",
+          "sizeLines": 563,
+          "fileCategory": "config"
+        },
+        {
+          "path": "public/data/free-exercise-db.json",
+          "language": "json",
+          "sizeLines": 22694,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "public/data/bodyweight-exercises.json": [],
+        "public/data/exercises-dataset.json": [],
+        "public/data/exercises.json": [],
+        "public/data/free-exercise-db.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 24,
+      "files": [
+        {
+          "path": "scripts/check-jwt-secret.sh",
+          "language": "shell",
+          "sizeLines": 55,
+          "fileCategory": "script"
+        },
+        {
+          "path": "scripts/create-issue.sh",
+          "language": "shell",
+          "sizeLines": 41,
+          "fileCategory": "script"
+        },
+        {
+          "path": "scripts/selfhost-setup.sh",
+          "language": "shell",
+          "sizeLines": 172,
+          "fileCategory": "script"
+        }
+      ],
+      "batchImportData": {
+        "scripts/check-jwt-secret.sh": [],
+        "scripts/create-issue.sh": [],
+        "scripts/selfhost-setup.sh": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 25,
+      "files": [
+        {
+          "path": ".claude-flow/neural/patterns.json",
+          "language": "json",
+          "sizeLines": 400,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".claude-flow/neural/stats.json",
+          "language": "json",
+          "sizeLines": 5,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".claude-flow/policy/ledger-anchors.json",
+          "language": "json",
+          "sizeLines": 17,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".claude-flow/policy/state.json",
+          "language": "json",
+          "sizeLines": 614,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".claude/settings.local.json.tmp.289024.84ce0ad365d2",
+          "language": "84ce0ad365d2",
+          "sizeLines": 50,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".geminiignore",
+          "language": "unknown",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "language": "markdown",
+          "sizeLines": 18,
+          "fileCategory": "docs"
+        },
+        {
+          "path": ".github/labels.yml",
+          "language": "yaml",
+          "sizeLines": 49,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".gitmodules",
+          "language": "unknown",
+          "sizeLines": 3,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".husky/pre-commit",
+          "language": "unknown",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".mcp-gateway/descriptions.yaml",
+          "language": "yaml",
+          "sizeLines": 194,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".swarm/ewc-fisher.json",
+          "language": "json",
+          "sizeLines": 396,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".swift-version",
+          "language": "swift",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".ua/config.json",
+          "language": "json",
+          "sizeLines": 1,
+          "fileCategory": "config"
+        },
+        {
+          "path": "agent/skills/accessibility-audit/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 63,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/accessibility/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 211,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/angular/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 210,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/api-design-review/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 59,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/api-test-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 79,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 228,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-and-design/assets/adr-template.md",
+          "language": "markdown",
+          "sizeLines": 59,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/architecture-diagram/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 72,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/bug-debugger/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 57,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/bug-report-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 64,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/changelog-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 57,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        ".claude-flow/neural/patterns.json": [],
+        ".claude-flow/neural/stats.json": [],
+        ".claude-flow/policy/ledger-anchors.json": [],
+        ".claude-flow/policy/state.json": [],
+        ".claude/settings.local.json.tmp.289024.84ce0ad365d2": [],
+        ".geminiignore": [],
+        ".github/PULL_REQUEST_TEMPLATE.md": [],
+        ".github/labels.yml": [],
+        ".gitmodules": [],
+        ".husky/pre-commit": [],
+        ".mcp-gateway/descriptions.yaml": [],
+        ".swarm/ewc-fisher.json": [],
+        ".swift-version": [],
+        ".ua/config.json": [],
+        "agent/skills/accessibility-audit/SKILL.md": [],
+        "agent/skills/accessibility/SKILL.md": [],
+        "agent/skills/angular/SKILL.md": [],
+        "agent/skills/api-design-review/SKILL.md": [],
+        "agent/skills/api-test-writer/SKILL.md": [],
+        "agent/skills/architecture-and-design/SKILL.md": [],
+        "agent/skills/architecture-and-design/assets/adr-template.md": [],
+        "agent/skills/architecture-diagram/SKILL.md": [],
+        "agent/skills/bug-debugger/SKILL.md": [],
+        "agent/skills/bug-report-writer/SKILL.md": [],
+        "agent/skills/changelog-writer/SKILL.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 26,
+      "files": [
+        {
+          "path": "agent/skills/code-review/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 59,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/code-review/checklist.md",
+          "language": "markdown",
+          "sizeLines": 51,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/codebase-onboarding/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 62,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/component-api-design/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 148,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 165,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/core-typescript/assets/eslint.config.js",
+          "language": "javascript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "agent/skills/core-typescript/assets/tsconfig.base.json",
+          "language": "json",
+          "sizeLines": 33,
+          "fileCategory": "config"
+        },
+        {
+          "path": "agent/skills/database-schema-design/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 68,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/database-schema-design/checklist.md",
+          "language": "markdown",
+          "sizeLines": 40,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/dependency-upgrade/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 63,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/dockerize-app/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 58,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/dockerize-app/templates.md",
+          "language": "markdown",
+          "sizeLines": 127,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/e2e-testing/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 156,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/figma-design-compare/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 66,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/figma-design-compare/capture.md",
+          "language": "markdown",
+          "sizeLines": 99,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/flaky-test-fixer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 59,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/frontend-code-review/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 129,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/git-commit-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 65,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/github-actions-ci/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 90,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/i18n-and-localization/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 161,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/playwright-e2e-tests/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 63,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/prd-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 52,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/prd-writer/template.md",
+          "language": "markdown",
+          "sizeLines": 62,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/proof-of-done-lite/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 29,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/proof-of-done/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/code-review/SKILL.md": [],
+        "agent/skills/code-review/checklist.md": [],
+        "agent/skills/codebase-onboarding/SKILL.md": [],
+        "agent/skills/component-api-design/SKILL.md": [],
+        "agent/skills/core-typescript/SKILL.md": [],
+        "agent/skills/core-typescript/assets/eslint.config.js": [],
+        "agent/skills/core-typescript/assets/tsconfig.base.json": [],
+        "agent/skills/database-schema-design/SKILL.md": [],
+        "agent/skills/database-schema-design/checklist.md": [],
+        "agent/skills/dependency-upgrade/SKILL.md": [],
+        "agent/skills/dockerize-app/SKILL.md": [],
+        "agent/skills/dockerize-app/templates.md": [],
+        "agent/skills/e2e-testing/SKILL.md": [],
+        "agent/skills/figma-design-compare/SKILL.md": [],
+        "agent/skills/figma-design-compare/capture.md": [],
+        "agent/skills/flaky-test-fixer/SKILL.md": [],
+        "agent/skills/frontend-code-review/SKILL.md": [],
+        "agent/skills/git-commit-writer/SKILL.md": [],
+        "agent/skills/github-actions-ci/SKILL.md": [],
+        "agent/skills/i18n-and-localization/SKILL.md": [],
+        "agent/skills/playwright-e2e-tests/SKILL.md": [],
+        "agent/skills/prd-writer/SKILL.md": [],
+        "agent/skills/prd-writer/template.md": [],
+        "agent/skills/proof-of-done-lite/SKILL.md": [],
+        "agent/skills/proof-of-done/SKILL.md": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 27,
+      "files": [
+        {
+          "path": "agent/skills/react/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 199,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/readme-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 49,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/readme-writer/template.md",
+          "language": "markdown",
+          "sizeLines": 56,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/refactor-planner/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 61,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/security-audit/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 60,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/security-audit/checklist.md",
+          "language": "markdown",
+          "sizeLines": 32,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/seo-audit/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 63,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/styling-and-design-tokens/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 170,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-case-generator/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 53,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-plan-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 71,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 191,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/test-quality/assets/builder.template.ts",
+          "language": "typescript",
+          "sizeLines": 63,
+          "fileCategory": "code"
+        },
+        {
+          "path": "agent/skills/test-writer/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 58,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/vue/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 186,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance-audit/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 55,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance-audit/checklist.md",
+          "language": "markdown",
+          "sizeLines": 46,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "agent/skills/web-performance/SKILL.md",
+          "language": "markdown",
+          "sizeLines": 173,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "api/claude.ts",
+          "language": "typescript",
+          "sizeLines": 38,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/coach.ts",
+          "language": "typescript",
+          "sizeLines": 47,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/cron/weekly-report.ts",
+          "language": "typescript",
+          "sizeLines": 24,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/generate-workout.ts",
+          "language": "typescript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/health.ts",
+          "language": "typescript",
+          "sizeLines": 5,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/request-token.ts",
+          "language": "typescript",
+          "sizeLines": 61,
+          "fileCategory": "code"
+        },
+        {
+          "path": "api/workout/complete.ts",
+          "language": "typescript",
+          "sizeLines": 27,
+          "fileCategory": "code"
+        },
+        {
+          "path": "capacitor.config.ts",
+          "language": "typescript",
+          "sizeLines": 14,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "agent/skills/react/SKILL.md": [],
+        "agent/skills/readme-writer/SKILL.md": [],
+        "agent/skills/readme-writer/template.md": [],
+        "agent/skills/refactor-planner/SKILL.md": [],
+        "agent/skills/security-audit/SKILL.md": [],
+        "agent/skills/security-audit/checklist.md": [],
+        "agent/skills/seo-audit/SKILL.md": [],
+        "agent/skills/styling-and-design-tokens/SKILL.md": [],
+        "agent/skills/test-case-generator/SKILL.md": [],
+        "agent/skills/test-plan-writer/SKILL.md": [],
+        "agent/skills/test-quality/SKILL.md": [],
+        "agent/skills/test-quality/assets/builder.template.ts": [],
+        "agent/skills/test-writer/SKILL.md": [],
+        "agent/skills/vue/SKILL.md": [],
+        "agent/skills/web-performance-audit/SKILL.md": [],
+        "agent/skills/web-performance-audit/checklist.md": [],
+        "agent/skills/web-performance/SKILL.md": [],
+        "api/claude.ts": [],
+        "api/coach.ts": [],
+        "api/cron/weekly-report.ts": [],
+        "api/generate-workout.ts": [],
+        "api/health.ts": [],
+        "api/request-token.ts": [],
+        "api/workout/complete.ts": [],
+        "capacitor.config.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 28,
+      "files": [
+        {
+          "path": "commitlint.config.js",
+          "language": "javascript",
+          "sizeLines": 26,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/registerSW.js",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/sw.js",
+          "language": "javascript",
+          "sizeLines": 116,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/workbox-25613826.js",
+          "language": "javascript",
+          "sizeLines": 4407,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/workbox-7e5eb42b.js",
+          "language": "javascript",
+          "sizeLines": 3390,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/workbox-8648bc04.js",
+          "language": "javascript",
+          "sizeLines": 4542,
+          "fileCategory": "code"
+        },
+        {
+          "path": "dev-dist/workbox-b1bafff1.js",
+          "language": "javascript",
+          "sizeLines": 4695,
+          "fileCategory": "code"
+        },
+        {
+          "path": "docker/bff/package.json",
+          "language": "json",
+          "sizeLines": 10,
+          "fileCategory": "config"
+        },
+        {
+          "path": "docker/db/init.sql",
+          "language": "sql",
+          "sizeLines": 269,
+          "fileCategory": "data"
+        },
+        {
+          "path": "docker/frontend/nginx.conf",
+          "language": "conf",
+          "sizeLines": 95,
+          "fileCategory": "code"
+        },
+        {
+          "path": "docs/SELFHOST.md",
+          "language": "markdown",
+          "sizeLines": 217,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "eslint.config.js",
+          "language": "javascript",
+          "sizeLines": 55,
+          "fileCategory": "code"
+        },
+        {
+          "path": "fix_db.js",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "fix_exerciseDB.js",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "fix_newlines.py",
+          "language": "python",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "fix_row.js",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "fix_ts.py",
+          "language": "python",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "generate_exercises.py",
+          "language": "python",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "playwright.config.ts",
+          "language": "typescript",
+          "sizeLines": 47,
+          "fileCategory": "code"
+        },
+        {
+          "path": "proxy/worker.js",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "public/manifest.json",
+          "language": "json",
+          "sizeLines": 69,
+          "fileCategory": "config"
+        },
+        {
+          "path": "ruvector.db",
+          "language": "db",
+          "sizeLines": 2,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/audit-stores.js",
+          "language": "javascript",
+          "sizeLines": 16,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/checkExerciseMedia.js",
+          "language": "javascript",
+          "sizeLines": 97,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/check_exercise_keys.js",
+          "language": "javascript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "commitlint.config.js": [],
+        "dev-dist/registerSW.js": [],
+        "dev-dist/sw.js": [],
+        "dev-dist/workbox-25613826.js": [],
+        "dev-dist/workbox-7e5eb42b.js": [],
+        "dev-dist/workbox-8648bc04.js": [],
+        "dev-dist/workbox-b1bafff1.js": [],
+        "docker/bff/package.json": [],
+        "docker/db/init.sql": [],
+        "docker/frontend/nginx.conf": [],
+        "docs/SELFHOST.md": [],
+        "eslint.config.js": [],
+        "fix_db.js": [],
+        "fix_exerciseDB.js": [],
+        "fix_newlines.py": [],
+        "fix_row.js": [],
+        "fix_ts.py": [],
+        "generate_exercises.py": [],
+        "playwright.config.ts": [],
+        "proxy/worker.js": [],
+        "public/manifest.json": [],
+        "ruvector.db": [],
+        "scripts/audit-stores.js": [],
+        "scripts/checkExerciseMedia.js": [],
+        "scripts/check_exercise_keys.js": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 29,
+      "files": [
+        {
+          "path": "scripts/cleanGifs.js",
+          "language": "javascript",
+          "sizeLines": 21,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/downloadAllExerciseMedia.js",
+          "language": "javascript",
+          "sizeLines": 143,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/downloadExerciseMedia.js",
+          "language": "javascript",
+          "sizeLines": 127,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/fetchOpenSourceExercises.js",
+          "language": "javascript",
+          "sizeLines": 438,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/fetch_metadata.js",
+          "language": "javascript",
+          "sizeLines": 12,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/generateAnimatedSVGs.js",
+          "language": "javascript",
+          "sizeLines": 903,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/generateExerciseGifs.js",
+          "language": "javascript",
+          "sizeLines": 40,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/generateSvgPlaceholders.js",
+          "language": "javascript",
+          "sizeLines": 122,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/migrate-exercise-db.js",
+          "language": "javascript",
+          "sizeLines": 69,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/migrate-exercises.cjs",
+          "language": "javascript",
+          "sizeLines": 261,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/read_error.js",
+          "language": "javascript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/upgradeExerciseDB.js",
+          "language": "javascript",
+          "sizeLines": 30,
+          "fileCategory": "code"
+        },
+        {
+          "path": "scripts/validate-exercise-db.js",
+          "language": "javascript",
+          "sizeLines": 124,
+          "fileCategory": "code"
+        },
+        {
+          "path": "server/package.json",
+          "language": "json",
+          "sizeLines": 14,
+          "fileCategory": "config"
+        },
+        {
+          "path": "social.patch",
+          "language": "patch",
+          "sizeLines": 1807,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/App.css",
+          "language": "css",
+          "sizeLines": 182,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "src/App.tsx",
+          "language": "typescript",
+          "sizeLines": 141,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/App.tsx.oFwECRe",
+          "language": "ofwecre",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/App.tsx.ofYZxbO",
+          "language": "ofyzxbo",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/__tests__/setup.ts",
+          "language": "typescript",
+          "sizeLines": 66,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/ai/cacheLayer.ts",
+          "language": "typescript",
+          "sizeLines": 31,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/3d/MuscleSphere.tsx",
+          "language": "typescript",
+          "sizeLines": 63,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/3d/MuscleViewer.tsx",
+          "language": "typescript",
+          "sizeLines": 216,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/3d/SmartCamera.tsx",
+          "language": "typescript",
+          "sizeLines": 302,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ErrorBoundary.tsx",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "scripts/cleanGifs.js": [],
+        "scripts/downloadAllExerciseMedia.js": [],
+        "scripts/downloadExerciseMedia.js": [],
+        "scripts/fetchOpenSourceExercises.js": [],
+        "scripts/fetch_metadata.js": [],
+        "scripts/generateAnimatedSVGs.js": [],
+        "scripts/generateExerciseGifs.js": [],
+        "scripts/generateSvgPlaceholders.js": [],
+        "scripts/migrate-exercise-db.js": [],
+        "scripts/migrate-exercises.cjs": [],
+        "scripts/read_error.js": [],
+        "scripts/upgradeExerciseDB.js": [],
+        "scripts/validate-exercise-db.js": [],
+        "server/package.json": [],
+        "social.patch": [],
+        "src/App.css": [],
+        "src/App.tsx": [],
+        "src/App.tsx.oFwECRe": [],
+        "src/App.tsx.ofYZxbO": [],
+        "src/__tests__/setup.ts": [],
+        "src/ai/cacheLayer.ts": [],
+        "src/components/3d/MuscleSphere.tsx": [],
+        "src/components/3d/MuscleViewer.tsx": [],
+        "src/components/3d/SmartCamera.tsx": [],
+        "src/components/ErrorBoundary.tsx": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 30,
+      "files": [
+        {
+          "path": "src/components/GhostSetComparison.tsx",
+          "language": "typescript",
+          "sizeLines": 66,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/GhostToggle.tsx",
+          "language": "typescript",
+          "sizeLines": 49,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/PlateCalculator/PlateCalculator.tsx",
+          "language": "typescript",
+          "sizeLines": 223,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/PlateCalculator/PlateVisualizer.tsx",
+          "language": "typescript",
+          "sizeLines": 89,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/WatchSyncIndicator.tsx",
+          "language": "typescript",
+          "sizeLines": 87,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ai/ProactiveMessage.tsx",
+          "language": "typescript",
+          "sizeLines": 183,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/challenges/ActiveChallenges.tsx",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/challenges/DeadHangWidget.tsx",
+          "language": "typescript",
+          "sizeLines": 138,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/ActivityHeatmap.tsx",
+          "language": "typescript",
+          "sizeLines": 548,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/BiometricDeltaCard.tsx",
+          "language": "typescript",
+          "sizeLines": 267,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/BiometricInsight.tsx",
+          "language": "typescript",
+          "sizeLines": 343,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/ClinicalAnalytics.tsx",
+          "language": "typescript",
+          "sizeLines": 506,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/CycleTracker.tsx",
+          "language": "typescript",
+          "sizeLines": 198,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/DailyBriefing.tsx",
+          "language": "typescript",
+          "sizeLines": 304,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/MuscleRecoveryRing.tsx",
+          "language": "typescript",
+          "sizeLines": 163,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/NutritionDashboardSection.tsx",
+          "language": "typescript",
+          "sizeLines": 180,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/PhaseCard.tsx",
+          "language": "typescript",
+          "sizeLines": 97,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/ReadinessGauge.tsx",
+          "language": "typescript",
+          "sizeLines": 142,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/RecoveryRoulette.tsx",
+          "language": "typescript",
+          "sizeLines": 131,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/TrendDashboardSection.tsx",
+          "language": "typescript",
+          "sizeLines": 81,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/TrendStatusBadge.tsx",
+          "language": "typescript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/TrendWidget.tsx",
+          "language": "typescript",
+          "sizeLines": 162,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/VTaperWidget.tsx",
+          "language": "typescript",
+          "sizeLines": 69,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/VirtualPet.tsx",
+          "language": "typescript",
+          "sizeLines": 190,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/dashboard/WeekCalendar.tsx",
+          "language": "typescript",
+          "sizeLines": 81,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/components/GhostSetComparison.tsx": [],
+        "src/components/GhostToggle.tsx": [],
+        "src/components/PlateCalculator/PlateCalculator.tsx": [],
+        "src/components/PlateCalculator/PlateVisualizer.tsx": [],
+        "src/components/WatchSyncIndicator.tsx": [],
+        "src/components/ai/ProactiveMessage.tsx": [],
+        "src/components/challenges/ActiveChallenges.tsx": [],
+        "src/components/challenges/DeadHangWidget.tsx": [],
+        "src/components/dashboard/ActivityHeatmap.tsx": [],
+        "src/components/dashboard/BiometricDeltaCard.tsx": [],
+        "src/components/dashboard/BiometricInsight.tsx": [],
+        "src/components/dashboard/ClinicalAnalytics.tsx": [],
+        "src/components/dashboard/CycleTracker.tsx": [],
+        "src/components/dashboard/DailyBriefing.tsx": [],
+        "src/components/dashboard/MuscleRecoveryRing.tsx": [],
+        "src/components/dashboard/NutritionDashboardSection.tsx": [],
+        "src/components/dashboard/PhaseCard.tsx": [],
+        "src/components/dashboard/ReadinessGauge.tsx": [],
+        "src/components/dashboard/RecoveryRoulette.tsx": [],
+        "src/components/dashboard/TrendDashboardSection.tsx": [],
+        "src/components/dashboard/TrendStatusBadge.tsx": [],
+        "src/components/dashboard/TrendWidget.tsx": [],
+        "src/components/dashboard/VTaperWidget.tsx": [],
+        "src/components/dashboard/VirtualPet.tsx": [],
+        "src/components/dashboard/WeekCalendar.tsx": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 31,
+      "files": [
+        {
+          "path": "src/components/dashboard/WorkoutSummaryCard.tsx",
+          "language": "typescript",
+          "sizeLines": 30,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/exercises/ExerciseTutorialExt.tsx",
+          "language": "typescript",
+          "sizeLines": 334,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/exercises/VideoTutorial.tsx",
+          "language": "typescript",
+          "sizeLines": 787,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/history/DetailedHistory.tsx",
+          "language": "typescript",
+          "sizeLines": 350,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/injury/BodyMap.tsx",
+          "language": "typescript",
+          "sizeLines": 173,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/injury/InjuryRiskPanel.tsx",
+          "language": "typescript",
+          "sizeLines": 225,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/injury/RiskBadge.tsx",
+          "language": "typescript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/injury/WorkoutModifications.tsx",
+          "language": "typescript",
+          "sizeLines": 93,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/onboarding/BeginnerGuide.tsx",
+          "language": "typescript",
+          "sizeLines": 137,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/onboarding/FitnessAssessment.tsx",
+          "language": "typescript",
+          "sizeLines": 440,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/onboarding/WelcomeWizard.tsx",
+          "language": "typescript",
+          "sizeLines": 334,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/planner/Challenge90Days.tsx",
+          "language": "typescript",
+          "sizeLines": 196,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/planner/DualWorkoutCalendar.tsx",
+          "language": "typescript",
+          "sizeLines": 256,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/recovery/HRVInput.tsx",
+          "language": "typescript",
+          "sizeLines": 74,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/recovery/MoodTracker.tsx",
+          "language": "typescript",
+          "sizeLines": 75,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/recovery/SleepInput.tsx",
+          "language": "typescript",
+          "sizeLines": 75,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/recovery/SorenessMap.tsx",
+          "language": "typescript",
+          "sizeLines": 196,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/rival/RivalRace.tsx",
+          "language": "typescript",
+          "sizeLines": 119,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/rival/RivalResult.tsx",
+          "language": "typescript",
+          "sizeLines": 101,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/security/LockScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 580,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/security/PasskeyRegistration.tsx",
+          "language": "typescript",
+          "sizeLines": 143,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/settings/HealthSyncSettings.tsx",
+          "language": "typescript",
+          "sizeLines": 162,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/AuthModal.tsx",
+          "language": "typescript",
+          "sizeLines": 133,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/ClubModal.tsx",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/ClubTab.tsx",
+          "language": "typescript",
+          "sizeLines": 210,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/components/dashboard/WorkoutSummaryCard.tsx": [],
+        "src/components/exercises/ExerciseTutorialExt.tsx": [],
+        "src/components/exercises/VideoTutorial.tsx": [],
+        "src/components/history/DetailedHistory.tsx": [],
+        "src/components/injury/BodyMap.tsx": [],
+        "src/components/injury/InjuryRiskPanel.tsx": [],
+        "src/components/injury/RiskBadge.tsx": [],
+        "src/components/injury/WorkoutModifications.tsx": [],
+        "src/components/onboarding/BeginnerGuide.tsx": [],
+        "src/components/onboarding/FitnessAssessment.tsx": [],
+        "src/components/onboarding/WelcomeWizard.tsx": [],
+        "src/components/planner/Challenge90Days.tsx": [],
+        "src/components/planner/DualWorkoutCalendar.tsx": [],
+        "src/components/recovery/HRVInput.tsx": [],
+        "src/components/recovery/MoodTracker.tsx": [],
+        "src/components/recovery/SleepInput.tsx": [],
+        "src/components/recovery/SorenessMap.tsx": [],
+        "src/components/rival/RivalRace.tsx": [],
+        "src/components/rival/RivalResult.tsx": [],
+        "src/components/security/LockScreen.tsx": [],
+        "src/components/security/PasskeyRegistration.tsx": [],
+        "src/components/settings/HealthSyncSettings.tsx": [],
+        "src/components/social/AuthModal.tsx": [],
+        "src/components/social/ClubModal.tsx": [],
+        "src/components/social/ClubTab.tsx": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 32,
+      "files": [
+        {
+          "path": "src/components/social/DuelsTab.tsx",
+          "language": "typescript",
+          "sizeLines": 286,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/GymVibeWidget.tsx",
+          "language": "typescript",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/LeaderboardTab.tsx",
+          "language": "typescript",
+          "sizeLines": 210,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/P2PSyncModal.tsx",
+          "language": "typescript",
+          "sizeLines": 496,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/QRSyncModal.tsx",
+          "language": "typescript",
+          "sizeLines": 359,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/ShareWorkoutModal.tsx",
+          "language": "typescript",
+          "sizeLines": 340,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/social/SocialModal.tsx",
+          "language": "typescript",
+          "sizeLines": 140,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/stats/MuscleHeatmap.tsx",
+          "language": "typescript",
+          "sizeLines": 128,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/stats/RecoveryRing.tsx",
+          "language": "typescript",
+          "sizeLines": 236,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/BackupRestoreModal.tsx",
+          "language": "typescript",
+          "sizeLines": 90,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/BottomNav.tsx",
+          "language": "typescript",
+          "sizeLines": 166,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/ChartContainer.tsx",
+          "language": "typescript",
+          "sizeLines": 95,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/EmptyState.tsx",
+          "language": "typescript",
+          "sizeLines": 118,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/GlassCard.tsx",
+          "language": "typescript",
+          "sizeLines": 86,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/GlobalBackground.tsx",
+          "language": "typescript",
+          "sizeLines": 56,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/GlowInput.tsx",
+          "language": "typescript",
+          "sizeLines": 54,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/GradientButton.tsx",
+          "language": "typescript",
+          "sizeLines": 75,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/MotionComponents.tsx",
+          "language": "typescript",
+          "sizeLines": 480,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/ui/Tooltip.tsx",
+          "language": "typescript",
+          "sizeLines": 146,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/AutoRepToggle.tsx",
+          "language": "typescript",
+          "sizeLines": 74,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/CircuitProgress.tsx",
+          "language": "typescript",
+          "sizeLines": 82,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/DynamicRPESlider.tsx",
+          "language": "typescript",
+          "sizeLines": 59,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/EffortTracker.tsx",
+          "language": "typescript",
+          "sizeLines": 203,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/ExerciseLibrary.tsx",
+          "language": "typescript",
+          "sizeLines": 864,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/FreeWorkoutBuilder.tsx",
+          "language": "typescript",
+          "sizeLines": 1296,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/components/social/DuelsTab.tsx": [],
+        "src/components/social/GymVibeWidget.tsx": [],
+        "src/components/social/LeaderboardTab.tsx": [],
+        "src/components/social/P2PSyncModal.tsx": [],
+        "src/components/social/QRSyncModal.tsx": [],
+        "src/components/social/ShareWorkoutModal.tsx": [],
+        "src/components/social/SocialModal.tsx": [],
+        "src/components/stats/MuscleHeatmap.tsx": [],
+        "src/components/stats/RecoveryRing.tsx": [],
+        "src/components/ui/BackupRestoreModal.tsx": [],
+        "src/components/ui/BottomNav.tsx": [],
+        "src/components/ui/ChartContainer.tsx": [],
+        "src/components/ui/EmptyState.tsx": [],
+        "src/components/ui/GlassCard.tsx": [],
+        "src/components/ui/GlobalBackground.tsx": [],
+        "src/components/ui/GlowInput.tsx": [],
+        "src/components/ui/GradientButton.tsx": [],
+        "src/components/ui/MotionComponents.tsx": [],
+        "src/components/ui/Tooltip.tsx": [],
+        "src/components/workout/AutoRepToggle.tsx": [],
+        "src/components/workout/CircuitProgress.tsx": [],
+        "src/components/workout/DynamicRPESlider.tsx": [],
+        "src/components/workout/EffortTracker.tsx": [],
+        "src/components/workout/ExerciseLibrary.tsx": [],
+        "src/components/workout/FreeWorkoutBuilder.tsx": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 33,
+      "files": [
+        {
+          "path": "src/components/workout/GhostSetBar.tsx",
+          "language": "typescript",
+          "sizeLines": 156,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/MobilityTimer.tsx",
+          "language": "typescript",
+          "sizeLines": 236,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/NextWorkoutSuggestion.tsx",
+          "language": "typescript",
+          "sizeLines": 105,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/PRTracker.tsx",
+          "language": "typescript",
+          "sizeLines": 62,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/PaceTracker.tsx",
+          "language": "typescript",
+          "sizeLines": 41,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/PostWorkoutFeedback.tsx",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/RestTimer.tsx",
+          "language": "typescript",
+          "sizeLines": 333,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WalkingMap.tsx",
+          "language": "typescript",
+          "sizeLines": 225,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WeeklyPlanGenerator.tsx",
+          "language": "typescript",
+          "sizeLines": 786,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WorkoutControls.tsx",
+          "language": "typescript",
+          "sizeLines": 32,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WorkoutExerciseList.tsx",
+          "language": "typescript",
+          "sizeLines": 420,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WorkoutHeader.tsx",
+          "language": "typescript",
+          "sizeLines": 179,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WorkoutModeSelector.tsx",
+          "language": "typescript",
+          "sizeLines": 129,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/WorkoutSetRow.tsx",
+          "language": "typescript",
+          "sizeLines": 288,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/huds/AmrapHUD.tsx",
+          "language": "typescript",
+          "sizeLines": 120,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/huds/AutoregulationBanner.tsx",
+          "language": "typescript",
+          "sizeLines": 63,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/components/workout/huds/EmomHUD.tsx",
+          "language": "typescript",
+          "sizeLines": 120,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/constants.ts",
+          "language": "typescript",
+          "sizeLines": 156,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/exerciseClassifier.ts",
+          "language": "typescript",
+          "sizeLines": 100,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/exerciseDB.ts",
+          "language": "typescript",
+          "sizeLines": 45384,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/exerciseMedia.ts",
+          "language": "typescript",
+          "sizeLines": 1037,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/exercises-generated.ts",
+          "language": "typescript",
+          "sizeLines": 15403,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/data/utils.ts",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/db/encryptedDb.ts",
+          "language": "typescript",
+          "sizeLines": 320,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/db/migrations.ts",
+          "language": "typescript",
+          "sizeLines": 121,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/components/workout/GhostSetBar.tsx": [],
+        "src/components/workout/MobilityTimer.tsx": [],
+        "src/components/workout/NextWorkoutSuggestion.tsx": [],
+        "src/components/workout/PRTracker.tsx": [],
+        "src/components/workout/PaceTracker.tsx": [],
+        "src/components/workout/PostWorkoutFeedback.tsx": [],
+        "src/components/workout/RestTimer.tsx": [],
+        "src/components/workout/WalkingMap.tsx": [],
+        "src/components/workout/WeeklyPlanGenerator.tsx": [],
+        "src/components/workout/WorkoutControls.tsx": [],
+        "src/components/workout/WorkoutExerciseList.tsx": [],
+        "src/components/workout/WorkoutHeader.tsx": [],
+        "src/components/workout/WorkoutModeSelector.tsx": [],
+        "src/components/workout/WorkoutSetRow.tsx": [],
+        "src/components/workout/huds/AmrapHUD.tsx": [],
+        "src/components/workout/huds/AutoregulationBanner.tsx": [],
+        "src/components/workout/huds/EmomHUD.tsx": [],
+        "src/data/constants.ts": [],
+        "src/data/exerciseClassifier.ts": [],
+        "src/data/exerciseDB.ts": [],
+        "src/data/exerciseMedia.ts": [],
+        "src/data/exercises-generated.ts": [],
+        "src/data/utils.ts": [],
+        "src/db/encryptedDb.ts": [],
+        "src/db/migrations.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 34,
+      "files": [
+        {
+          "path": "src/db/schema.ts",
+          "language": "typescript",
+          "sizeLines": 418,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/audioMachine.ts",
+          "language": "typescript",
+          "sizeLines": 84,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/index.ts",
+          "language": "typescript",
+          "sizeLines": 185,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useAudioCoach.ts",
+          "language": "typescript",
+          "sizeLines": 114,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useBluetoothHRM.ts",
+          "language": "typescript",
+          "sizeLines": 215,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useChallenges.ts",
+          "language": "typescript",
+          "sizeLines": 38,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useDashboardData.ts",
+          "language": "typescript",
+          "sizeLines": 231,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useFitnessData.ts",
+          "language": "typescript",
+          "sizeLines": 436,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useFitnessMachine.ts",
+          "language": "typescript",
+          "sizeLines": 204,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useGhostMode.ts",
+          "language": "typescript",
+          "sizeLines": 84,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useMachine.ts",
+          "language": "typescript",
+          "sizeLines": 30,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useMotionCounter.ts",
+          "language": "typescript",
+          "sizeLines": 96,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/usePoseCounter.ts",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useProactiveCoach.ts",
+          "language": "typescript",
+          "sizeLines": 76,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useProgressiveHaptics.ts",
+          "language": "typescript",
+          "sizeLines": 126,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useRobustTimer.ts",
+          "language": "typescript",
+          "sizeLines": 89,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useWalkingCoach.ts",
+          "language": "typescript",
+          "sizeLines": 564,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/hooks/useWorkerPoseDetection.ts",
+          "language": "typescript",
+          "sizeLines": 50,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/index.css",
+          "language": "css",
+          "sizeLines": 485,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "src/jobs/weeklyReport.ts",
+          "language": "typescript",
+          "sizeLines": 41,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/lib/persistence.ts",
+          "language": "typescript",
+          "sizeLines": 32,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/lib/supabaseBrowser.ts",
+          "language": "typescript",
+          "sizeLines": 142,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/machines/bluetoothMachine.ts",
+          "language": "typescript",
+          "sizeLines": 113,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main.jsx",
+          "language": "javascript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/main.tsx",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/db/schema.ts": [],
+        "src/hooks/audioMachine.ts": [],
+        "src/hooks/index.ts": [],
+        "src/hooks/useAudioCoach.ts": [],
+        "src/hooks/useBluetoothHRM.ts": [],
+        "src/hooks/useChallenges.ts": [],
+        "src/hooks/useDashboardData.ts": [],
+        "src/hooks/useFitnessData.ts": [],
+        "src/hooks/useFitnessMachine.ts": [],
+        "src/hooks/useGhostMode.ts": [],
+        "src/hooks/useMachine.ts": [],
+        "src/hooks/useMotionCounter.ts": [],
+        "src/hooks/usePoseCounter.ts": [],
+        "src/hooks/useProactiveCoach.ts": [],
+        "src/hooks/useProgressiveHaptics.ts": [],
+        "src/hooks/useRobustTimer.ts": [],
+        "src/hooks/useWalkingCoach.ts": [],
+        "src/hooks/useWorkerPoseDetection.ts": [],
+        "src/index.css": [],
+        "src/jobs/weeklyReport.ts": [],
+        "src/lib/persistence.ts": [],
+        "src/lib/supabaseBrowser.ts": [],
+        "src/machines/bluetoothMachine.ts": [],
+        "src/main.jsx": [],
+        "src/main.tsx": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 35,
+      "files": [
+        {
+          "path": "src/middleware/auth.ts",
+          "language": "typescript",
+          "sizeLines": 130,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/middleware/rateLimiter.ts",
+          "language": "typescript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/router/viewConfigs.tsx",
+          "language": "typescript",
+          "sizeLines": 237,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/AICoach.tsx",
+          "language": "typescript",
+          "sizeLines": 225,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/ActiveWorkout.tsx",
+          "language": "typescript",
+          "sizeLines": 1114,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/BackupScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 128,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/CommunityFeed.tsx",
+          "language": "typescript",
+          "sizeLines": 378,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/CompeteScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 757,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/CycleReview.tsx",
+          "language": "typescript",
+          "sizeLines": 168,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/Dashboard.tsx",
+          "language": "typescript",
+          "sizeLines": 836,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/DeviceManager.tsx",
+          "language": "typescript",
+          "sizeLines": 304,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/GymVibe.tsx",
+          "language": "typescript",
+          "sizeLines": 556,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/Milestones.tsx",
+          "language": "typescript",
+          "sizeLines": 191,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/NutritionPlanner.tsx",
+          "language": "typescript",
+          "sizeLines": 845,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/Planner.tsx",
+          "language": "typescript",
+          "sizeLines": 64,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/ProfileScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 496,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/RecoveryScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 184,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/RewardsStore.tsx",
+          "language": "typescript",
+          "sizeLines": 230,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/Settings.tsx",
+          "language": "typescript",
+          "sizeLines": 580,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/Trends.tsx",
+          "language": "typescript",
+          "sizeLines": 341,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/screens/WalkingCoachScreen.tsx",
+          "language": "typescript",
+          "sizeLines": 1009,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/ProgressionSystem.ts",
+          "language": "typescript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/__tests__/gamificationEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 91,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/__tests__/injuryPredictionEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 56,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/__tests__/nutritionEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 230,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/middleware/auth.ts": [],
+        "src/middleware/rateLimiter.ts": [],
+        "src/router/viewConfigs.tsx": [],
+        "src/screens/AICoach.tsx": [],
+        "src/screens/ActiveWorkout.tsx": [],
+        "src/screens/BackupScreen.tsx": [],
+        "src/screens/CommunityFeed.tsx": [],
+        "src/screens/CompeteScreen.tsx": [],
+        "src/screens/CycleReview.tsx": [],
+        "src/screens/Dashboard.tsx": [],
+        "src/screens/DeviceManager.tsx": [],
+        "src/screens/GymVibe.tsx": [],
+        "src/screens/Milestones.tsx": [],
+        "src/screens/NutritionPlanner.tsx": [],
+        "src/screens/Planner.tsx": [],
+        "src/screens/ProfileScreen.tsx": [],
+        "src/screens/RecoveryScreen.tsx": [],
+        "src/screens/RewardsStore.tsx": [],
+        "src/screens/Settings.tsx": [],
+        "src/screens/Trends.tsx": [],
+        "src/screens/WalkingCoachScreen.tsx": [],
+        "src/services/ProgressionSystem.ts": [],
+        "src/services/__tests__/gamificationEngine.test.ts": [],
+        "src/services/__tests__/injuryPredictionEngine.test.ts": [],
+        "src/services/__tests__/nutritionEngine.test.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 36,
+      "files": [
+        {
+          "path": "src/services/__tests__/offlineWorkoutEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 44,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/__tests__/recoveryEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 90,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/__tests__/trendAnalyzer.test.ts",
+          "language": "typescript",
+          "sizeLines": 203,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/advancedFeatures.ts",
+          "language": "typescript",
+          "sizeLines": 15,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/aiCoach/proactiveEngine.ts",
+          "language": "typescript",
+          "sizeLines": 326,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/aiGenerator.ts",
+          "language": "typescript",
+          "sizeLines": 102,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/anthropicService.ts",
+          "language": "typescript",
+          "sizeLines": 290,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/backupService.ts",
+          "language": "typescript",
+          "sizeLines": 186,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/demographicEngine.ts",
+          "language": "typescript",
+          "sizeLines": 121,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/fitnessMechanics.ts",
+          "language": "typescript",
+          "sizeLines": 62,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/gamificationEngine.ts",
+          "language": "typescript",
+          "sizeLines": 132,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/googleDrive.ts",
+          "language": "typescript",
+          "sizeLines": 155,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/healthBridge.ts",
+          "language": "typescript",
+          "sizeLines": 109,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/healthKitService.ts",
+          "language": "typescript",
+          "sizeLines": 277,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPrediction/exerciseRegionMap.ts",
+          "language": "typescript",
+          "sizeLines": 195,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPrediction/index.ts",
+          "language": "typescript",
+          "sizeLines": 81,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPrediction/recoveryTracker.ts",
+          "language": "typescript",
+          "sizeLines": 52,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPrediction/riskModel.ts",
+          "language": "typescript",
+          "sizeLines": 192,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPrediction/stressCalculator.ts",
+          "language": "typescript",
+          "sizeLines": 154,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPredictionEngine.ts",
+          "language": "typescript",
+          "sizeLines": 298,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/injuryPredictor.ts",
+          "language": "typescript",
+          "sizeLines": 160,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/jwtEngine.ts",
+          "language": "typescript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/keyRotationService.ts",
+          "language": "typescript",
+          "sizeLines": 202,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/macrocycleEngine.ts",
+          "language": "typescript",
+          "sizeLines": 56,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/neuralFatigue.ts",
+          "language": "typescript",
+          "sizeLines": 111,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/services/__tests__/offlineWorkoutEngine.test.ts": [],
+        "src/services/__tests__/recoveryEngine.test.ts": [],
+        "src/services/__tests__/trendAnalyzer.test.ts": [],
+        "src/services/advancedFeatures.ts": [],
+        "src/services/aiCoach/proactiveEngine.ts": [],
+        "src/services/aiGenerator.ts": [],
+        "src/services/anthropicService.ts": [],
+        "src/services/backupService.ts": [],
+        "src/services/demographicEngine.ts": [],
+        "src/services/fitnessMechanics.ts": [],
+        "src/services/gamificationEngine.ts": [],
+        "src/services/googleDrive.ts": [],
+        "src/services/healthBridge.ts": [],
+        "src/services/healthKitService.ts": [],
+        "src/services/injuryPrediction/exerciseRegionMap.ts": [],
+        "src/services/injuryPrediction/index.ts": [],
+        "src/services/injuryPrediction/recoveryTracker.ts": [],
+        "src/services/injuryPrediction/riskModel.ts": [],
+        "src/services/injuryPrediction/stressCalculator.ts": [],
+        "src/services/injuryPredictionEngine.ts": [],
+        "src/services/injuryPredictor.ts": [],
+        "src/services/jwtEngine.ts": [],
+        "src/services/keyRotationService.ts": [],
+        "src/services/macrocycleEngine.ts": [],
+        "src/services/neuralFatigue.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 37,
+      "files": [
+        {
+          "path": "src/services/nutritionEngine.ts",
+          "language": "typescript",
+          "sizeLines": 181,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/offlineWorkoutEngine.ts",
+          "language": "typescript",
+          "sizeLines": 534,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/p2pSync.ts",
+          "language": "typescript",
+          "sizeLines": 199,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/predictiveChallenges.ts",
+          "language": "typescript",
+          "sizeLines": 164,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/recoveryEngine.ts",
+          "language": "typescript",
+          "sizeLines": 276,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/rivalAI.ts",
+          "language": "typescript",
+          "sizeLines": 51,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/supabaseClient.ts",
+          "language": "typescript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/tools/agentLoop.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/tools/braveSearch.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/tools/githubAudit.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/tools/supabaseQuery.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/tools/toolDefinitions.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/trendAnalyzer.ts",
+          "language": "typescript",
+          "sizeLines": 159,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/vectorMemory.ts",
+          "language": "typescript",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/webrtcEngine.ts",
+          "language": "typescript",
+          "sizeLines": 106,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/services/workoutGenerator.ts",
+          "language": "typescript",
+          "sizeLines": 107,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/encryptedPersist.ts",
+          "language": "typescript",
+          "sizeLines": 175,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useChallengeStore.ts",
+          "language": "typescript",
+          "sizeLines": 130,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useCommunityStore.ts",
+          "language": "typescript",
+          "sizeLines": 125,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useCompeteStore.ts",
+          "language": "typescript",
+          "sizeLines": 472,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useDeviceStore.ts",
+          "language": "typescript",
+          "sizeLines": 37,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useDualWorkoutStore.ts",
+          "language": "typescript",
+          "sizeLines": 91,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useEffortStore.ts",
+          "language": "typescript",
+          "sizeLines": 83,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useExerciseStore.ts",
+          "language": "typescript",
+          "sizeLines": 59,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useGhostStore.ts",
+          "language": "typescript",
+          "sizeLines": 163,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/services/nutritionEngine.ts": [],
+        "src/services/offlineWorkoutEngine.ts": [],
+        "src/services/p2pSync.ts": [],
+        "src/services/predictiveChallenges.ts": [],
+        "src/services/recoveryEngine.ts": [],
+        "src/services/rivalAI.ts": [],
+        "src/services/supabaseClient.ts": [],
+        "src/services/tools/agentLoop.ts": [],
+        "src/services/tools/braveSearch.ts": [],
+        "src/services/tools/githubAudit.ts": [],
+        "src/services/tools/supabaseQuery.ts": [],
+        "src/services/tools/toolDefinitions.ts": [],
+        "src/services/trendAnalyzer.ts": [],
+        "src/services/vectorMemory.ts": [],
+        "src/services/webrtcEngine.ts": [],
+        "src/services/workoutGenerator.ts": [],
+        "src/stores/encryptedPersist.ts": [],
+        "src/stores/useChallengeStore.ts": [],
+        "src/stores/useCommunityStore.ts": [],
+        "src/stores/useCompeteStore.ts": [],
+        "src/stores/useDeviceStore.ts": [],
+        "src/stores/useDualWorkoutStore.ts": [],
+        "src/stores/useEffortStore.ts": [],
+        "src/stores/useExerciseStore.ts": [],
+        "src/stores/useGhostStore.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 38,
+      "files": [
+        {
+          "path": "src/stores/useHealthStore.ts",
+          "language": "typescript",
+          "sizeLines": 293,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useInjuryStore.ts",
+          "language": "typescript",
+          "sizeLines": 57,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useMilestonesStore.ts",
+          "language": "typescript",
+          "sizeLines": 72,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useNutritionStore.ts",
+          "language": "typescript",
+          "sizeLines": 216,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/usePlanStore.ts",
+          "language": "typescript",
+          "sizeLines": 44,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useProactiveCoachStore.ts",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useProgressionStore.ts",
+          "language": "typescript",
+          "sizeLines": 154,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useRoutineStore.ts",
+          "language": "typescript",
+          "sizeLines": 106,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useSocialStore.ts",
+          "language": "typescript",
+          "sizeLines": 546,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/stores/useVibeStore.ts",
+          "language": "typescript",
+          "sizeLines": 91,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/types.ts",
+          "language": "typescript",
+          "sizeLines": 91,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/types/exercise.ts",
+          "language": "typescript",
+          "sizeLines": 84,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/types/fitness.ts",
+          "language": "typescript",
+          "sizeLines": 22,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/types/ghost.ts",
+          "language": "typescript",
+          "sizeLines": 17,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/types/injury.ts",
+          "language": "typescript",
+          "sizeLines": 71,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/__tests__/cryptoEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 121,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/__tests__/loadCalculator.test.ts",
+          "language": "typescript",
+          "sizeLines": 143,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/__tests__/prescriptionEngine.test.ts",
+          "language": "typescript",
+          "sizeLines": 188,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/__tests__/validation.test.ts",
+          "language": "typescript",
+          "sizeLines": 251,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/audio.ts",
+          "language": "typescript",
+          "sizeLines": 62,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/bluetoothParser.ts",
+          "language": "typescript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/cryptoEngine.ts",
+          "language": "typescript",
+          "sizeLines": 143,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/cryptoHelpers.ts",
+          "language": "typescript",
+          "sizeLines": 32,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/dailyAdjustment.ts",
+          "language": "typescript",
+          "sizeLines": 113,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/exerciseClassifier.ts",
+          "language": "typescript",
+          "sizeLines": 74,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/stores/useHealthStore.ts": [],
+        "src/stores/useInjuryStore.ts": [],
+        "src/stores/useMilestonesStore.ts": [],
+        "src/stores/useNutritionStore.ts": [],
+        "src/stores/usePlanStore.ts": [],
+        "src/stores/useProactiveCoachStore.ts": [],
+        "src/stores/useProgressionStore.ts": [],
+        "src/stores/useRoutineStore.ts": [],
+        "src/stores/useSocialStore.ts": [],
+        "src/stores/useVibeStore.ts": [],
+        "src/types.ts": [],
+        "src/types/exercise.ts": [],
+        "src/types/fitness.ts": [],
+        "src/types/ghost.ts": [],
+        "src/types/injury.ts": [],
+        "src/utils/__tests__/cryptoEngine.test.ts": [],
+        "src/utils/__tests__/loadCalculator.test.ts": [],
+        "src/utils/__tests__/prescriptionEngine.test.ts": [],
+        "src/utils/__tests__/validation.test.ts": [],
+        "src/utils/audio.ts": [],
+        "src/utils/bluetoothParser.ts": [],
+        "src/utils/cryptoEngine.ts": [],
+        "src/utils/cryptoHelpers.ts": [],
+        "src/utils/dailyAdjustment.ts": [],
+        "src/utils/exerciseClassifier.ts": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 39,
+      "files": [
+        {
+          "path": "src/utils/fitnessMath.ts",
+          "language": "typescript",
+          "sizeLines": 73,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/loadCalculator.ts",
+          "language": "typescript",
+          "sizeLines": 93,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/missedDaysDetector.ts",
+          "language": "typescript",
+          "sizeLines": 59,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/oneRMCalculator.ts",
+          "language": "typescript",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/plateCalculator.ts",
+          "language": "typescript",
+          "sizeLines": 49,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/prescriptionEngine.ts",
+          "language": "typescript",
+          "sizeLines": 226,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/sanitize.ts",
+          "language": "typescript",
+          "sizeLines": 18,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/schemas.ts",
+          "language": "typescript",
+          "sizeLines": 96,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/silentAudio.ts",
+          "language": "typescript",
+          "sizeLines": 84,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/telemetry.ts",
+          "language": "typescript",
+          "sizeLines": 194,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/validation.ts",
+          "language": "typescript",
+          "sizeLines": 125,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/workoutAdapters.test.ts",
+          "language": "typescript",
+          "sizeLines": 123,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/workoutAdapters.ts",
+          "language": "typescript",
+          "sizeLines": 21,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/utils/xpCalculator.ts",
+          "language": "typescript",
+          "sizeLines": 44,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/vite-env.d.ts",
+          "language": "typescript",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/workers/crypto.worker.ts",
+          "language": "typescript",
+          "sizeLines": 69,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/workers/poseDetection.worker.ts",
+          "language": "typescript",
+          "sizeLines": 65,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/workers/syncWorker.ts",
+          "language": "typescript",
+          "sizeLines": 147,
+          "fileCategory": "code"
+        },
+        {
+          "path": "test-jsdom.js",
+          "language": "javascript",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "tests/e2e/auth.spec.ts",
+          "language": "typescript",
+          "sizeLines": 45,
+          "fileCategory": "code"
+        },
+        {
+          "path": "tests/e2e/fitness-flow.spec.ts",
+          "language": "typescript",
+          "sizeLines": 44,
+          "fileCategory": "code"
+        },
+        {
+          "path": "tests/e2e/progression.spec.ts",
+          "language": "typescript",
+          "sizeLines": 72,
+          "fileCategory": "code"
+        },
+        {
+          "path": "tests/e2e/workout.spec.ts",
+          "language": "typescript",
+          "sizeLines": 30,
+          "fileCategory": "code"
+        },
+        {
+          "path": "update_svgs.py",
+          "language": "python",
+          "sizeLines": 0,
+          "fileCategory": "code"
+        },
+        {
+          "path": "vite.config.js",
+          "language": "javascript",
+          "sizeLines": 133,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/utils/fitnessMath.ts": [],
+        "src/utils/loadCalculator.ts": [],
+        "src/utils/missedDaysDetector.ts": [],
+        "src/utils/oneRMCalculator.ts": [],
+        "src/utils/plateCalculator.ts": [],
+        "src/utils/prescriptionEngine.ts": [],
+        "src/utils/sanitize.ts": [],
+        "src/utils/schemas.ts": [],
+        "src/utils/silentAudio.ts": [],
+        "src/utils/telemetry.ts": [],
+        "src/utils/validation.ts": [],
+        "src/utils/workoutAdapters.test.ts": [],
+        "src/utils/workoutAdapters.ts": [],
+        "src/utils/xpCalculator.ts": [],
+        "src/vite-env.d.ts": [],
+        "src/workers/crypto.worker.ts": [],
+        "src/workers/poseDetection.worker.ts": [],
+        "src/workers/syncWorker.ts": [],
+        "test-jsdom.js": [],
+        "tests/e2e/auth.spec.ts": [],
+        "tests/e2e/fitness-flow.spec.ts": [],
+        "tests/e2e/progression.spec.ts": [],
+        "tests/e2e/workout.spec.ts": [],
+        "update_svgs.py": [],
+        "vite.config.js": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 40,
+      "files": [
+        {
+          "path": "vitest.config.ts",
+          "language": "typescript",
+          "sizeLines": 33,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "vitest.config.ts": []
+      },
+      "neighborMap": {}
+    }
+  ]
+}

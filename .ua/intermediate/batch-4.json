@@ -1,0 +1,148 @@
+{
+  "batchIndex": 4,
+  "files": [
+    {
+      "path": ".dockerignore",
+      "language": "unknown",
+      "sizeLines": 25,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".env.example",
+      "language": "config",
+      "sizeLines": 79,
+      "fileCategory": "config"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 670,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "API.md",
+      "language": "markdown",
+      "sizeLines": 114,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "language": "markdown",
+      "sizeLines": 0,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "FITTRACK_EVOLUTION.md",
+      "language": "markdown",
+      "sizeLines": 461,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "FITTRACK_GAP_ANALYSIS_REPORT.md",
+      "language": "markdown",
+      "sizeLines": 218,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "GEMINI.md",
+      "language": "markdown",
+      "sizeLines": 18,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 202,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "PRD.md",
+      "language": "markdown",
+      "sizeLines": 0,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 117,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "ROADMAP.md",
+      "language": "markdown",
+      "sizeLines": 19,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "TESTING.md",
+      "language": "markdown",
+      "sizeLines": 0,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "biome.json",
+      "language": "json",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "capacitor.config.json",
+      "language": "json",
+      "sizeLines": 10,
+      "fileCategory": "config"
+    },
+    {
+      "path": "compete_schema.sql",
+      "language": "sql",
+      "sizeLines": 64,
+      "fileCategory": "data"
+    },
+    {
+      "path": "docker-compose.yml",
+      "language": "yaml",
+      "sizeLines": 97,
+      "fileCategory": "infra"
+    },
+    {
+      "path": "fittrack_briefing.md",
+      "language": "markdown",
+      "sizeLines": 1745,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "gemini-extension.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    ".dockerignore": [],
+    ".env.example": [],
+    "AGENTS.md": [],
+    "API.md": [],
+    "ARCHITECTURE.md": [],
+    "CLAUDE.md": [],
+    "FITTRACK_EVOLUTION.md": [],
+    "FITTRACK_GAP_ANALYSIS_REPORT.md": [],
+    "GEMINI.md": [],
+    "LICENSE.txt": [],
+    "PRD.md": [],
+    "README.md": [],
+    "ROADMAP.md": [],
+    "TESTING.md": [],
+    "biome.json": [],
+    "capacitor.config.json": [],
+    "compete_schema.sql": [],
+    "docker-compose.yml": [],
+    "fittrack_briefing.md": [],
+    "gemini-extension.json": []
+  },
+  "neighborMap": {}
+}

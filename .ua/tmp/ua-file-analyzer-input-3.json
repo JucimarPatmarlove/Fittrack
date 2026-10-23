@@ -1,0 +1,9 @@
+{
+  "projectRoot": "/home/kali/Documentos/Fittrack",
+  "batchFiles": [
+    {"path": "supabase/migrations/001_social.sql", "language": "sql", "sizeLines": 282, "fileCategory": "data"}
+  ],
+  "batchImportData": {
+    "supabase/migrations/001_social.sql": []
+  }
+}

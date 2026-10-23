@@ -1,0 +1,78 @@
+{
+  "nodes": [
+    {
+      "id": "config:docker/frontend/Dockerfile",
+      "type": "config",
+      "name": "docker/frontend/Dockerfile",
+      "filePath": "docker/frontend/Dockerfile",
+      "summary": "Multi-stage Docker build for FitTrack V7 frontend: Node.js 22 Alpine builder compiles Vite application with Supabase, PostHog, and Sentry configuration injected via build args, then Nginx 1.27 Alpine serves the static production build with custom nginx.conf including healthcheck via wget.",
+      "tags": ["dockerfile", "multi-stage-build", "frontend", "nginx", "vite", "production", "infrastructure"],
+      "languageNotes": "Dockerfile uses Alpine Linux base images for minimal size. Build stage leverages npm ci for reproducible dependency installs. Runtime stage adds wget for healthcheck. Build args inject VITE_* environment variables into the Vite bundle at compile time.",
+      "languageLesson": "Docker multi-stage builds separate build-time dependencies (Node.js, npm) from runtime dependencies (Nginx only), dramatically reducing final image size. Each FROM starts a new stage; COPY --from=builder transfers only the compiled /dist output. Build args (ARG) are only available during build — they must be re-declared as ENV if needed at runtime. Layer caching is optimized by copying package.json first before source code."
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "config:package-lock.json",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "config:docker/frontend/nginx.conf",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "config:tsconfig.json",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "config:vite.config.js",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "file:src",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "file:public",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "file:index.html",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docker/frontend/Dockerfile",
+      "target": "service:frontend",
+      "type": "deploys",
+      "weight": 0.7
+    }
+  ],
+  "batchFiles": [
+    {
+      "path": "docker/frontend/Dockerfile",
+      "language": "dockerfile",
+      "sizeLines": 55,
+      "fileCategory": "infra"
+    }
+  ]
+}

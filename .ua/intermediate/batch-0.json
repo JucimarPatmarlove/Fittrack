@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "id": "service:docker/bff/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "docker/bff/Dockerfile",
+      "summary": "Multi-stage Docker build producing a minimal Node.js 22 Alpine image for the BFF proxy server that securely holds the Anthropic API key.",
+      "tags": ["containerization", "infrastructure", "deployment", "zero-trust"],
+      "complexity": "simple",
+      "languageNotes": "Uses a single-stage Node.js Alpine base with production dependencies only, health check via wget, and runs server.js on port 3001."
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:docker/bff/Dockerfile",
+      "target": "file:server.js",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

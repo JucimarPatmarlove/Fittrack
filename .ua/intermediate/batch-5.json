@@ -1,0 +1,164 @@
+{
+  "nodes": [
+    {
+      "path": "index.html",
+      "language": "html",
+      "sizeLines": 118,
+      "fileCategory": "markup",
+      "summary": "HTML splash screen for FitTrack V7 with PWA metadata, CSP, font imports, and splash screen animations. Loads /src/main.tsx as the main application entry point. Contains error handlers that update splash text on failures.",
+      "keyFields": {
+        "hasSplashScreen": true,
+        "pwaManifest": "/manifest.json",
+        "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.anthropic.com blob:; ...",
+        "fonts": ["Bebas Neue", "Inter"],
+        "entryPoint": "/src/main.tsx"
+      }
+    },
+    {
+      "path": "knip.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config",
+      "summary": "Knip static analysis configuration defining entry points and project files to analyze. Ignores eslint and biome dependencies.",
+      "keyFields": {
+        "entryPoints": ["src/main.tsx", "scripts/**/*.js"],
+        "projectFiles": ["src/**/*.{ts,tsx}"],
+        "ignoreDependencies": ["eslint", "eslint-plugin-*", "@biomejs/biome"]
+      }
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 99,
+      "fileCategory": "config",
+      "summary": "Main npm project manifest for FitTrack V7. Vite-based React project with React 19, OpenTelemetry, Sentry, Supabase, Three.js, Recharts, and Zustand. Includes build security check that validates no Anthropic keys are bundled.",
+      "keyFields": {
+        "framework": "Vite/React 19",
+        "keyDependencies": ["react", "react-dom", "zod", "zustand", "recharts", "lucide-react", "@supabase/supabase-js"],
+        "devDependencies": ["@biomejs/biome", "@playwright/test", "vitest", "esbuild"],
+        "scripts": ["analyze", "dev", "build", "preview", "lint", "test", "test:ui", "test:coverage", "test:e2e"],
+        "allowScripts": ["esbuild@0.28.1", "protobufjs@7.6.5", "core-js@3.49.0"],
+        "securityCheck": "postbuild hook verifies no sk-ant in dist/"
+      }
+    },
+    {
+      "path": "save_memory.sh",
+      "language": "shell",
+      "sizeLines": 6,
+      "fileCategory": "script",
+      "summary": "Bash script to save text to external memory via HTTP webhook. Sends POST request to localhost:5678 with the provided text as a 'memoria' field.",
+      "keyFields": {
+        "usage": "./save_memory.sh \"Texto que quero guardar\"",
+        "method": "curl POST with JSON payload",
+        "webhookUrl": "http://localhost:5678/webhook/4d7de017-7800-40d9-bcab-462f76c71e3e",
+        "payloadFormat": "{\"memoria\": \"$1\"}"
+      }
+    },
+    {
+      "path": "skills-lock.json",
+      "language": "json",
+      "sizeLines": 1583,
+      "fileCategory": "config",
+      "summary": "Locked skills inventory with 1583 lines mapping skill names to GitHub source hashes. Contains skill definitions from multiple sources (danielteles/awesome-agent-skills, anthropics/skills, WST2002/claude-code-skills, etc.) with computed hashes for integrity verification.",
+      "keyFields": {
+        "totalSkills": 1583,
+        "skillCount": 230,
+        "sources": ["danielteles/awesome-agent-skills", "anthropics/skills", "WST2002/claude-code-skills", "LucasDuarteInacio/ai-skills", "Gwitchr/skills", "P4nda0s/reverse-skills", "basicmachines-co/basic-memory-skills", "obra/superpowers", "juliusbrussee/caveman", "williamcorrea23/sap-router-skill"],
+        "hashFormat": "computed MD5-like hash per skill",
+        "uses": "skills-best-practices or similar for integrity"
+      }
+    },
+    {
+      "path": "tsconfig.json",
+      "language": "json",
+      "sizeLines": 36,
+      "fileCategory": "config",
+      "summary": "TypeScript configuration for FitTrack V7. ES2020 target with strict mode, path aliases (@/* → ./src/), ESNext modules, JSX react-jsx, and various compiler checks (noUnusedLocals, noUnusedParameters, noImplicitAny etc.). Excludes node_modules, dist, fittrackTeste, server, functions.",
+      "keyFields": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "jsx": "react-jsx",
+        "strict": true,
+        "paths": {"@/*": ["./src/*"]},
+        "exclude": ["node_modules", "dist", "fittrackTeste", "server", "functions"],
+        "include": ["src"]
+      }
+    },
+    {
+      "path": "vercel.json",
+      "language": "json",
+      "sizeLines": 28,
+      "fileCategory": "config",
+      "summary": "Vercel deployment configuration for FitTrack V7. Sets region fra1, weekly cron for API report at 20:00 Sunday, API rewrites (api proxy and root → index.html), and security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, CSP with anthropic.com and googleapis.com).",
+      "keyFields": {
+        "region": "fra1",
+        "cronSchedule": "0 20 * * 0",
+        "rewrites": ["/api/(.*) → /api/$1", "/* → /index.html"],
+        "securityHeaders": ["X-Content-Type-Options: nosniff", "X-Frame-Options: DENY", "X-XSS-Protection: 1; mode=block", "Referrer-Policy: strict-origin-when-cross-origin", "CSP: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; ..."],
+        "headersApplyTo": "all routes /*"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "index.html",
+      "target": "src/main.tsx",
+      "type": "imports",
+      "label": "loads main application entry point"
+    },
+    {
+      "source": "index.html",
+      "target": "vercel.json",
+      "type": "configures",
+      "label": "Vercel deployment configuration"
+    },
+    {
+      "source": "package.json",
+      "target": "tsconfig.json",
+      "type": "references",
+      "label": "TypeScript config used by Vite build"
+    },
+    {
+      "source": "package.json",
+      "target": "knip.json",
+      "type": "configures",
+      "label": "Knip analysis entry points defined"
+    },
+    {
+      "source": "package.json",
+      "target": "skills-lock.json",
+      "type": "references",
+      "label": "Skill inventory for agent capabilities"
+    },
+    {
+      "source": "vercel.json",
+      "target": "package.json",
+      "type": "deploys",
+      "label": "Vercel deployment target for npm build"
+    },
+    {
+      "source": "save_memory.sh",
+      "target": "package.json",
+      "type": "integrates-with",
+      "label": "Could integrate with npm scripts for memory saving"
+    },
+    {
+      "source": "knip.json",
+      "target": "package.json",
+      "type": "references",
+      "label": "Entry points source from project config"
+    },
+    {
+      "source": "tsconfig.json",
+      "target": "package.json",
+      "type": "references",
+      "label": "TypeScript config referenced by project"
+    },
+    {
+      "source": "skills-lock.json",
+      "target": "package.json",
+      "type": "references",
+      "label": "Skills used by project agents"
+    }
+  ]
+}

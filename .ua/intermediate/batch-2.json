@@ -1,0 +1,31 @@
+{
+  "nodes": [
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "ci.yml",
+      "filePath": ".github/workflows/ci.yml",
+      "summary": "FitTrack V7 CI/CD pipeline running lint, typecheck, test, and build jobs on every push to main or develop branches and pull requests. The pipeline enforces code quality, type safety, test coverage, and production builds as part of the continuous integration workflow.",
+      "tags": ["ci-cd", "deployment", "continuous-integration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/sync-labels.yml",
+      "type": "pipeline",
+      "name": "sync-labels.yml",
+      "filePath": ".github/workflows/sync-labels.yml",
+      "summary": "FitTrack V7 GitHub Actions workflow that synchronizes repository labels using the label-syncer action on workflow dispatch. Ensures consistent label application across the repository for issue and pull request categorization.",
+      "tags": ["ci-cd", "label-sync", "automation"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "pipeline:.github/workflows/sync-labels.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

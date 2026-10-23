@@ -158,7 +158,7 @@ export interface FitTrackDBSchema extends DBSchema {
 const DB_NAME = 'FitTrack_V7_Database';
 
 let dbPromise: Promise<IDBPDatabase<FitTrackDBSchema>> | null = null;
-let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
+//let dbInstance: IDBPDatabase<FitTrackDBSchema> | null = null;
 const EXPECTED_STORES = [
   'workouts',
   'setLogs',

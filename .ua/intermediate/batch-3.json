@@ -1,0 +1,134 @@
+{
+  "nodes": [
+    {
+      "id": "table:supabase/migrations/001_social.sql:profiles",
+      "type": "table",
+      "name": "profiles",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [18, 25],
+      "summary": "User profiles table storing username, display name, avatar, and bio for authenticated users.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:follows",
+      "type": "table",
+      "name": "follows",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [46, 52],
+      "summary": "Follows relationship table managing user follower connections and social graph links.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:activities",
+      "type": "table",
+      "name": "activities",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [73, 84],
+      "summary": "Activities table recording published PRs, workouts, and performance metrics with visibility settings.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:challenges",
+      "type": "table",
+      "name": "challenges",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [121, 132],
+      "summary": "Challenges table defining 1:1 or open fitness challenges between users.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:challenge_participants",
+      "type": "table",
+      "name": "challenge_participants",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [153, 159],
+      "summary": "Challenge participants tracking user inscription and best scores in active challenges.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:clubs",
+      "type": "table",
+      "name": "clubs",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [204, 212],
+      "summary": "Clubs table organizing fitness groups, weekly XP goals, and official status.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/001_social.sql:club_members",
+      "type": "table",
+      "name": "club_members",
+      "filePath": "supabase/migrations/001_social.sql",
+      "lineRange": [232, 238],
+      "summary": "Club members table linking users to clubs with weekly XP tracking and membership limits.",
+      "tags": ["database", "migration", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:supabase/migrations/001_social.sql",
+      "type": "table",
+      "name": "001_social.sql",
+      "filePath": "supabase/migrations/001_social.sql",
+      "summary": "Supabase SQL migration defining social features including profiles, follows, activities, challenges, clubs, and Row Level Security policies.",
+      "tags": ["database", "migration", "security"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:profiles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:follows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:activities",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:challenges",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:challenge_participants",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:clubs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:supabase/migrations/001_social.sql",
+      "target": "table:supabase/migrations/001_social.sql:club_members",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ]
+}
