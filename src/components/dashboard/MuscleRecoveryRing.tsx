@@ -28,7 +28,6 @@ export const MuscleRecoveryRing: React.FC<Props> = ({ recoveryData }) => {
   }, [recoveryData.length]);
 
   const current = useMemo(() => recoveryData[currentIndex], [recoveryData, currentIndex]);
-  if (!current) return null;
 
   // SVG Ring Calculations
   const { size, strokeWidth, center, radius, circumference, offset } = useMemo(() => {
@@ -37,9 +36,16 @@ export const MuscleRecoveryRing: React.FC<Props> = ({ recoveryData }) => {
     const center = size / 2;
     const radius = center - strokeWidth;
     const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (current.recoveryPercentage / 100) * circumference;
+
+    // Guarda para o caso de current ser undefined
+    const percentage = current?.recoveryPercentage ?? 0;
+    const offset = circumference - (percentage / 100) * circumference;
+
     return { size, strokeWidth, center, radius, circumference, offset };
-  }, [current.recoveryPercentage]);
+  }, [current]);
+
+  // O return condicional tem de vir DEPOIS de todos os hooks
+  if (!current) return null;
 
   return (
     <div
