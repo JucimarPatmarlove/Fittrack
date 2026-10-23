@@ -52,3 +52,6 @@ cyclomatic_complexity_report.md
 AntigravitySwissKnife/
 .ua/
 .ua/
+.rlm/
+*.rlm
+claudecode-rlm*
