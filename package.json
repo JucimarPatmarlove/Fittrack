@@ -21,7 +21,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prepare": "husky"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
@@ -76,8 +77,10 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "knip": "^5.44.1",
+    "lint-staged": "^17.6.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",

@@ -1,9 +1,0 @@
-{
-  "projectRoot": "/home/kali/Documentos/Fittrack",
-  "batchFiles": [
-    {"path": "docker/bff/Dockerfile", "language": "dockerfile", "sizeLines": 26, "fileCategory": "infra"}
-  ],
-  "batchImportData": {
-    "docker/bff/Dockerfile": []
-  }
-}
