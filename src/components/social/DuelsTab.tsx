@@ -3,6 +3,13 @@ import { C } from '../../data/constants';
 import { type MetricType, useSocialStore } from '../../stores/useSocialStore';
 import { useExerciseStore } from '../../stores/useExerciseStore';
 
+const daysLeft = (endsAt: string) => {
+  const diff = new Date(endsAt).getTime() - Date.now();
+  if (diff <= 0) return 'Expirado';
+  const d = Math.ceil(diff / 86400000);
+  return `${d}d restante${d > 1 ? 's' : ''}`;
+};
+
 const METRIC_LABELS: Record<MetricType, string> = {
   '1rm': '1RM Estimado',
   volume: 'Volume Total',
@@ -23,7 +30,7 @@ export const DuelsTab = () => {
     const names = Object.keys(exercises);
     setExerciseNames(names);
     if (names.length > 0 && !exerciseName && exerciseName === 'Barbell Back Squat') {
-      setExerciseName(names[0]);
+      setExerciseName(names[0] ?? '');
     }
   }, [exercises, exerciseName]);
 

@@ -6,6 +6,8 @@ import { useCompeteStore } from '../stores/useCompeteStore';
 import { useExerciseStore } from '../stores/useExerciseStore';
 import type { Challenge, LeaderboardEntry, WeightClass } from '../stores/useCompeteStore';
 
+type Tab = 'leaderboard' | 'challenges' | 'myPRs';
+
 // ── Setup Profile Modal ──
 function SetupModal({ onComplete }: { onComplete: () => void }) {
   const { setupProfile } = useCompeteStore();

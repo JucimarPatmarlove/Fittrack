@@ -39,7 +39,7 @@ export const LeaderboardTab = () => {
   useEffect(() => {
     setExerciseNames(Object.keys(exercises));
     if (exercises && Object.keys(exercises).length > 0 && !exerciseName) {
-      setExerciseName(Object.keys(exercises)[0]);
+      setExerciseName(Object.keys(exercises)[0] ?? '');
     }
   }, [exercises]);
 
