@@ -5,6 +5,10 @@ import { VideoTutorial } from '../exercises/VideoTutorial';
 import { GlassCard } from '../ui/GlassCard';
 import { Tooltip } from '../ui/Tooltip';
 import { WorkoutSetRow } from './WorkoutSetRow';
+import { ProgressionBadge } from './ProgressionBadge';
+import { nextPrescription } from '../../lib/progression';
+import { getExerciseSessions, createExerciseConfig } from '../../lib/progressionAdapters';
+import type { WorkoutSessionData } from '../../utils/schemas';
 
 export const WorkoutExerciseList = ({
   localExs,
@@ -150,6 +154,26 @@ export const WorkoutExerciseList = ({
                   style={{ padding: '0 16px 16px' }}
                 >
                   <VideoTutorial exerciseName={ex.name} muscle={ex.muscle} />
+                  {/* Progression Badge — calculado com o novo motor */}
+                  {(() => {
+                    try {
+                      const config = createExerciseConfig(ex.name, todayPlan);
+                      const sessions = getExerciseSessions(history as WorkoutSessionData[], ex.name, config);
+                      const prescription = nextPrescription(sessions, config);
+                      return (
+                        <ProgressionBadge
+                          key={`progression-${ex.name}`}
+                          kind={prescription.kind}
+                          weight={prescription.weight}
+                          reps={prescription.reps}
+                          reason={prescription.reason}
+                          isBodyweight={config.isBodyweight}
+                        />
+                      );
+                    } catch {
+                      return null;
+                    }
+                  })()}
 
                   <div
                     style={{
