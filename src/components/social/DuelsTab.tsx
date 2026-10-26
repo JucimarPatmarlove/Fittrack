@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { C } from '../../data/constants';
-import { EXERCISE_DB } from '../../data/exerciseDB';
 import { type MetricType, useSocialStore } from '../../stores/useSocialStore';
-
-const EXERCISE_NAMES = Object.keys(EXERCISE_DB);
+import { useExerciseStore } from '../../stores/useExerciseStore';
 
 const METRIC_LABELS: Record<MetricType, string> = {
   '1rm': '1RM Estimado',
@@ -12,14 +10,23 @@ const METRIC_LABELS: Record<MetricType, string> = {
   duration: 'Duração',
 };
 
-function daysLeft(endsAt: string): string {
-  const diff = new Date(endsAt).getTime() - Date.now();
-  if (diff <= 0) return 'Terminado';
-  const days = Math.ceil(diff / 86400000);
-  return days === 1 ? '1 dia restante' : `${days} dias restantes`;
-}
-
 export const DuelsTab = () => {
+  const { exercises, fetchExercises } = useExerciseStore();
+  const [exerciseNames, setExerciseNames] = useState<string[]>([]);
+  const [exerciseName, setExerciseName] = useState('Barbell Back Squat');
+
+  useEffect(() => {
+    fetchExercises();
+  }, [fetchExercises]);
+
+  useEffect(() => {
+    const names = Object.keys(exercises);
+    setExerciseNames(names);
+    if (names.length > 0 && !exerciseName && exerciseName === 'Barbell Back Squat') {
+      setExerciseName(names[0]);
+    }
+  }, [exercises, exerciseName]);
+
   const {
     challenges,
     challengesLoading,
@@ -30,7 +37,6 @@ export const DuelsTab = () => {
   } = useSocialStore();
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState('');
-  const [exerciseName, setExerciseName] = useState(EXERCISE_NAMES[0] ?? 'Barbell Back Squat');
   const [metricType, setMetricType] = useState<MetricType>('1rm');
   const [durationDays, setDurationDays] = useState(7);
   const [creating, setCreating] = useState(false);
@@ -214,7 +220,7 @@ export const DuelsTab = () => {
                   fontSize: 12,
                 }}
               >
-                {EXERCISE_NAMES.map((name) => (
+                {exerciseNames.map((name) => (
                   <option key={name} value={name}>
                     {name}
                   </option>

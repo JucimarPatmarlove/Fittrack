@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { C } from '../../data/constants';
-import { EXERCISE_DB } from '../../data/exerciseDB';
+import { useExerciseStore } from '../../stores/useExerciseStore';
 import { type MetricType, useSocialStore } from '../../stores/useSocialStore';
-
-const EXERCISE_NAMES = Object.keys(EXERCISE_DB);
 
 const METRIC_LABELS: Record<MetricType, string> = {
   '1rm': '1RM Estimado (kg)',
@@ -23,9 +21,11 @@ const selectStyle: React.CSSProperties = {
 };
 
 export const LeaderboardTab = () => {
+  const { exercises, fetchExercises } = useExerciseStore();
   const { leaderboard, leaderboardLoading, fetchLeaderboard, publishPR, profile } =
     useSocialStore();
-  const [exerciseName, setExerciseName] = useState(EXERCISE_NAMES[0] ?? 'Barbell Back Squat');
+  const [exerciseNames, setExerciseNames] = useState<string[]>([]);
+  const [exerciseName, setExerciseName] = useState('Barbell Back Squat');
   const [metricType, setMetricType] = useState<MetricType>('1rm');
   const [showPublish, setShowPublish] = useState(false);
   const [publishValue, setPublishValue] = useState('');
@@ -33,7 +33,20 @@ export const LeaderboardTab = () => {
   const [publishError, setPublishError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchLeaderboard(exerciseName, metricType);
+    fetchExercises();
+  }, [fetchExercises]);
+
+  useEffect(() => {
+    setExerciseNames(Object.keys(exercises));
+    if (exercises && Object.keys(exercises).length > 0 && !exerciseName) {
+      setExerciseName(Object.keys(exercises)[0]);
+    }
+  }, [exercises]);
+
+  useEffect(() => {
+    if (exerciseName) {
+      fetchLeaderboard(exerciseName, metricType);
+    }
   }, [exerciseName, metricType, fetchLeaderboard]);
 
   const handlePublish = async () => {
@@ -64,7 +77,7 @@ export const LeaderboardTab = () => {
           onChange={(e) => setExerciseName(e.target.value)}
           style={{ ...selectStyle, flex: 1.5 }}
         >
-          {EXERCISE_NAMES.map((name) => (
+          {exerciseNames.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>

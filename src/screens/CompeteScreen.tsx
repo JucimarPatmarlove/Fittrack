@@ -1,17 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 // @ts-nocheck
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { C } from '../data/constants';
-import { EXERCISE_LIBRARY } from '../data/constants';
 import { useCompeteStore } from '../stores/useCompeteStore';
+import { useExerciseStore } from '../stores/useExerciseStore';
 import type { Challenge, LeaderboardEntry, WeightClass } from '../stores/useCompeteStore';
-
-type Tab = 'leaderboard' | 'challenges' | 'myPRs';
-
-// ── Exercícios competitivos (subconjunto da library) ──
-const COMPETE_EXERCISES = EXERCISE_LIBRARY.filter((e) =>
-  ['Barra', 'Halteres', 'Máquinas', 'PesoCorporal'].includes(e.equipment),
-).map((e) => e.name);
 
 // ── Setup Profile Modal ──
 function SetupModal({ onComplete }: { onComplete: () => void }) {
@@ -167,13 +160,25 @@ function SetupModal({ onComplete }: { onComplete: () => void }) {
 // ── Leaderboard Tab ──
 function LeaderboardTab() {
   const { leaderboard, leaderboardExercise, fetchLeaderboard, myRank } = useCompeteStore();
+  const { exerciseLibrary, fetchExercises } = useExerciseStore();
   const [selectedExercise, setSelectedExercise] = useState(leaderboardExercise);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchExercises();
+  }, [fetchExercises]);
+
+  const COMPETE_EXERCISES = useMemo(() =>
+    exerciseLibrary.filter((e) =>
+      ['Barra', 'Halteres', 'Máquinas', 'PesoCorporal'].includes(e.equipment),
+    ).map((e) => e.name),
+  [exerciseLibrary]);
 
   useEffect(() => {
     setLoading(true);
     fetchLeaderboard(selectedExercise).finally(() => setLoading(false));
   }, [selectedExercise, fetchLeaderboard]);
+
 
   const medalColor = (rank: number) => {
     if (rank === 1) return '#FFD700';
@@ -191,25 +196,31 @@ function LeaderboardTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <select
-        value={selectedExercise}
-        onChange={(e) => setSelectedExercise(e.target.value)}
-        style={{
-          width: '100%',
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          borderRadius: 10,
-          padding: 12,
-          color: '#fff',
-          fontSize: 13,
-        }}
-      >
-        {COMPETE_EXERCISES.map((ex) => (
-          <option key={ex} value={ex}>
-            {ex}
-          </option>
-        ))}
-      </select>
+      {COMPETE_EXERCISES.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 20, color: C.muted }}>
+          A carregar exercícios...
+        </div>
+      ) : (
+        <select
+          value={selectedExercise}
+          onChange={(e) => setSelectedExercise(e.target.value)}
+          style={{
+            width: '100%',
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            borderRadius: 10,
+            padding: 12,
+            color: '#fff',
+            fontSize: 13,
+          }}
+        >
+          {COMPETE_EXERCISES.map((ex) => (
+            <option key={ex} value={ex}>
+              {ex}
+            </option>
+          ))}
+        </select>
+      )}
 
       {myRank && (
         <div
@@ -531,13 +542,16 @@ function ChallengesTab() {
 // ── My PRs Tab ──
 function MyPRsTab() {
   const { publishedPRs, publishPR, unpublishPR } = useCompeteStore();
+  const { exerciseLibrary, fetchExercises } = useExerciseStore();
   const [localPRs, setLocalPRs] = useState<{ exerciseName: string; best1RM: number }[]>([]);
 
   useEffect(() => {
+    fetchExercises();
     // Load PRs from IndexedDB
     (async () => {
       try {
         const { getAllPersonalRecords } = await import('../db/schema');
+
         const records = await getAllPersonalRecords();
         setLocalPRs(
           records
@@ -548,7 +562,13 @@ function MyPRsTab() {
         setLocalPRs([]);
       }
     })();
-  }, []);
+  }, [fetchExercises]);
+
+  const COMPETE_EXERCISES = useMemo(() =>
+    exerciseLibrary.filter((e) =>
+      ['Barra', 'Halteres', 'Máquinas', 'PesoCorporal'].includes(e.equipment),
+    ).map((e) => e.name),
+  [exerciseLibrary]);
 
   // Merge local PRs with published status
   const allExercises = COMPETE_EXERCISES.map((name) => {

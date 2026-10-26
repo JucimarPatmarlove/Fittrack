@@ -13,10 +13,10 @@ export default defineConfig({
     globals: true,
     // Aliases para coincidir com vite.config.js
     alias: {
-      '@': resolve(__dirname, './src'),
+      '@': resolve(import.meta.dirname, './src'),
     },
     // Excluir node_modules e dist e testes e2e do Playwright
-    exclude: ['**/node_modules/**', '**/dist/**', '**/dev-dist/**', 'tests/e2e/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/dev-dist/**', 'tests/e2e/**', '**/AntigravitySwissKnife/**', '**/.agents/**', '**/.claude/**'],
     // Coverage com v8
     coverage: {
       provider: 'v8',
@@ -27,7 +27,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      '@': resolve(import.meta.dirname, './src'),
     },
   },
 });
