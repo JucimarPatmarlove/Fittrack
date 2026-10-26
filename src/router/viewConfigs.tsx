@@ -121,6 +121,8 @@ export function createViewConfigs(props: ViewConfigProps): Record<string, React.
           setProfile={setProfile}
           onBack={() => setView('dashboard')}
           onOpenSettings={() => setView('settings')}
+          history={history}
+          streakData={streakData}
         />
       </PageTransition>
     ),

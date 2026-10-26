@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { C } from '../data/constants';
 import { getCurrentLevel, LEVEL_THRESHOLDS, type LevelThreshold } from '../services/gamificationEngine';
 import type { UserProfile } from '../types';
+import type { WorkoutSessionData } from '../utils/schemas';
+import StructuralBalanceWidget from '../components/profile/StructuralBalanceWidget';
 
 interface ProfileScreenProps {
   profile: UserProfile;
@@ -11,6 +13,7 @@ interface ProfileScreenProps {
   onBack?: () => void;
   onOpenSettings?: () => void;
   streakData?: { currentStreak: number; longestStreak: number };
+  history?: WorkoutSessionData[];
 }
 
 interface EditForm {
@@ -25,6 +28,7 @@ export default function ProfileScreen({
   onBack,
   onOpenSettings,
   streakData,
+  history,
 }: ProfileScreenProps) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<EditForm>({
@@ -319,6 +323,17 @@ export default function ProfileScreen({
             </p>
           </div>
         </div>
+      )}
+
+      {/* 📊 EQUILÍBRIO MUSCULAR */}
+      {history && history.length > 0 && profile.weight && (
+        <StructuralBalanceWidget
+          history={history}
+          bodyweight={profile.weight}
+          sex={profile.gender === 'female' ? 'female' : 'male'}
+          title="Equilíbrio Muscular"
+          showOnlyWithData={true}
+        />
       )}
 
       <AnimatePresence>
