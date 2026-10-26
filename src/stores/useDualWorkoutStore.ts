@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createDurableStorage } from '../lib/durablePersist';
 
 export type WorkoutSlot = 'morning' | 'afternoon';
 
@@ -86,6 +87,9 @@ export const useDualWorkoutStore = create<DualWorkoutStore>()(
         return workouts.length > 0 ? workouts[0] : null;
       },
     }),
-    { name: 'dual-workout-storage' },
+    {
+      name: 'dual-workout-storage',
+      storage: createDurableStorage() as any,
+    },
   ),
 );

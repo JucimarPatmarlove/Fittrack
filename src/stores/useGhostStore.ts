@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { DailyGhostStats, GhostSetRecord } from '../types/ghost';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 interface GhostStore {
   active: boolean;
@@ -157,7 +157,7 @@ export const useGhostStore = create<GhostStore>()(
     }),
     {
       name: 'ghost-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

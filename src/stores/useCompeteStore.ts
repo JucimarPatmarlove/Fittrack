@@ -10,6 +10,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getSupabaseBrowser, signInAnonymously } from '../lib/supabaseBrowser';
+import { createDurableStorage } from '../lib/durablePersist';
 
 // ─── TIPOS ──────────────────────────────────────────────────────
 
@@ -467,6 +468,9 @@ export const useCompeteStore = create<CompeteState>()(
         ).length;
       },
     }),
-    { name: 'ft_compete_store' },
+    {
+      name: 'ft_compete_store',
+      storage: createDurableStorage() as any,
+    },
   ),
 );

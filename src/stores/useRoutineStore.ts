@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 interface RoutinePlan {
   id: string;
@@ -100,7 +100,7 @@ export const useRoutineStore = create<RoutineState>()(
     }),
     {
       name: 'routine-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

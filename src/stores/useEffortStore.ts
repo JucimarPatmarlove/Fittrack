@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 interface EffortSession {
   id: string;
@@ -77,7 +77,7 @@ export const useEffortStore = create<EffortState>()(
     }),
     {
       name: 'effort-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

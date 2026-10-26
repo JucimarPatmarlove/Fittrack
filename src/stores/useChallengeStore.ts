@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 export interface DailyChecklist {
   date: string;
@@ -124,7 +124,7 @@ export const useChallengeStore = create<ChallengeStore>()(
     }),
     {
       name: 'challenge-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

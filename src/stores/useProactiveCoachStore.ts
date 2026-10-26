@@ -9,6 +9,7 @@ import { persist } from 'zustand/middleware';
 import type { ProactiveMessage, TriggerContext } from '../services/aiCoach/proactiveEngine';
 import { evaluateTriggers, shouldShowMessage } from '../services/aiCoach/proactiveEngine';
 import { trackEvent } from '../utils/telemetry';
+import { createDurableStorage } from '../lib/durablePersist';
 
 interface ProactiveCoachState {
   messages: ProactiveMessage[];
@@ -95,6 +96,7 @@ export const useProactiveCoachStore = create<ProactiveCoachState>()(
     }),
     {
       name: 'fittrack-proactive-coach',
+      storage: createDurableStorage() as any,
       partialize: (state) => ({
         messages: state.messages.filter((m) => !m.dismissed),
         lastEvaluation: state.lastEvaluation,

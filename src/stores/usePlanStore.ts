@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 export type PlanType = 'hipertrofia' | 'forca' | 'anatoly' | 'fullbody' | 'calistenia';
 
@@ -38,7 +38,7 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: 'plan-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

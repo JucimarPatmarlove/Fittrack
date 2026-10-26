@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedStorage } from './encryptedPersist';
+import { createEncryptedDurableStorage } from './encryptedDurableStorage';
 
 interface MilestonesState {
   prs: Record<string, number>;
@@ -31,7 +31,7 @@ export const useMilestonesStore = create<MilestonesState>()(
     }),
     {
       name: 'milestones-store',
-      storage: createEncryptedStorage(),
+      storage: createEncryptedDurableStorage(),
     },
   ),
 );

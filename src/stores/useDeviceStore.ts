@@ -1,6 +1,7 @@
 // src/stores/useDeviceStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createDurableStorage } from '../lib/durablePersist';
 
 export interface PairedDevice {
   id: string;
@@ -32,6 +33,9 @@ export const useDeviceStore = create<DeviceState>()(
         })),
       setAutoSync: (autoSync) => set({ autoSync }),
     }),
-    { name: 'fittrack_devices' },
+    {
+      name: 'fittrack_devices',
+      storage: createDurableStorage() as any,
+    },
   ),
 );

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createDurableStorage } from '../lib/durablePersist';
 import { sanitizeText, sanitizeUrl } from '../utils/sanitize';
 
 export interface Vibe {
@@ -86,6 +87,7 @@ export const useVibeStore = create<VibeState>()(
     }),
     {
       name: 'ft_vibes',
+      storage: createDurableStorage() as any,
     },
   ),
 );

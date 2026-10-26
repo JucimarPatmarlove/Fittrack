@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createDurableStorage } from '../lib/durablePersist';
 
 export interface SocialPost {
   id: string;
@@ -120,6 +121,7 @@ export const useCommunityStore = create<CommunityState>()(
     }),
     {
       name: 'ft_community_feed',
+      storage: createDurableStorage() as any,
     },
   ),
 );
