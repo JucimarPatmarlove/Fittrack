@@ -6,7 +6,6 @@ import {
   ACTIVITY_TYPES,
   C,
   EQUIPMENT_TYPES,
-  EXERCISE_LIBRARY,
   MUSCLE_GROUPS,
 } from '../../data/constants';
 import { getExerciseMedia } from '../../data/exerciseMedia';
@@ -104,30 +103,50 @@ export function ExerciseLibrary({ onCreateWorkout, onClose }: ExerciseLibraryPro
   const INITIAL_PAGE = 50;
   const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE);
 
-  const filtered = useMemo(() => {
-    return EXERCISE_LIBRARY.filter((ex) => {
-      const matchSearch = search === '' || ex.name.toLowerCase().includes(search.toLowerCase());
-      const matchMuscle = muscle === 'Todos' || ex.muscles.includes(muscle);
-      const matchEquip = equipment === 'Todos os equipamentos' || ex.equipment === equipment;
-      const matchType = actType === 'Todos os tipos' || ex.type === actType;
-      return matchSearch && matchMuscle && matchEquip && matchType;
-    });
-  }, [search, muscle, equipment, actType]);
+  const { exerciseLibrary, isLoading, fetchExercises } = useExerciseStore();
+
+  // Load exercises on mount
+  useEffect(() => {
+    fetchExercises();
+  }, [fetchExercises]);
 
   // Whenever the filters/search change, reset the visible window.
   useEffect(() => {
     setVisibleCount(INITIAL_PAGE);
   }, [search, muscle, equipment, actType]);
 
+  const filtered = useMemo(() => {
+    return exerciseLibrary.filter((ex) => {
+      const matchSearch = search === '' || ex.name.toLowerCase().includes(search.toLowerCase());
+      const matchMuscle = muscle === 'Todos' || ex.muscles.includes(muscle);
+      const matchEquip = equipment === 'Todos os equipamentos' || ex.equipment === equipment;
+      const matchType = actType === 'Todos os tipos' || ex.type === actType;
+      return matchSearch && matchMuscle && matchEquip && matchType;
+    });
+  }, [search, muscle, equipment, actType, exerciseLibrary]);
+
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div style={modalOverlay}>
+        <div style={modalSheet}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: C.muted }}>
+            A carregar exercícios...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const toggle = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   const handleCreate = () => {
     const names = selected
-      .map((id) => EXERCISE_LIBRARY.find((e) => e.id === id)?.name)
+      .map((id) => exerciseLibrary.find((e) => e.id === id)?.name)
       .filter(Boolean) as string[];
     onCreateWorkout(names);
   };

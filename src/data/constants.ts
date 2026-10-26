@@ -134,8 +134,9 @@ export const ACTIVITY_TYPES = [
 ];
 
 // Full EXERCISE_LIBRARY with all 1324 exercises imported from generated file
-import { EXERCISE_LIBRARY as FULL_EXERCISE_LIBRARY } from './exercises-generated';
-export const EXERCISE_LIBRARY = FULL_EXERCISE_LIBRARY;
+// REMOVED: Import now done asynchronously via useExerciseStore to avoid bundling JSON
+// import { EXERCISE_LIBRARY as FULL_EXERCISE_LIBRARY } from './exercises-generated';
+export const EXERCISE_LIBRARY = [];
 
 export const V2_LOAD_PCT: Record<string, Record<string, [number, number, number]>> = {
   'Barbell Bench Press': {
