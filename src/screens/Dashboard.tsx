@@ -27,6 +27,7 @@ import { DailyBriefing } from '../components/dashboard/DailyBriefing';
 import { ReadinessGauge } from '../components/dashboard/ReadinessGauge';
 import { TrendDashboardSection } from '../components/dashboard/TrendDashboardSection';
 import { ActivityHeatmap } from '../components/dashboard/ActivityHeatmap';
+import { ConsistencyHeatmap } from '../components/dashboard/ConsistencyHeatmap';
 import { InjuryRiskPanel } from '../components/injury/InjuryRiskPanel';
 import { P2PSyncModal } from '../components/social/P2PSyncModal';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -340,6 +341,9 @@ export default function Dashboard({
 
       {/* 🔥 RADAR DE CONSISTÊNCIA — Heatmap Premium (365 dias) 🔥 */}
       {!isSystemEmpty && <ActivityHeatmap history={history} />}
+
+      {/* 📅 CONSISTÊNCIA ANUAL */}
+      {!isSystemEmpty && <ConsistencyHeatmap history={history} />}
 
       {/* 📡 TELEMETRIA BIOLÓGICA — HealthKit (RENPHO + Apple Watch) 📡 */}
       <BiometricInsight
