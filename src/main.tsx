@@ -8,6 +8,16 @@ import './index.css';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Resiliência PWA: recarregar página se chunk falhar ao carregar (evita erro de cache obsoleto)
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault();
+  if (!sessionStorage.getItem('chunk_reload')) {
+    sessionStorage.setItem('chunk_reload', 'true');
+    window.location.reload();
+  }
+});
+setTimeout(() => sessionStorage.removeItem('chunk_reload'), 60000);
+
 try {
   // ── INIT TELEMETRY E MONITORIZAÇÃO ────────────────────────
   initTelemetry();
