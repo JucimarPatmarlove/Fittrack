@@ -121,7 +121,7 @@ export function classifyBalance(pctOfTarget: number): BalanceClassification {
 export function getBestPerformance(
   role: Role,
   performances: ExercisePerformance[],
-  userData: UserData
+  _userData: UserData
 ): { value: number; exerciseId: string; metricType: MetricType } | null {
   const relevantPerformances = performances.filter((p) => role.exerciseIds.includes(p.exerciseId));
 
@@ -151,9 +151,10 @@ export function getBestPerformance(
 
   // Para unilaterais, agrupa por exercício base e pega o melhor lado
   // Simplificação: pega o máximo valor entre todos
-  const best = evaluated.reduce((max, curr) =>
-    curr.value > max.value ? curr : max
-  , evaluated[0]);
+  const best = evaluated.reduce(
+    (max, curr) => (curr.value > max.value ? curr : max),
+    evaluated[0] as { value: number; exerciseId: string }
+  );
 
   if (best.value <= 0) return null;
 
@@ -192,7 +193,6 @@ export function evaluateRole(
       }
       currentValue = bestPerf.value / anchorValue;
       targetValue = role.targetPct ?? 1.0;
-      const pct = (currentValue / targetValue) * 100;
       reason = `${bestPerf.exerciseId}: ${(currentValue * 100).toFixed(1)}% do ${role.anchorRoleId} (alvo: ${(targetValue * 100).toFixed(0)}%)`;
       return {
         roleId: role.id,

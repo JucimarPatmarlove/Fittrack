@@ -11,8 +11,6 @@ import {
   type Role,
   type ExercisePerformance,
   type UserData,
-  type BalanceClassification,
-  type MetricType,
 } from './structuralBalance';
 
 // Helper para criar UserData

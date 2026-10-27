@@ -58,3 +58,10 @@ claudecode-rlm*
 .claudecode/
 claudecode-rlm*
 .claude/
+
+# Ignorar cache do npm
+.npm-cache/
+
+# Ignorar tudo na pasta .claude, EXCETO as configurações importantes
+.claude/*
+!.claude/settings.json
