@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { DailyGhostStats, GhostSetRecord } from '../types/ghost';
-import { createEncryptedDurableStorage } from './encryptedDurableStorage';
+import { createEncryptedDurableStorage } from '../lib/encryptedDurableStorage';
 
 interface GhostStore {
   active: boolean;

@@ -65,3 +65,9 @@ claudecode-rlm*
 # Ignorar tudo na pasta .claude, EXCETO as configurações importantes
 .claude/*
 !.claude/settings.json
+
+# Ignorar o histórico e cache do Claude, mas manter as configurações de segurança
+.claude/*
+!.claude/settings.json
+!.claude/rules/
+!.claude/hooks/

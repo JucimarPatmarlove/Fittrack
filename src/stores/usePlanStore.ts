@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createEncryptedDurableStorage } from './encryptedDurableStorage';
+import { createEncryptedDurableStorage } from '../lib/encryptedDurableStorage';
 
 export type PlanType = 'hipertrofia' | 'forca' | 'anatoly' | 'fullbody' | 'calistenia';
 
