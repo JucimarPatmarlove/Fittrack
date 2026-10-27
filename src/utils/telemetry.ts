@@ -19,6 +19,12 @@ import { Resource } from '@opentelemetry/resources';
 import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
 export function initTelemetry() {
+  // Only initialize OpenTelemetry in development to avoid CSP issues with localhost:4318 in production
+  if (!import.meta.env.DEV) {
+    console.log('🔭 OpenTelemetry skipped in production');
+    return;
+  }
+
   try {
     const provider = new WebTracerProvider({
       resource: new Resource({

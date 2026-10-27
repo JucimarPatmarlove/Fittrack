@@ -8,8 +8,19 @@ export default defineConfig({
     react(),
     process.env.ANALYZE === 'true' && visualizer({ open: true, filename: 'dist/stats.html' }),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'icons/*.png'],
+      // Callbacks para UX PWA (Safari/outros browsers)
+      // onNeedRefresh: chamado quando há nova versão disponível
+      // onOfflineReady: chamado quando app está pronta para offline
+      onNeedRefresh() {
+        if (confirm('Nova versão disponível. Atualizar agora?')) {
+          window.location.reload();
+        }
+      },
+      onOfflineReady() {
+        console.log('[PWA] App pronta para uso offline');
+      },
       manifest: {
         name: 'FitTrack V7',
         short_name: 'FitTrack',
